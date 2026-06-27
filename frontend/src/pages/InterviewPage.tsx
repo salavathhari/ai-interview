@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { interviewApi } from '../services/api';
+import { interviewApi, API_BASE_URL } from '../services/api';
 import './InterviewPage.css';
 
 type InterviewStatus = 'connecting' | 'answering' | 'evaluating' | 'feedback' | 'finished';
@@ -226,7 +226,8 @@ const InterviewPage: React.FC = () => {
         }
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const ws = new WebSocket(`${protocol}//localhost:8000/ws/interview/${sessionId}?token=${token}`);
+        const wsHost = API_BASE_URL.replace(/^https?:\/\//, '');
+        const ws = new WebSocket(`${protocol}//${wsHost}/ws/interview/${sessionId}?token=${token}`);
         socketRef.current = ws;
 
         ws.onopen = () => console.log('Connected to interview');
@@ -312,7 +313,8 @@ const InterviewPage: React.FC = () => {
                         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
                         const token = localStorage.getItem('token');
                         if (token) {
-                            const newWs = new WebSocket(`${protocol}//localhost:8000/ws/interview/${sessionId}?token=${token}`);
+                            const wsHost = API_BASE_URL.replace(/^https?:\/\//, '');
+                            const newWs = new WebSocket(`${protocol}//${wsHost}/ws/interview/${sessionId}?token=${token}`);
                             socketRef.current = newWs;
                             newWs.onopen = ws.onopen;
                             newWs.onmessage = ws.onmessage;
