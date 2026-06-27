@@ -1,0 +1,1 @@
+[AUTH WARNING] No JWT_SECRET_KEY set in environment. Generated ephemeral key. Tokens will not survive restarts.

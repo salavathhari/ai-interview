@@ -1,0 +1,134 @@
+{
+  "categories": {
+    "programming_languages": {
+      "skills": [
+        "Python", "JavaScript", "TypeScript", "Java", "C++", "C#", "Go", "Rust", "Ruby",
+        "PHP", "Swift", "Kotlin", "Scala", "R", "MATLAB", "Perl", "Shell", "Bash",
+        "PowerShell", "SQL", "HTML", "CSS", "Sass", "Less", "Dart", "Lua", "Haskell",
+        "Elixir", "Clojure", "F#", "Groovy", "Objective-C", "Assembly", "Fortran",
+        "COBOL", "Pascal", "Ada", "Lisp", "Prolog", "Julia", "Erlang", "OCaml"
+      ],
+      "aliases": {
+        "js": "JavaScript", "ts": "TypeScript", "py": "Python", "rb": "Ruby",
+        "c sharp": "C#", "c#": "C#", "golang": "Go", "rs": "Rust",
+        "objc": "Objective-C", "r lang": "R"
+      }
+    },
+    "frameworks": {
+      "skills": [
+        "React", "Angular", "Vue.js", "Vue", "Next.js", "Nuxt.js", "Svelte", "SvelteKit",
+        "Remix", "Gatsby", "jQuery", "Bootstrap", "Tailwind CSS", "Material UI",
+        "Node.js", "Express", "FastAPI", "Django", "Flask", "Spring Boot", "Spring",
+        "Laravel", "Ruby on Rails", "Rails", "ASP.NET", ".NET", "Express.js",
+        "NestJS", "Koa", "Hapi", "Phoenix", "Gin", "Echo", "Fiber",
+        "TensorFlow", "PyTorch", "Keras", "scikit-learn", "XGBoost", "LightGBM",
+        "Hugging Face Transformers", "Spacy", "NLTK", "OpenCV", "Pandas", "NumPy",
+        "React Native", "Flutter", "Ionic", "Xamarin", "Electron", "Tauri",
+        "Django REST Framework", "GraphQL", "gRPC", "FastAPI"
+      ],
+      "aliases": {
+        "react.js": "React", "angular.js": "Angular", "vue.js": "Vue.js",
+        "next": "Next.js", "nuxt": "Nuxt.js", "tailwind": "Tailwind CSS",
+        "node": "Node.js", "express.js": "Express", "django": "Django",
+        "flask": "Flask", "spring": "Spring Boot", "rails": "Ruby on Rails",
+        "dotnet": ".NET", "asp.net": "ASP.NET", "sklearn": "scikit-learn",
+        "tf": "TensorFlow", "torch": "PyTorch", "hf": "Hugging Face Transformers"
+      }
+    },
+    "databases": {
+      "skills": [
+        "PostgreSQL", "MySQL", "SQLite", "MongoDB", "Redis", "Elasticsearch",
+        "Cassandra", "DynamoDB", "CouchDB", "Neo4j", "InfluxDB", "RethinkDB",
+        "MariaDB", "Oracle DB", "SQL Server", "Firebase", "Supabase",
+        "Cosmos DB", "TimescaleDB", "ClickHouse", "Snowflake", "BigQuery",
+        "Redshift", "Firestore", "Memcached", "RocksDB", "LevelDB"
+      ],
+      "aliases": {
+        "postgres": "PostgreSQL", "mongo": "MongoDB", "elastic": "Elasticsearch",
+        "dynamo": "DynamoDB", "sql server": "SQL Server", "mssql": "SQL Server"
+      }
+    },
+    "cloud_platforms": {
+      "skills": [
+        "AWS", "Amazon Web Services", "Microsoft Azure", "Azure", "Google Cloud Platform",
+        "GCP", "Google Cloud", "Heroku", "Vercel", "Netlify", "DigitalOcean",
+        "Linode", "Alibaba Cloud", "IBM Cloud", "Oracle Cloud", "Cloudflare",
+        "Firebase", "Supabase", "Railway", "Render"
+      ],
+      "aliases": {
+        "amazon web services": "AWS", "amazon cloud": "AWS",
+        "google cloud platform": "GCP", "google cloud": "GCP",
+        "microsoft cloud": "Azure", "ms azure": "Azure"
+      }
+    },
+    "devops_tools": {
+      "skills": [
+        "Docker", "Kubernetes", "K8s", "Jenkins", "GitLab CI", "GitHub Actions",
+        "CircleCI", "Travis CI", "Terraform", "Ansible", "Puppet", "Chef",
+        "Pulumi", "Vagrant", "Prometheus", "Grafana", "Datadog", "Splunk",
+        "Nagios", "Zabbix", "ELK Stack", "Nginx", "Apache", "Caddy",
+        "HAProxy", "Istio", "Envoy", "Consul", "Vault", "ArgoCD",
+        "Flux", "Helm", "Kustomize", "SonarQube", "Artifactory"
+      ],
+      "aliases": {
+        "k8s": "Kubernetes", "gh actions": "GitHub Actions", "tf": "Terraform",
+        "helm": "Helm", "sonar": "SonarQube"
+      }
+    },
+    "ai_frameworks": {
+      "skills": [
+        "Machine Learning", "Deep Learning", "Natural Language Processing", "NLP",
+        "Computer Vision", "Reinforcement Learning", "Generative AI", "LLM",
+        "Neural Networks", "CNN", "RNN", "LSTM", "Transformer", "BERT", "GPT",
+        "Stable Diffusion", "Hugging Face", "LangChain", "LlamaIndex",
+        "OpenAI API", "Anthropic API", "RAG", "Vector Database",
+        "MLflow", "Kubeflow", "Airflow", "Feature Store", "MLOps"
+      ],
+      "aliases": {
+        "ml": "Machine Learning", "dl": "Deep Learning", "nlp": "Natural Language Processing",
+        "cv": "Computer Vision", "rl": "Reinforcement Learning",
+        "gen ai": "Generative AI", "genai": "Generative AI",
+        "large language model": "LLM", "vector db": "Vector Database"
+      }
+    },
+    "soft_skills": {
+      "skills": [
+        "Communication", "Leadership", "Teamwork", "Problem Solving", "Critical Thinking",
+        "Time Management", "Adaptability", "Creativity", "Collaboration", "Mentoring",
+        "Presentation", "Negotiation", "Conflict Resolution", "Emotional Intelligence",
+        "Decision Making", "Project Management", "Agile", "Scrum", "Kanban",
+        "Stakeholder Management", "Cross-functional Collaboration",
+        "Technical Writing", "Public Speaking", "Analytical Thinking"
+      ],
+      "aliases": {
+        "team player": "Teamwork", "time management": "Time Management",
+        "project management": "Project Management", "agile methodology": "Agile",
+        "scrum master": "Scrum"
+      }
+    },
+    "operating_systems": {
+      "skills": [
+        "Linux", "Ubuntu", "CentOS", "Debian", "Red Hat", "RHEL", "Fedora",
+        "Arch Linux", "macOS", "Windows", "Windows Server", "FreeBSD",
+        "Alpine Linux", "Kali Linux"
+      ],
+      "aliases": {
+        "linux": "Linux", "ubuntu": "Ubuntu", "centos": "CentOS",
+        "mac": "macOS", "win": "Windows"
+      }
+    },
+    "methodologies": {
+      "skills": [
+        "Agile", "Scrum", "Kanban", "Waterfall", "SAFe", "Lean",
+        "TDD", "BDD", "DDD", "CI/CD", "DevOps", "GitOps",
+        "Microservices", "Serverless", "Event-Driven", "RESTful API",
+        "GraphQL", "gRPC", "SOA"
+      ],
+      "aliases": {
+        "test driven development": "TDD", "behavior driven development": "BDD",
+        "domain driven design": "DDD", "continuous integration": "CI/CD",
+        "continuous deployment": "CI/CD", "rest api": "RESTful API"
+      }
+    }
+  }
+}

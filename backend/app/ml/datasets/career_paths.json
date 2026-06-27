@@ -1,0 +1,109 @@
+{
+  "career_paths": {
+    "Frontend Developer": {
+      "senior": ["Senior Frontend Developer", "Lead Frontend Developer"],
+      "lateral": ["Full Stack Developer", "UI/UX Engineer"],
+      "advanced": ["Frontend Architect", "Engineering Manager", "Product Manager", "CTO"],
+      "skill_progression": {
+        "Senior Frontend Developer": ["System Design", "Performance Optimization", "Accessibility", "Leadership", "Mentoring"],
+        "Full Stack Developer": ["Node.js", "PostgreSQL", "Docker", "REST API", "DevOps Basics"],
+        "Frontend Architect": ["Architecture Design", "Micro Frontends", "Build Systems", "CI/CD", "Technical Leadership"],
+        "Engineering Manager": ["Team Management", "Project Management", "Stakeholder Communication", "Hiring", "Strategy"]
+      }
+    },
+    "Backend Developer": {
+      "senior": ["Senior Backend Developer", "Lead Backend Developer"],
+      "lateral": ["Cloud Engineer", "DevOps Engineer", "Data Engineer"],
+      "advanced": ["Solutions Architect", "Engineering Manager", "Platform Engineer", "CTO"],
+      "skill_progression": {
+        "Senior Backend Developer": ["System Design", "Distributed Systems", "Performance Tuning", "Architecture", "Mentoring"],
+        "Cloud Engineer": ["AWS/Azure/GCP", "Terraform", "Kubernetes", "Serverless", "Cloud Architecture"],
+        "DevOps Engineer": ["CI/CD", "Docker", "Kubernetes", "Infrastructure as Code", "Monitoring"],
+        "Solutions Architect": ["Enterprise Architecture", "System Design", "Cloud Strategy", "Cost Optimization", "Stakeholder Management"],
+        "Engineering Manager": ["Team Leadership", "Project Management", "Hiring", "Strategy", "Cross-team Collaboration"]
+      }
+    },
+    "Full Stack Developer": {
+      "senior": ["Senior Full Stack Developer", "Lead Full Stack Developer"],
+      "lateral": ["Frontend Architect", "Backend Architect", "Cloud Engineer"],
+      "advanced": ["Engineering Manager", "CTO", "Technical Director", "Product Manager"],
+      "skill_progression": {
+        "Senior Full Stack Developer": ["System Design", "Architecture", "Performance", "DevOps", "Leadership"],
+        "Frontend Architect": ["Micro Frontends", "Build Systems", "Design Systems", "Performance", "Accessibility"],
+        "Backend Architect": ["Distributed Systems", "Database Design", "API Design", "Security", "Scalability"],
+        "Engineering Manager": ["Team Management", "Project Management", "Hiring", "Strategy", "Communication"]
+      }
+    },
+    "Cloud Native Engineer": {
+      "senior": ["Senior Cloud Engineer", "Cloud Architect"],
+      "lateral": ["DevOps Engineer", "Platform Engineer", "Site Reliability Engineer"],
+      "advanced": ["Cloud Solutions Architect", "VP of Engineering", "CTO"],
+      "skill_progression": {
+        "Cloud Architect": ["Enterprise Architecture", "Multi-cloud Strategy", "Cost Optimization", "Security Architecture", "Compliance"],
+        "Platform Engineer": ["Developer Experience", "Internal Tools", "CI/CD Platform", "Monitoring", "Self-service Infrastructure"],
+        "Site Reliability Engineer": ["SLO/SLI", "Incident Response", "Capacity Planning", "Chaos Engineering", "Automation"]
+      }
+    },
+    "DevOps Engineer": {
+      "senior": ["Senior DevOps Engineer", "Lead DevOps Engineer"],
+      "lateral": ["Cloud Engineer", "Platform Engineer", "Site Reliability Engineer"],
+      "advanced": ["DevOps Architect", "VP of Infrastructure", "CTO"],
+      "skill_progression": {
+        "Senior DevOps Engineer": ["Architecture", "Security", "Cost Optimization", "Team Leadership", "Strategy"],
+        "Platform Engineer": ["Developer Tools", "Internal Platforms", "Self-service", "Observability", "Automation"],
+        "Site Reliability Engineer": ["SRE Practices", "Incident Management", "Capacity Planning", "Performance Engineering", "Reliability"]
+      }
+    },
+    "AI Engineer": {
+      "senior": ["Senior AI Engineer", "Lead AI Engineer"],
+      "lateral": ["ML Engineer", "Data Scientist", "Research Engineer"],
+      "advanced": ["AI Architect", "Head of AI", "VP of Engineering", "CTO"],
+      "skill_progression": {
+        "Senior AI Engineer": ["System Design for ML", "MLOps", "Model Deployment", "Performance Optimization", "Research"],
+        "ML Engineer": ["Model Training", "Feature Engineering", "Data Pipelines", "Model Monitoring", "A/B Testing"],
+        "Data Scientist": ["Statistical Modeling", "Business Analytics", "A/B Testing", "Visualization", "Storytelling"],
+        "AI Architect": ["AI Strategy", "LLM Applications", "RAG Systems", "AI Ethics", "Enterprise AI"]
+      }
+    },
+    "Data Scientist": {
+      "senior": ["Senior Data Scientist", "Lead Data Scientist"],
+      "lateral": ["ML Engineer", "AI Engineer", "Analytics Engineer"],
+      "advanced": ["Head of Data", "VP of Data Science", "Chief Data Officer"],
+      "skill_progression": {
+        "Senior Data Scientist": ["Advanced ML", "Deep Learning", "Causal Inference", "Mentoring", "Strategy"],
+        "ML Engineer": ["Model Deployment", "MLOps", "System Design", "Production ML", "Scalability"],
+        "Analytics Engineer": ["Data Modeling", "dbt", "ETL/ELT", "Data Governance", "BI Tools"]
+      }
+    },
+    "Mobile Developer": {
+      "senior": ["Senior Mobile Developer", "Lead Mobile Developer"],
+      "lateral": ["Full Stack Developer", "Frontend Developer"],
+      "advanced": ["Mobile Architect", "Engineering Manager", "Product Manager"],
+      "skill_progression": {
+        "Senior Mobile Developer": ["Architecture", "Performance", "Testing", "CI/CD", "Cross-platform Strategy"],
+        "Mobile Architect": ["Platform Architecture", "SDK Design", "Performance Optimization", "Security", "Leadership"],
+        "Full Stack Developer": ["Web Development", "Backend APIs", "Database Design", "DevOps", "System Design"]
+      }
+    },
+    "UI/UX Designer": {
+      "senior": ["Senior UI/UX Designer", "Lead UX Designer"],
+      "lateral": ["Product Designer", "UX Researcher", "Interaction Designer"],
+      "advanced": ["Design Director", "VP of Design", "Head of Product Design", "Product Manager"],
+      "skill_progression": {
+        "Senior UI/UX Designer": ["Design Systems", "User Research", "Prototyping", "Strategy", "Mentoring"],
+        "Design Director": ["Team Leadership", "Design Strategy", "Brand Identity", "Stakeholder Management", "Innovation"],
+        "Product Manager": ["Product Strategy", "Market Research", "Data Analysis", "Roadmapping", "Stakeholder Communication"]
+      }
+    },
+    "Cybersecurity Engineer": {
+      "senior": ["Senior Security Engineer", "Security Architect"],
+      "lateral": ["Penetration Tester", "Security Analyst", "Security Consultant"],
+      "advanced": ["Chief Information Security Officer", "VP of Security", "Security Director"],
+      "skill_progression": {
+        "Security Architect": ["Enterprise Security", "Risk Assessment", "Compliance", "Security Strategy", "Team Leadership"],
+        "Chief Information Security Officer": ["Security Strategy", "Risk Management", "Compliance", "Board Communication", "Incident Response Leadership"],
+        "Security Consultant": ["Client Management", "Security Auditing", "Compliance", "Penetration Testing", "Training"]
+      }
+    }
+  }
+}

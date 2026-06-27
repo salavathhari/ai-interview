@@ -1,0 +1,1277 @@
+{
+  "roles": {
+    "C++ Specialist": {
+      "description": "Role requiring C++, HTML, JavaScript expertise (1 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "HTML",
+        "JavaScript"
+      ],
+      "secondary_skills": [
+        "SQL",
+        "Machine Learning",
+        "CSS",
+        "Python",
+        "AI"
+      ],
+      "keywords": [
+        "c++",
+        "html",
+        "javascript",
+        "c++ specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.502,
+        "avg_recommendation_rate": 0.231,
+        "job_ids": [
+          493
+        ]
+      }
+    },
+    "AI Specialist": {
+      "description": "Role requiring AI, JavaScript, SQL expertise (1 job variants in dataset)",
+      "core_skills": [
+        "AI",
+        "JavaScript",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "Python",
+        "C++",
+        "CSS",
+        "Java",
+        "HTML"
+      ],
+      "keywords": [
+        "ai",
+        "javascript",
+        "sql",
+        "ai specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.501,
+        "avg_recommendation_rate": 0.213,
+        "job_ids": [
+          487
+        ]
+      }
+    },
+    "Data Science Specialist": {
+      "description": "Role requiring Data Science, JavaScript, Machine Learning, Python, SQL expertise (1 job variants in dataset)",
+      "core_skills": [
+        "Data Science",
+        "JavaScript",
+        "Machine Learning",
+        "Python",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "CSS",
+        "HTML",
+        "AI",
+        "Java",
+        "C++"
+      ],
+      "keywords": [
+        "data science",
+        "javascript",
+        "machine learning",
+        "python",
+        "sql",
+        "data science specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.487,
+        "avg_recommendation_rate": 0.161,
+        "job_ids": [
+          443
+        ]
+      }
+    },
+    "CSS Specialist": {
+      "description": "Role requiring CSS, Data Science, HTML, JavaScript, Machine Learning expertise (1 job variants in dataset)",
+      "core_skills": [
+        "CSS",
+        "Data Science",
+        "HTML",
+        "JavaScript",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "C++",
+        "Python",
+        "AI"
+      ],
+      "keywords": [
+        "css",
+        "data science",
+        "html",
+        "javascript",
+        "machine learning",
+        "css specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.492,
+        "avg_recommendation_rate": 0.188,
+        "job_ids": [
+          500
+        ]
+      }
+    },
+    "Enterprise Web Developer": {
+      "description": "Role requiring Java, JavaScript expertise (6 job variants in dataset)",
+      "core_skills": [
+        "Java",
+        "JavaScript"
+      ],
+      "secondary_skills": [
+        "Machine Learning",
+        "HTML",
+        "CSS",
+        "Data Science",
+        "Python",
+        "AI",
+        "C++",
+        "SQL"
+      ],
+      "keywords": [
+        "java",
+        "javascript",
+        "enterprise web developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 6,
+        "avg_match_score": 0.491,
+        "avg_recommendation_rate": 0.201,
+        "job_ids": [
+          6,
+          124,
+          164,
+          256,
+          350,
+          402
+        ]
+      }
+    },
+    "HTML Specialist": {
+      "description": "Role requiring HTML, Java, JavaScript, Python expertise (1 job variants in dataset)",
+      "core_skills": [
+        "HTML",
+        "Java",
+        "JavaScript",
+        "Python"
+      ],
+      "secondary_skills": [
+        "SQL",
+        "C++",
+        "Machine Learning",
+        "CSS",
+        "AI"
+      ],
+      "keywords": [
+        "html",
+        "java",
+        "javascript",
+        "python",
+        "html specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.492,
+        "avg_recommendation_rate": 0.17,
+        "job_ids": [
+          492
+        ]
+      }
+    },
+    "JavaScript Specialist": {
+      "description": "Role requiring JavaScript, Machine Learning, Python expertise (2 job variants in dataset)",
+      "core_skills": [
+        "JavaScript",
+        "Machine Learning",
+        "Python"
+      ],
+      "secondary_skills": [
+        "Data Science",
+        "SQL",
+        "HTML",
+        "AI",
+        "C++",
+        "CSS",
+        "Java"
+      ],
+      "keywords": [
+        "javascript",
+        "machine learning",
+        "python",
+        "javascript specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.494,
+        "avg_recommendation_rate": 0.19,
+        "job_ids": [
+          107,
+          330
+        ]
+      }
+    },
+    "Web Designer/Developer": {
+      "description": "Role requiring CSS, HTML expertise (4 job variants in dataset)",
+      "core_skills": [
+        "CSS",
+        "HTML"
+      ],
+      "secondary_skills": [
+        "AI",
+        "Data Science",
+        "Machine Learning",
+        "C++",
+        "Python",
+        "JavaScript",
+        "Java"
+      ],
+      "keywords": [
+        "css",
+        "html",
+        "web designer/developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 4,
+        "avg_match_score": 0.483,
+        "avg_recommendation_rate": 0.185,
+        "job_ids": [
+          17,
+          184,
+          258,
+          324
+        ]
+      }
+    },
+    "AI Infrastructure Engineer": {
+      "description": "Role requiring AI, C++ expertise (2 job variants in dataset)",
+      "core_skills": [
+        "AI",
+        "C++"
+      ],
+      "secondary_skills": [
+        "Java",
+        "HTML",
+        "JavaScript",
+        "Data Science",
+        "Machine Learning",
+        "SQL",
+        "Python"
+      ],
+      "keywords": [
+        "ai",
+        "c++",
+        "ai infrastructure engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.514,
+        "avg_recommendation_rate": 0.218,
+        "job_ids": [
+          25,
+          488
+        ]
+      }
+    },
+    "AI Research Scientist": {
+      "description": "Role requiring AI, Machine Learning expertise (6 job variants in dataset)",
+      "core_skills": [
+        "AI",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "C++",
+        "Java",
+        "JavaScript",
+        "SQL",
+        "CSS",
+        "HTML",
+        "Data Science",
+        "Python"
+      ],
+      "keywords": [
+        "ai",
+        "machine learning",
+        "ai research scientist"
+      ],
+      "dataset_stats": {
+        "job_variants": 6,
+        "avg_match_score": 0.503,
+        "avg_recommendation_rate": 0.185,
+        "job_ids": [
+          26,
+          292,
+          344,
+          365,
+          420,
+          498
+        ]
+      }
+    },
+    "Python Web Developer": {
+      "description": "Role requiring HTML, Python expertise (2 job variants in dataset)",
+      "core_skills": [
+        "HTML",
+        "Python"
+      ],
+      "secondary_skills": [
+        "Java",
+        "AI",
+        "SQL",
+        "JavaScript",
+        "Data Science",
+        "CSS",
+        "C++",
+        "Machine Learning"
+      ],
+      "keywords": [
+        "html",
+        "python",
+        "python web developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.498,
+        "avg_recommendation_rate": 0.198,
+        "job_ids": [
+          28,
+          349
+        ]
+      }
+    },
+    "AI/Data Analyst": {
+      "description": "Role requiring AI, Data Science expertise (4 job variants in dataset)",
+      "core_skills": [
+        "AI",
+        "Data Science"
+      ],
+      "secondary_skills": [
+        "C++",
+        "HTML",
+        "Python",
+        "JavaScript",
+        "CSS",
+        "Machine Learning",
+        "Java",
+        "SQL"
+      ],
+      "keywords": [
+        "ai",
+        "data science",
+        "ai/data analyst"
+      ],
+      "dataset_stats": {
+        "job_variants": 4,
+        "avg_match_score": 0.487,
+        "avg_recommendation_rate": 0.186,
+        "job_ids": [
+          31,
+          386,
+          472,
+          495
+        ]
+      }
+    },
+    "Systems Software Engineer": {
+      "description": "Role requiring C++, Java expertise (3 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "Java"
+      ],
+      "secondary_skills": [
+        "Python",
+        "CSS",
+        "HTML",
+        "Data Science",
+        "JavaScript",
+        "SQL",
+        "Machine Learning",
+        "AI"
+      ],
+      "keywords": [
+        "c++",
+        "java",
+        "systems software engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 3,
+        "avg_match_score": 0.512,
+        "avg_recommendation_rate": 0.213,
+        "job_ids": [
+          33,
+          246,
+          334
+        ]
+      }
+    },
+    "Research Data Scientist": {
+      "description": "Role requiring Data Science, Machine Learning expertise (2 job variants in dataset)",
+      "core_skills": [
+        "Data Science",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "C++",
+        "JavaScript",
+        "Python",
+        "AI",
+        "Java",
+        "HTML",
+        "SQL",
+        "CSS"
+      ],
+      "keywords": [
+        "data science",
+        "machine learning",
+        "research data scientist"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.488,
+        "avg_recommendation_rate": 0.188,
+        "job_ids": [
+          34,
+          327
+        ]
+      }
+    },
+    "Java UI Engineer": {
+      "description": "Role requiring CSS, Java expertise (7 job variants in dataset)",
+      "core_skills": [
+        "CSS",
+        "Java"
+      ],
+      "secondary_skills": [
+        "Python",
+        "C++",
+        "SQL",
+        "HTML",
+        "Data Science",
+        "JavaScript",
+        "Machine Learning",
+        "AI"
+      ],
+      "keywords": [
+        "css",
+        "java",
+        "java ui engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 7,
+        "avg_match_score": 0.5,
+        "avg_recommendation_rate": 0.19,
+        "job_ids": [
+          42,
+          182,
+          185,
+          291,
+          431,
+          438,
+          475
+        ]
+      }
+    },
+    "Machine Learning Specialist": {
+      "description": "Role requiring Machine Learning, Python, SQL expertise (2 job variants in dataset)",
+      "core_skills": [
+        "Machine Learning",
+        "Python",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "HTML",
+        "Java",
+        "JavaScript",
+        "C++",
+        "AI",
+        "Data Science",
+        "CSS"
+      ],
+      "keywords": [
+        "machine learning",
+        "python",
+        "sql",
+        "machine learning specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.521,
+        "avg_recommendation_rate": 0.23,
+        "job_ids": [
+          49,
+          114
+        ]
+      }
+    },
+    "Backend Java Developer": {
+      "description": "Role requiring Java, SQL expertise (4 job variants in dataset)",
+      "core_skills": [
+        "Java",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "Data Science",
+        "JavaScript",
+        "AI",
+        "CSS",
+        "Python",
+        "C++",
+        "HTML",
+        "Machine Learning"
+      ],
+      "keywords": [
+        "java",
+        "sql",
+        "backend java developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 4,
+        "avg_match_score": 0.524,
+        "avg_recommendation_rate": 0.218,
+        "job_ids": [
+          52,
+          129,
+          259,
+          361
+        ]
+      }
+    },
+    "Java Specialist": {
+      "description": "Role requiring Java, JavaScript, Machine Learning, Python expertise (1 job variants in dataset)",
+      "core_skills": [
+        "Java",
+        "JavaScript",
+        "Machine Learning",
+        "Python"
+      ],
+      "secondary_skills": [
+        "AI",
+        "C++",
+        "CSS",
+        "HTML",
+        "Data Science"
+      ],
+      "keywords": [
+        "java",
+        "javascript",
+        "machine learning",
+        "python",
+        "java specialist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.505,
+        "avg_recommendation_rate": 0.226,
+        "job_ids": [
+          342
+        ]
+      }
+    },
+    "Database Systems Engineer": {
+      "description": "Role requiring C++, SQL expertise (3 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "AI",
+        "Python",
+        "CSS",
+        "Data Science",
+        "JavaScript",
+        "HTML",
+        "Machine Learning",
+        "Java"
+      ],
+      "keywords": [
+        "c++",
+        "sql",
+        "database systems engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 3,
+        "avg_match_score": 0.491,
+        "avg_recommendation_rate": 0.218,
+        "job_ids": [
+          58,
+          309,
+          485
+        ]
+      }
+    },
+    "Web Application Developer": {
+      "description": "Role requiring JavaScript, SQL expertise (4 job variants in dataset)",
+      "core_skills": [
+        "JavaScript",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "Java",
+        "Data Science",
+        "Machine Learning",
+        "Python",
+        "C++",
+        "AI",
+        "HTML",
+        "CSS"
+      ],
+      "keywords": [
+        "javascript",
+        "sql",
+        "web application developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 4,
+        "avg_match_score": 0.505,
+        "avg_recommendation_rate": 0.217,
+        "job_ids": [
+          61,
+          172,
+          188,
+          363
+        ]
+      }
+    },
+    "ML Data Engineer": {
+      "description": "Role requiring Machine Learning, SQL expertise (2 job variants in dataset)",
+      "core_skills": [
+        "Machine Learning",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "C++",
+        "CSS",
+        "Python",
+        "HTML",
+        "AI",
+        "Java",
+        "JavaScript",
+        "Data Science"
+      ],
+      "keywords": [
+        "machine learning",
+        "sql",
+        "ml data engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.494,
+        "avg_recommendation_rate": 0.202,
+        "job_ids": [
+          74,
+          263
+        ]
+      }
+    },
+    "Python/Java Backend Engineer": {
+      "description": "Role requiring Java, Python expertise (2 job variants in dataset)",
+      "core_skills": [
+        "Java",
+        "Python"
+      ],
+      "secondary_skills": [
+        "CSS",
+        "JavaScript",
+        "C++",
+        "Data Science",
+        "AI",
+        "SQL",
+        "Machine Learning"
+      ],
+      "keywords": [
+        "java",
+        "python",
+        "python/java backend engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.508,
+        "avg_recommendation_rate": 0.219,
+        "job_ids": [
+          75,
+          370
+        ]
+      }
+    },
+    "Java ML Engineer": {
+      "description": "Role requiring Java, Machine Learning expertise (4 job variants in dataset)",
+      "core_skills": [
+        "Java",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "C++",
+        "Python",
+        "HTML",
+        "SQL",
+        "AI",
+        "Data Science",
+        "CSS",
+        "JavaScript"
+      ],
+      "keywords": [
+        "java",
+        "machine learning",
+        "java ml engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 4,
+        "avg_match_score": 0.51,
+        "avg_recommendation_rate": 0.204,
+        "job_ids": [
+          82,
+          192,
+          242,
+          390
+        ]
+      }
+    },
+    "Database UI Developer": {
+      "description": "Role requiring CSS, SQL expertise (1 job variants in dataset)",
+      "core_skills": [
+        "CSS",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "HTML",
+        "Machine Learning",
+        "AI",
+        "JavaScript",
+        "Python",
+        "C++"
+      ],
+      "keywords": [
+        "css",
+        "sql",
+        "database ui developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.499,
+        "avg_recommendation_rate": 0.177,
+        "job_ids": [
+          95
+        ]
+      }
+    },
+    "Java Web Developer": {
+      "description": "Role requiring HTML, Java expertise (3 job variants in dataset)",
+      "core_skills": [
+        "HTML",
+        "Java"
+      ],
+      "secondary_skills": [
+        "Python",
+        "C++",
+        "Data Science",
+        "AI",
+        "JavaScript",
+        "CSS",
+        "SQL",
+        "Machine Learning"
+      ],
+      "keywords": [
+        "html",
+        "java",
+        "java web developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 3,
+        "avg_match_score": 0.486,
+        "avg_recommendation_rate": 0.182,
+        "job_ids": [
+          96,
+          456,
+          494
+        ]
+      }
+    },
+    "C++ GUI Developer": {
+      "description": "Role requiring C++, CSS expertise (2 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "CSS"
+      ],
+      "secondary_skills": [
+        "HTML",
+        "Python",
+        "SQL",
+        "JavaScript",
+        "Machine Learning",
+        "Data Science",
+        "AI",
+        "Java"
+      ],
+      "keywords": [
+        "c++",
+        "css",
+        "c++ gui developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.498,
+        "avg_recommendation_rate": 0.194,
+        "job_ids": [
+          99,
+          234
+        ]
+      }
+    },
+    "Java Data Engineer": {
+      "description": "Role requiring Data Science, Java expertise (2 job variants in dataset)",
+      "core_skills": [
+        "Data Science",
+        "Java"
+      ],
+      "secondary_skills": [
+        "Python",
+        "Machine Learning",
+        "JavaScript",
+        "AI",
+        "C++",
+        "CSS",
+        "SQL"
+      ],
+      "keywords": [
+        "data science",
+        "java",
+        "java data engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.482,
+        "avg_recommendation_rate": 0.143,
+        "job_ids": [
+          131,
+          406
+        ]
+      }
+    },
+    "Frontend Web Developer": {
+      "description": "Role requiring HTML, JavaScript expertise (2 job variants in dataset)",
+      "core_skills": [
+        "HTML",
+        "JavaScript"
+      ],
+      "secondary_skills": [
+        "CSS",
+        "Data Science",
+        "C++",
+        "Java",
+        "Python",
+        "AI",
+        "Machine Learning",
+        "SQL"
+      ],
+      "keywords": [
+        "html",
+        "javascript",
+        "frontend web developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.482,
+        "avg_recommendation_rate": 0.184,
+        "job_ids": [
+          132,
+          169
+        ]
+      }
+    },
+    "Business Intelligence Analyst": {
+      "description": "Role requiring Data Science, SQL expertise (2 job variants in dataset)",
+      "core_skills": [
+        "Data Science",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "C++",
+        "Java",
+        "Python",
+        "HTML",
+        "Machine Learning",
+        "JavaScript",
+        "AI",
+        "CSS"
+      ],
+      "keywords": [
+        "data science",
+        "sql",
+        "business intelligence analyst"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.5,
+        "avg_recommendation_rate": 0.204,
+        "job_ids": [
+          140,
+          233
+        ]
+      }
+    },
+    "Full Stack Developer": {
+      "description": "Role requiring JavaScript, Python expertise (1 job variants in dataset)",
+      "core_skills": [
+        "JavaScript",
+        "Python"
+      ],
+      "secondary_skills": [
+        "C++",
+        "SQL",
+        "Data Science",
+        "Java",
+        "AI",
+        "Machine Learning",
+        "CSS"
+      ],
+      "keywords": [
+        "javascript",
+        "python",
+        "full stack developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.512,
+        "avg_recommendation_rate": 0.242,
+        "job_ids": [
+          145
+        ]
+      }
+    },
+    "Data Visualization Engineer": {
+      "description": "Role requiring HTML, Machine Learning expertise (3 job variants in dataset)",
+      "core_skills": [
+        "HTML",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "CSS",
+        "Data Science",
+        "Java",
+        "AI",
+        "C++",
+        "JavaScript",
+        "Python",
+        "SQL"
+      ],
+      "keywords": [
+        "html",
+        "machine learning",
+        "data visualization engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 3,
+        "avg_match_score": 0.504,
+        "avg_recommendation_rate": 0.196,
+        "job_ids": [
+          189,
+          435,
+          447
+        ]
+      }
+    },
+    "Performance Engineer": {
+      "description": "Role requiring C++, Python expertise (3 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "Python"
+      ],
+      "secondary_skills": [
+        "Machine Learning",
+        "JavaScript",
+        "Java",
+        "HTML",
+        "CSS",
+        "AI",
+        "SQL",
+        "Data Science"
+      ],
+      "keywords": [
+        "c++",
+        "python",
+        "performance engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 3,
+        "avg_match_score": 0.515,
+        "avg_recommendation_rate": 0.227,
+        "job_ids": [
+          200,
+          268,
+          462
+        ]
+      }
+    },
+    "UI Developer": {
+      "description": "Role requiring CSS, JavaScript expertise (1 job variants in dataset)",
+      "core_skills": [
+        "CSS",
+        "JavaScript"
+      ],
+      "secondary_skills": [
+        "C++",
+        "Python",
+        "Machine Learning",
+        "Java",
+        "SQL",
+        "AI"
+      ],
+      "keywords": [
+        "css",
+        "javascript",
+        "ui developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.499,
+        "avg_recommendation_rate": 0.223,
+        "job_ids": [
+          245
+        ]
+      }
+    },
+    "Database Web Developer": {
+      "description": "Role requiring HTML, SQL expertise (2 job variants in dataset)",
+      "core_skills": [
+        "HTML",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "CSS",
+        "Java",
+        "JavaScript",
+        "C++",
+        "AI",
+        "Data Science",
+        "Python"
+      ],
+      "keywords": [
+        "html",
+        "sql",
+        "database web developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 2,
+        "avg_match_score": 0.502,
+        "avg_recommendation_rate": 0.199,
+        "job_ids": [
+          262,
+          313
+        ]
+      }
+    },
+    "Python UI Developer": {
+      "description": "Role requiring CSS, Python expertise (5 job variants in dataset)",
+      "core_skills": [
+        "CSS",
+        "Python"
+      ],
+      "secondary_skills": [
+        "JavaScript",
+        "Java",
+        "C++",
+        "AI",
+        "Machine Learning",
+        "HTML",
+        "SQL",
+        "Data Science"
+      ],
+      "keywords": [
+        "css",
+        "python",
+        "python ui developer"
+      ],
+      "dataset_stats": {
+        "job_variants": 5,
+        "avg_match_score": 0.487,
+        "avg_recommendation_rate": 0.187,
+        "job_ids": [
+          267,
+          294,
+          336,
+          389,
+          467
+        ]
+      }
+    },
+    "Data Scientist": {
+      "description": "Role requiring Data Science, Python expertise (1 job variants in dataset)",
+      "core_skills": [
+        "Data Science",
+        "Python"
+      ],
+      "secondary_skills": [
+        "SQL",
+        "Machine Learning",
+        "JavaScript",
+        "Java",
+        "C++",
+        "HTML",
+        "AI"
+      ],
+      "keywords": [
+        "data science",
+        "python",
+        "data scientist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.48,
+        "avg_recommendation_rate": 0.17,
+        "job_ids": [
+          316
+        ]
+      }
+    },
+    "Computational Data Scientist": {
+      "description": "Role requiring C++, Data Science expertise (1 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "Data Science"
+      ],
+      "secondary_skills": [
+        "AI",
+        "CSS",
+        "HTML",
+        "Java",
+        "JavaScript",
+        "SQL"
+      ],
+      "keywords": [
+        "c++",
+        "data science",
+        "computational data scientist"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.478,
+        "avg_recommendation_rate": 0.197,
+        "job_ids": [
+          372
+        ]
+      }
+    },
+    "ML Systems Engineer": {
+      "description": "Role requiring C++, Machine Learning expertise (1 job variants in dataset)",
+      "core_skills": [
+        "C++",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "Data Science",
+        "AI",
+        "JavaScript",
+        "SQL",
+        "Java",
+        "CSS",
+        "HTML"
+      ],
+      "keywords": [
+        "c++",
+        "machine learning",
+        "ml systems engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.457,
+        "avg_recommendation_rate": 0.125,
+        "job_ids": [
+          405
+        ]
+      }
+    },
+    "AI Engineer": {
+      "description": "Role requiring AI, Python expertise (1 job variants in dataset)",
+      "core_skills": [
+        "AI",
+        "Python"
+      ],
+      "secondary_skills": [
+        "JavaScript",
+        "C++",
+        "Machine Learning",
+        "Java",
+        "Data Science",
+        "SQL"
+      ],
+      "keywords": [
+        "ai",
+        "python",
+        "ai engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.512,
+        "avg_recommendation_rate": 0.239,
+        "job_ids": [
+          408
+        ]
+      }
+    },
+    "Python Data Engineer": {
+      "description": "Role requiring Python, SQL expertise (1 job variants in dataset)",
+      "core_skills": [
+        "Python",
+        "SQL"
+      ],
+      "secondary_skills": [
+        "JavaScript",
+        "CSS",
+        "Machine Learning",
+        "C++",
+        "HTML",
+        "Java"
+      ],
+      "keywords": [
+        "python",
+        "sql",
+        "python data engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.481,
+        "avg_recommendation_rate": 0.177,
+        "job_ids": [
+          410
+        ]
+      }
+    },
+    "ML Frontend Engineer": {
+      "description": "Role requiring JavaScript, Machine Learning expertise (1 job variants in dataset)",
+      "core_skills": [
+        "JavaScript",
+        "Machine Learning"
+      ],
+      "secondary_skills": [
+        "HTML",
+        "C++",
+        "Python",
+        "AI",
+        "Data Science",
+        "CSS"
+      ],
+      "keywords": [
+        "javascript",
+        "machine learning",
+        "ml frontend engineer"
+      ],
+      "dataset_stats": {
+        "job_variants": 1,
+        "avg_match_score": 0.515,
+        "avg_recommendation_rate": 0.231,
+        "job_ids": [
+          417
+        ]
+      }
+    }
+  }
+}

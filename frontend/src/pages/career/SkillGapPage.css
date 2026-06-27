@@ -1,0 +1,714 @@
+/* ============================================
+   Skill Gap Analysis — Professional Design
+   ============================================ */
+
+/* ── Page Layout ── */
+
+.sg-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Header ── */
+
+.sg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.sg-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sg-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sg-header-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sg-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.sg-header-left p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ── Buttons ── */
+
+.sg-btn {
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.sg-btn-primary {
+  background: var(--accent-strong);
+  color: #fff;
+}
+
+.sg-btn-primary:hover {
+  background: var(--accent-strong-hover);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.sg-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sg-btn-ghost {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.sg-btn-ghost:hover {
+  background: var(--bg);
+  border-color: #cbd5e1;
+}
+
+/* ── Error Banner ── */
+
+.sg-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sg-error svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Loading ── */
+
+.sg-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 120px 0;
+  color: var(--muted);
+}
+
+.sg-loading svg {
+  width: 40px;
+  height: 40px;
+  color: var(--accent-strong);
+}
+
+.sg-spin {
+  animation: sg-spin 0.8s linear infinite;
+}
+
+@keyframes sg-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Config Card ── */
+
+.sg-config-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  border-left: 4px solid #f59e0b;
+  transition: box-shadow 0.15s ease;
+}
+
+.sg-config-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.sg-config-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+
+.sg-config-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sg-config-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sg-config-left h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.sg-config-left p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 0 0;
+}
+
+.sg-config-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* ── Select / Field ── */
+
+.sg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sg-field span {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.sg-field select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--ink);
+  min-width: 180px;
+  transition: border-color 0.15s ease;
+}
+
+.sg-field select:focus {
+  border-color: var(--accent-strong);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Section / Card ── */
+
+.sg-section {
+  width: 100%;
+}
+
+.sg-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.sg-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sg-card-header div:first-child h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.sg-card-header div:first-child p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 2px 0 0 0;
+}
+
+/* ── Analysis History ── */
+
+.sg-analysis-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sg-analysis-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  transition: background 0.1s ease;
+}
+
+.sg-analysis-list li:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.sg-analysis-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sg-analysis-info strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-analysis-info span {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.sg-tag {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.sg-analysis-scores {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sg-score-badge {
+  background: #eff6ff;
+  color: #1e40af;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Match Ring ── */
+
+.sg-match-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 40px;
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.sg-ring {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.sg-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.sg-ring-track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 8;
+}
+
+.sg-ring-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 427;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.sg-ring-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sg-match-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.sg-match-card p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ── Results Grid ── */
+
+.sg-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* ── Skill Lists ── */
+
+.sg-skill-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sg-skill-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  font-size: 14px;
+}
+
+.sg-skill-list li:first-child { border-radius: 0; }
+
+.sg-skill-list--matched li {
+  background: rgba(16, 185, 129, 0.04);
+  color: #166534;
+}
+
+.sg-skill-list--missing li {
+  background: rgba(239, 68, 68, 0.04);
+  color: #991b1b;
+}
+
+.sg-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sg-x {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sg-empty {
+  background: transparent !important;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Tags ── */
+
+.sg-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 24px;
+}
+
+.sg-tag--additional {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.sg-tag--priority {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.sg-empty-text {
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Action Cards ── */
+
+.sg-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.sg-action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 24px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.sg-action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sg-action-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sg-action-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.sg-action-card p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── CTA Banner ── */
+
+.sg-cta-card {
+  background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+  border: 1px solid #c7d2fe;
+  border-radius: 14px;
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.sg-cta-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--accent-strong);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sg-cta-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.sg-cta-text {
+  flex: 1;
+}
+
+.sg-cta-text h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--ink);
+}
+
+.sg-cta-text p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 960px) {
+  .sg-config-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sg-config-right {
+    width: 100%;
+  }
+
+  .sg-config-right .sg-field {
+    flex: 1;
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sg-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sg-config-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sg-config-right {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .sg-field select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .sg-results {
+    grid-template-columns: 1fr;
+  }
+
+  .sg-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .sg-cta-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+}
+
+/* ── Estimated Hours ── */
+
+.sg-estimated-hours {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6366f1;
+  font-weight: 600;
+  margin: 8px 0 0 0;
+}
+
+/* ── Pagination ── */
+
+.sg-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sg-pagination button {
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sg-pagination button:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.sg-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

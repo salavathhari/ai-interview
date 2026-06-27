@@ -1,0 +1,1383 @@
+{
+  "skills": {
+    "technical": [
+      {
+        "name": "c++",
+        "frequency": 20
+      },
+      {
+        "name": "html",
+        "frequency": 20
+      },
+      {
+        "name": "java",
+        "frequency": 18
+      },
+      {
+        "name": "sql",
+        "frequency": 18
+      },
+      {
+        "name": "javascript",
+        "frequency": 16
+      },
+      {
+        "name": "linux",
+        "frequency": 12
+      },
+      {
+        "name": "css",
+        "frequency": 11
+      },
+      {
+        "name": "jenkins",
+        "frequency": 10
+      },
+      {
+        "name": "excel",
+        "frequency": 10
+      },
+      {
+        "name": "eclipse",
+        "frequency": 9
+      },
+      {
+        "name": "git",
+        "frequency": 9
+      },
+      {
+        "name": "microsoft office",
+        "frequency": 8
+      },
+      {
+        "name": "jira",
+        "frequency": 7
+      },
+      {
+        "name": "excel (less than 1 year)",
+        "frequency": 7
+      },
+      {
+        "name": "database (less than 1 year)",
+        "frequency": 6
+      },
+      {
+        "name": "mysql",
+        "frequency": 6
+      },
+      {
+        "name": "python",
+        "frequency": 6
+      },
+      {
+        "name": "php",
+        "frequency": 6
+      },
+      {
+        "name": "ms office",
+        "frequency": 6
+      },
+      {
+        "name": "java (less than 1 year)",
+        "frequency": 5
+      },
+      {
+        "name": "html (less than 1 year)",
+        "frequency": 5
+      },
+      {
+        "name": "sql server",
+        "frequency": 5
+      },
+      {
+        "name": "dhcp",
+        "frequency": 5
+      },
+      {
+        "name": "jquery",
+        "frequency": 5
+      },
+      {
+        "name": "core java",
+        "frequency": 5
+      },
+      {
+        "name": "ms office (less than 1 year)",
+        "frequency": 5
+      },
+      {
+        "name": "pl/sql",
+        "frequency": 4
+      },
+      {
+        "name": "dhcp (less than 1 year)",
+        "frequency": 4
+      },
+      {
+        "name": "oracle",
+        "frequency": 4
+      },
+      {
+        "name": "problem solving (less than 1 year)",
+        "frequency": 4
+      },
+      {
+        "name": "sql developer",
+        "frequency": 4
+      },
+      {
+        "name": "ansible",
+        "frequency": 4
+      },
+      {
+        "name": "docker",
+        "frequency": 4
+      },
+      {
+        "name": "aws",
+        "frequency": 4
+      },
+      {
+        "name": "c#",
+        "frequency": 4
+      },
+      {
+        "name": "database (3 years)",
+        "frequency": 3
+      },
+      {
+        "name": "java script",
+        "frequency": 3
+      },
+      {
+        "name": "functional testing",
+        "frequency": 3
+      },
+      {
+        "name": "hibernate",
+        "frequency": 3
+      },
+      {
+        "name": "java (3 years)",
+        "frequency": 3
+      },
+      {
+        "name": "winscp",
+        "frequency": 3
+      },
+      {
+        "name": "android (less than 1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "networking",
+        "frequency": 3
+      },
+      {
+        "name": "chef",
+        "frequency": 3
+      },
+      {
+        "name": "exchange (less than 1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "c# (less than 1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "testing (10+ years)",
+        "frequency": 3
+      },
+      {
+        "name": "linux (less than 1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "perforce",
+        "frequency": 3
+      },
+      {
+        "name": "asp (1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "asp.net (1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "ms excel (less than 1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "word (less than 1 year)",
+        "frequency": 3
+      },
+      {
+        "name": "programming language",
+        "frequency": 2
+      },
+      {
+        "name": "oracle 10g",
+        "frequency": 2
+      },
+      {
+        "name": "mainframe",
+        "frequency": 2
+      },
+      {
+        "name": "jcl",
+        "frequency": 2
+      },
+      {
+        "name": "cobol",
+        "frequency": 2
+      },
+      {
+        "name": "sql (3 years)",
+        "frequency": 2
+      },
+      {
+        "name": "access (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "ajax (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "selenium webdriver",
+        "frequency": 2
+      },
+      {
+        "name": "regression testing",
+        "frequency": 2
+      },
+      {
+        "name": "quality assurance",
+        "frequency": 2
+      },
+      {
+        "name": "programming languages",
+        "frequency": 2
+      },
+      {
+        "name": "git (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "jira (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "cucumber",
+        "frequency": 2
+      },
+      {
+        "name": "rest",
+        "frequency": 2
+      },
+      {
+        "name": "project lifecycle (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "project manager (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "technical assistance. (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "mongodb",
+        "frequency": 2
+      },
+      {
+        "name": "python (2 years)",
+        "frequency": 2
+      },
+      {
+        "name": "java (1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "html (1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "javascript (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "accounts payable",
+        "frequency": 2
+      },
+      {
+        "name": "program management (2 years)",
+        "frequency": 2
+      },
+      {
+        "name": "operating systems",
+        "frequency": 2
+      },
+      {
+        "name": "xml (3 years)",
+        "frequency": 2
+      },
+      {
+        "name": "tomcat",
+        "frequency": 2
+      },
+      {
+        "name": "dns (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "tcl (4 years)",
+        "frequency": 2
+      },
+      {
+        "name": "oracle (6 years)",
+        "frequency": 2
+      },
+      {
+        "name": "active directory (2 years)",
+        "frequency": 2
+      },
+      {
+        "name": "active directory",
+        "frequency": 2
+      },
+      {
+        "name": "ms word",
+        "frequency": 2
+      },
+      {
+        "name": "html5",
+        "frequency": 2
+      },
+      {
+        "name": "c++ (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "powerpoint",
+        "frequency": 2
+      },
+      {
+        "name": "pycharm",
+        "frequency": 2
+      },
+      {
+        "name": "team player",
+        "frequency": 2
+      },
+      {
+        "name": "adobe photoshop (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "bi (1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "business intelligence (1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "project management (2 years)",
+        "frequency": 2
+      },
+      {
+        "name": "customer handling",
+        "frequency": 2
+      },
+      {
+        "name": "incident management (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "oracle (3 years)",
+        "frequency": 2
+      },
+      {
+        "name": "application development",
+        "frequency": 2
+      },
+      {
+        "name": "software testing",
+        "frequency": 2
+      },
+      {
+        "name": "salesforce",
+        "frequency": 2
+      },
+      {
+        "name": "eigrp",
+        "frequency": 2
+      },
+      {
+        "name": "tcp",
+        "frequency": 2
+      },
+      {
+        "name": "ipsec vpn",
+        "frequency": 2
+      },
+      {
+        "name": "ipsec",
+        "frequency": 2
+      },
+      {
+        "name": "android",
+        "frequency": 2
+      },
+      {
+        "name": "octopus",
+        "frequency": 2
+      },
+      {
+        "name": "microsoft office (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "programming",
+        "frequency": 2
+      },
+      {
+        "name": "erp",
+        "frequency": 2
+      },
+      {
+        "name": "power point",
+        "frequency": 2
+      },
+      {
+        "name": "ms excel",
+        "frequency": 2
+      },
+      {
+        "name": "linux.",
+        "frequency": 2
+      },
+      {
+        "name": "design patterns",
+        "frequency": 2
+      },
+      {
+        "name": ".net (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "security (5 years)",
+        "frequency": 2
+      },
+      {
+        "name": "programming languages python",
+        "frequency": 2
+      },
+      {
+        "name": "java (2 years)",
+        "frequency": 2
+      },
+      {
+        "name": "robot framework",
+        "frequency": 2
+      },
+      {
+        "name": "scrum",
+        "frequency": 2
+      },
+      {
+        "name": "guice",
+        "frequency": 2
+      },
+      {
+        "name": "software development",
+        "frequency": 2
+      },
+      {
+        "name": "testing (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "protractor",
+        "frequency": 2
+      },
+      {
+        "name": "sql (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "wcf",
+        "frequency": 2
+      },
+      {
+        "name": "asp.net mvc",
+        "frequency": 2
+      },
+      {
+        "name": "azure",
+        "frequency": 2
+      },
+      {
+        "name": "ms asp (1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "asp (less than 1 year)",
+        "frequency": 2
+      },
+      {
+        "name": "change management",
+        "frequency": 2
+      },
+      {
+        "name": "mac  non",
+        "frequency": 1
+      },
+      {
+        "name": "c (less than 1 year)",
+        "frequency": 1
+      },
+      {
+        "name": "database management (less than 1 year)",
+        "frequency": 1
+      },
+      {
+        "name": "database management system (less than 1 year)",
+        "frequency": 1
+      },
+      {
+        "name": "linux. (less than 1 year)",
+        "frequency": 1
+      },
+      {
+        "name": "microsoft access (less than 1 year)",
+        "frequency": 1
+      },
+      {
+        "name": "php. \u2022 web designing",
+        "frequency": 1
+      },
+      {
+        "name": "xml \u2022 operating systems",
+        "frequency": 1
+      },
+      {
+        "name": "linux. \u2022 database",
+        "frequency": 1
+      }
+    ],
+    "soft": [
+      {
+        "name": "windows",
+        "frequency": 7
+      },
+      {
+        "name": "xml",
+        "frequency": 7
+      },
+      {
+        "name": "soap ui",
+        "frequency": 6
+      },
+      {
+        "name": "unix",
+        "frequency": 6
+      },
+      {
+        "name": "svn",
+        "frequency": 5
+      },
+      {
+        "name": "tally",
+        "frequency": 4
+      },
+      {
+        "name": "maven",
+        "frequency": 4
+      },
+      {
+        "name": "jsp",
+        "frequency": 4
+      },
+      {
+        "name": "databases",
+        "frequency": 4
+      },
+      {
+        "name": "languages",
+        "frequency": 3
+      },
+      {
+        "name": "selenium",
+        "frequency": 3
+      },
+      {
+        "name": "automation testing",
+        "frequency": 3
+      },
+      {
+        "name": "banking",
+        "frequency": 3
+      },
+      {
+        "name": "database",
+        "frequency": 3
+      },
+      {
+        "name": "matlab",
+        "frequency": 3
+      },
+      {
+        "name": "dns",
+        "frequency": 3
+      },
+      {
+        "name": "splunk",
+        "frequency": 3
+      },
+      {
+        "name": "hp",
+        "frequency": 3
+      },
+      {
+        "name": "oops",
+        "frequency": 3
+      },
+      {
+        "name": "vlan",
+        "frequency": 3
+      },
+      {
+        "name": ".net",
+        "frequency": 2
+      },
+      {
+        "name": "ide",
+        "frequency": 2
+      },
+      {
+        "name": "testing",
+        "frequency": 2
+      },
+      {
+        "name": "junit",
+        "frequency": 2
+      },
+      {
+        "name": "billing",
+        "frequency": 2
+      },
+      {
+        "name": "qtp",
+        "frequency": 2
+      },
+      {
+        "name": "kvm",
+        "frequency": 2
+      },
+      {
+        "name": "non",
+        "frequency": 2
+      },
+      {
+        "name": "devops",
+        "frequency": 2
+      },
+      {
+        "name": "tools",
+        "frequency": 2
+      },
+      {
+        "name": "kibana",
+        "frequency": 2
+      },
+      {
+        "name": "vb.net",
+        "frequency": 2
+      },
+      {
+        "name": "ubuntu",
+        "frequency": 2
+      },
+      {
+        "name": "ssh",
+        "frequency": 2
+      },
+      {
+        "name": "toad",
+        "frequency": 2
+      },
+      {
+        "name": "dbms",
+        "frequency": 2
+      },
+      {
+        "name": "visio",
+        "frequency": 2
+      },
+      {
+        "name": "j2ee",
+        "frequency": 2
+      },
+      {
+        "name": "manual testing",
+        "frequency": 2
+      },
+      {
+        "name": "ms",
+        "frequency": 2
+      },
+      {
+        "name": "putty",
+        "frequency": 2
+      },
+      {
+        "name": "ejb",
+        "frequency": 2
+      },
+      {
+        "name": "ftp",
+        "frequency": 2
+      },
+      {
+        "name": "ospf",
+        "frequency": 2
+      },
+      {
+        "name": "nat",
+        "frequency": 2
+      },
+      {
+        "name": "stp",
+        "frequency": 2
+      },
+      {
+        "name": "nexus",
+        "frequency": 2
+      },
+      {
+        "name": "sap",
+        "frequency": 2
+      },
+      {
+        "name": "windowsmobile5.0",
+        "frequency": 2
+      },
+      {
+        "name": "ssis",
+        "frequency": 2
+      },
+      {
+        "name": "wpf",
+        "frequency": 2
+      },
+      {
+        "name": "xaml",
+        "frequency": 2
+      },
+      {
+        "name": "atdd",
+        "frequency": 2
+      },
+      {
+        "name": "soa",
+        "frequency": 2
+      },
+      {
+        "name": "web api",
+        "frequency": 2
+      },
+      {
+        "name": "outlook",
+        "frequency": 2
+      },
+      {
+        "name": "asp.net",
+        "frequency": 2
+      },
+      {
+        "name": "ajax",
+        "frequency": 2
+      }
+    ]
+  },
+  "designations": [
+    {
+      "name": "Software Engineer",
+      "frequency": 8
+    },
+    {
+      "name": "Associate Consultant",
+      "frequency": 4
+    },
+    {
+      "name": "System Engineer",
+      "frequency": 4
+    },
+    {
+      "name": "Senior Systems Engineer",
+      "frequency": 3
+    },
+    {
+      "name": "Technology Analyst",
+      "frequency": 3
+    },
+    {
+      "name": "Systems Engineer",
+      "frequency": 3
+    },
+    {
+      "name": "Developer",
+      "frequency": 3
+    },
+    {
+      "name": "Technical Support Engineer",
+      "frequency": 3
+    },
+    {
+      "name": "Test Engineer",
+      "frequency": 3
+    },
+    {
+      "name": "Consultant",
+      "frequency": 3
+    },
+    {
+      "name": "software engineer",
+      "frequency": 2
+    },
+    {
+      "name": "Test Analyst",
+      "frequency": 2
+    },
+    {
+      "name": "Application Developer",
+      "frequency": 2
+    },
+    {
+      "name": "Architect",
+      "frequency": 2
+    },
+    {
+      "name": "Senior System Engineer",
+      "frequency": 2
+    },
+    {
+      "name": "Project Lead",
+      "frequency": 2
+    },
+    {
+      "name": "App develop",
+      "frequency": 2
+    },
+    {
+      "name": "Technical Lead",
+      "frequency": 2
+    },
+    {
+      "name": "DevOps Consultant",
+      "frequency": 2
+    },
+    {
+      "name": "IT SUPPORT",
+      "frequency": 2
+    },
+    {
+      "name": "Software developer",
+      "frequency": 2
+    },
+    {
+      "name": "Technical Architect",
+      "frequency": 2
+    },
+    {
+      "name": "Data Entry Operator",
+      "frequency": 2
+    },
+    {
+      "name": "Senior Process Executive",
+      "frequency": 2
+    },
+    {
+      "name": "B.E in Information science and engineering",
+      "frequency": 1
+    },
+    {
+      "name": "Application Development Associate",
+      "frequency": 1
+    },
+    {
+      "name": "Operational Analyst (SQL DBA) Engineer",
+      "frequency": 1
+    },
+    {
+      "name": "lecturer",
+      "frequency": 1
+    },
+    {
+      "name": "Automation developer",
+      "frequency": 1
+    },
+    {
+      "name": "Process Specialist",
+      "frequency": 1
+    },
+    {
+      "name": "senior program coordinator",
+      "frequency": 1
+    },
+    {
+      "name": "Senior Program coordinator",
+      "frequency": 1
+    },
+    {
+      "name": "QA Tester",
+      "frequency": 1
+    },
+    {
+      "name": "Team Lead",
+      "frequency": 1
+    },
+    {
+      "name": "Subject matter Expert",
+      "frequency": 1
+    },
+    {
+      "name": "Senior Associate Consultant",
+      "frequency": 1
+    },
+    {
+      "name": "Team member",
+      "frequency": 1
+    },
+    {
+      "name": "Senior Analyst",
+      "frequency": 1
+    },
+    {
+      "name": "Class teacher",
+      "frequency": 1
+    },
+    {
+      "name": "Preschool Teacher",
+      "frequency": 1
+    },
+    {
+      "name": "Process associate",
+      "frequency": 1
+    },
+    {
+      "name": "Financial Analyst",
+      "frequency": 1
+    },
+    {
+      "name": "Deployed chef for configuration management infrastructure",
+      "frequency": 1
+    },
+    {
+      "name": "Co-coordinator of CODE HUNTER at CGC FEST",
+      "frequency": 1
+    },
+    {
+      "name": "Staff Consultant",
+      "frequency": 1
+    },
+    {
+      "name": "Senior Consultant",
+      "frequency": 1
+    },
+    {
+      "name": "Senior Software Engineer",
+      "frequency": 1
+    },
+    {
+      "name": "QA Analyst",
+      "frequency": 1
+    },
+    {
+      "name": "Manual and Automation testing.",
+      "frequency": 1
+    },
+    {
+      "name": "Data Analyst Intern",
+      "frequency": 1
+    }
+  ],
+  "degrees": [
+    {
+      "name": "B.Tech",
+      "level": 3,
+      "frequency": 6
+    },
+    {
+      "name": "MCA",
+      "level": 4,
+      "frequency": 5
+    },
+    {
+      "name": "B.E",
+      "level": 0,
+      "frequency": 4
+    },
+    {
+      "name": "SSC",
+      "level": 0,
+      "frequency": 4
+    },
+    {
+      "name": "H.S.C",
+      "level": 0,
+      "frequency": 3
+    },
+    {
+      "name": "State Board",
+      "level": 0,
+      "frequency": 3
+    },
+    {
+      "name": "B.com",
+      "level": 0,
+      "frequency": 3
+    },
+    {
+      "name": "Bachelor of Engineering in Engineering",
+      "level": 3,
+      "frequency": 3
+    },
+    {
+      "name": "B.Tech in CSE",
+      "level": 3,
+      "frequency": 3
+    },
+    {
+      "name": "Bachelor of Technology in Information Technology",
+      "level": 3,
+      "frequency": 3
+    },
+    {
+      "name": "B.E in CSE",
+      "level": 0,
+      "frequency": 3
+    },
+    {
+      "name": "HSC",
+      "level": 0,
+      "frequency": 3
+    },
+    {
+      "name": "BSc",
+      "level": 0,
+      "frequency": 3
+    },
+    {
+      "name": "C.B.S.E.",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "BCA",
+      "level": 3,
+      "frequency": 2
+    },
+    {
+      "name": "B.Sc. in Computer Science",
+      "level": 3,
+      "frequency": 2
+    },
+    {
+      "name": "CBSE",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "B.Tech in Engineering",
+      "level": 3,
+      "frequency": 2
+    },
+    {
+      "name": "B.Tech in Information Technology",
+      "level": 3,
+      "frequency": 2
+    },
+    {
+      "name": "BSc in Computer Science",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "Electrical engineering",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "BTEC HNC in Aviation in Hospitality and Travel Management",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "BE in Computer Science and Engineering",
+      "level": 3,
+      "frequency": 2
+    },
+    {
+      "name": "Master's",
+      "level": 4,
+      "frequency": 2
+    },
+    {
+      "name": "B.COM",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "MBA",
+      "level": 4,
+      "frequency": 2
+    },
+    {
+      "name": "B.Sc in Computer Science",
+      "level": 3,
+      "frequency": 2
+    },
+    {
+      "name": "C.B.S.E",
+      "level": 0,
+      "frequency": 2
+    },
+    {
+      "name": "Bachelor of Engg in Information Technology",
+      "level": 3,
+      "frequency": 1
+    },
+    {
+      "name": "PG-DAC",
+      "level": 0,
+      "frequency": 1
+    }
+  ],
+  "experience_range": {
+    "min": 1.0,
+    "max": 2004.0,
+    "avg": 65.0
+  },
+  "companies": [
+    {
+      "name": "Microsoft",
+      "frequency": 33
+    },
+    {
+      "name": "Infosys Limited",
+      "frequency": 19
+    },
+    {
+      "name": "Infosys",
+      "frequency": 13
+    },
+    {
+      "name": "Oracle",
+      "frequency": 11
+    },
+    {
+      "name": "Accenture",
+      "frequency": 9
+    },
+    {
+      "name": "Cisco",
+      "frequency": 8
+    },
+    {
+      "name": "Infosys Ltd",
+      "frequency": 4
+    },
+    {
+      "name": "SAP ABAP",
+      "frequency": 3
+    },
+    {
+      "name": "MICROSOFT",
+      "frequency": 3
+    },
+    {
+      "name": "SAP Labs",
+      "frequency": 2
+    },
+    {
+      "name": "Microsoft India",
+      "frequency": 2
+    },
+    {
+      "name": "Infosys limited",
+      "frequency": 2
+    },
+    {
+      "name": "SAP",
+      "frequency": 2
+    },
+    {
+      "name": "Cisco Systems",
+      "frequency": 2
+    },
+    {
+      "name": "TCS",
+      "frequency": 2
+    },
+    {
+      "name": "UNISYS",
+      "frequency": 1
+    },
+    {
+      "name": "oracle tutorials",
+      "frequency": 1
+    },
+    {
+      "name": "oracle",
+      "frequency": 1
+    },
+    {
+      "name": "Cisco -",
+      "frequency": 1
+    },
+    {
+      "name": "Oracle Clinical",
+      "frequency": 1
+    },
+    {
+      "name": "cisco",
+      "frequency": 1
+    },
+    {
+      "name": "Cloud Lending Solutions",
+      "frequency": 1
+    },
+    {
+      "name": "Oracle Retail",
+      "frequency": 1
+    },
+    {
+      "name": "Oracle Corporation",
+      "frequency": 1
+    },
+    {
+      "name": "State Street",
+      "frequency": 1
+    },
+    {
+      "name": "Oracle Financial Software Services",
+      "frequency": 1
+    },
+    {
+      "name": "NIIT",
+      "frequency": 1
+    },
+    {
+      "name": "SAP FICO",
+      "frequency": 1
+    },
+    {
+      "name": "Sap labs",
+      "frequency": 1
+    },
+    {
+      "name": "SAP -",
+      "frequency": 1
+    },
+    {
+      "name": "Wipro",
+      "frequency": 1
+    },
+    {
+      "name": "Aggrigator",
+      "frequency": 1
+    },
+    {
+      "name": "CISCO",
+      "frequency": 1
+    },
+    {
+      "name": "Oracle India Pvt Ltd",
+      "frequency": 1
+    },
+    {
+      "name": "HCL Technologies -",
+      "frequency": 1
+    },
+    {
+      "name": "Disney",
+      "frequency": 1
+    },
+    {
+      "name": "Infosys -  Pune, Maharashtra -",
+      "frequency": 1
+    },
+    {
+      "name": "Infosys/Offshore Lead",
+      "frequency": 1
+    },
+    {
+      "name": "Oracle Inc",
+      "frequency": 1
+    },
+    {
+      "name": "SAP ARIBA",
+      "frequency": 1
+    },
+    {
+      "name": "SAP EWM",
+      "frequency": 1
+    },
+    {
+      "name": "INFOSYS LIMITED",
+      "frequency": 1
+    },
+    {
+      "name": "ORACLE -",
+      "frequency": 1
+    },
+    {
+      "name": "Sasken Technologies Pvt. Ltd -",
+      "frequency": 1
+    },
+    {
+      "name": "Arrow Electronics Inc",
+      "frequency": 1
+    },
+    {
+      "name": "TATA Communications Ltd",
+      "frequency": 1
+    },
+    {
+      "name": "Aricent Group",
+      "frequency": 1
+    },
+    {
+      "name": "HCL",
+      "frequency": 1
+    },
+    {
+      "name": "SAP AG",
+      "frequency": 1
+    },
+    {
+      "name": "Amazon",
+      "frequency": 1
+    }
+  ],
+  "education_keywords": [
+    "b.e.",
+    "b.sc",
+    "b.tech",
+    "bachelor",
+    "bca",
+    "be",
+    "diploma",
+    "m.sc",
+    "m.tech",
+    "master",
+    "mba",
+    "mca"
+  ]
+}

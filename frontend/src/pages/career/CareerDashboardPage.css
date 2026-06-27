@@ -1,0 +1,882 @@
+/* ============================================
+   Career Dashboard — Professional Design
+   ============================================ */
+
+/* ── Page Layout ── */
+
+.cd-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Header ── */
+
+.cd-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cd-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cd-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-header-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.cd-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.cd-header-left p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.cd-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Buttons ── */
+
+.cd-btn {
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.cd-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cd-btn-primary {
+  background: var(--accent-strong);
+  color: #fff;
+}
+
+.cd-btn-primary:hover {
+  background: var(--accent-strong-hover);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.cd-btn-ghost {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.cd-btn-ghost:hover {
+  background: var(--bg);
+  border-color: #cbd5e1;
+}
+
+.cd-btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Error Banner ── */
+
+.cd-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cd-error svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Loading ── */
+
+.cd-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 120px 0;
+  color: var(--muted);
+}
+
+.cd-loading svg {
+  width: 40px;
+  height: 40px;
+  color: var(--accent-strong);
+}
+
+.cd-spin {
+  animation: cd-spin 0.8s linear infinite;
+}
+
+@keyframes cd-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Quick Actions ── */
+
+.cd-quick-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cd-action-card {
+  flex: 1;
+  min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+}
+
+.cd-action-card:hover {
+  border-color: var(--accent-strong);
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
+}
+
+.cd-action-card > svg:last-child {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.cd-action-card:hover > svg:last-child {
+  opacity: 1;
+}
+
+.cd-action-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-action-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.cd-action-text h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+  color: var(--ink);
+}
+
+.cd-action-text p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ── Score Cards ── */
+
+.cd-scores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.cd-score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.cd-score-card:hover {
+  box-shadow: var(--shadow);
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.cd-score-accent {
+  height: 3px;
+  width: 100%;
+}
+
+.cd-score-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 20px 0;
+}
+
+.cd-score-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-score-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.cd-score-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cd-score-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cd-score-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.cd-score-bottom {
+  display: flex;
+  justify-content: center;
+  padding: 16px 20px 20px;
+}
+
+/* ── Progress Ring ── */
+
+.cd-progress-ring {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
+.cd-progress-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cd-ring-track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 6;
+}
+
+.cd-ring-fill {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 251.2;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.cd-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cd-ring-value {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.cd-ring-value small {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cd-ring-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+/* ── Section Divider ── */
+
+.cd-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 0 0;
+}
+
+.cd-section-divider h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.cd-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Main Grid ── */
+
+.cd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+/* ── Panels ── */
+
+.cd-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.cd-panel:hover {
+  box-shadow: var(--shadow);
+}
+
+.cd-panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cd-panel-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-panel-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cd-panel-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.cd-panel-header p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 2px 0 0 0;
+}
+
+/* ── Skill Tags ── */
+
+.cd-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cd-skill-tag {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.cd-skill-tag:hover {
+  background: #fde68a;
+}
+
+/* ── Analysis List ── */
+
+.cd-analysis-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cd-analysis-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cd-analysis-list li:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-soft);
+}
+
+.cd-analysis-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cd-analysis-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cd-analysis-left > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cd-analysis-left strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cd-analysis-left span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.cd-analysis-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cd-analysis-score {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cd-analysis-right > svg {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.cd-analysis-list li:hover .cd-analysis-right > svg {
+  opacity: 1;
+}
+
+/* ── Suggestion List ── */
+
+.cd-suggestion-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cd-suggestion-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s ease;
+}
+
+.cd-suggestion-list li:hover {
+  border-color: #cbd5e1;
+}
+
+.cd-priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.cd-priority-dot.high { background: #ef4444; }
+.cd-priority-dot.medium { background: #f59e0b; }
+.cd-priority-dot.low { background: #10b981; }
+
+.cd-suggestion-list p {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Roadmap ── */
+
+.cd-roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.cd-roadmap-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cd-roadmap-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.cd-roadmap-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-roadmap-stat-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cd-roadmap-stat strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.cd-roadmap-stat span {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  display: block;
+}
+
+/* ── Empty States ── */
+
+.cd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.cd-empty svg {
+  width: 32px;
+  height: 32px;
+  color: var(--border);
+  margin-bottom: 4px;
+}
+
+.cd-empty p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── Link Button ── */
+
+.cd-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--accent-strong);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 0 0 0;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.cd-link-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.cd-link-btn:hover {
+  color: var(--accent-strong-hover);
+}
+
+/* ── Trends ── */
+
+.cd-trends {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.cd-trend-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.15s ease;
+}
+
+.cd-trend-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.cd-trend-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cd-trend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.cd-trend-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ink);
+}
+
+.cd-trend-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cd-trend-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.cd-trend-label {
+  font-weight: 500;
+  color: var(--muted);
+  text-align: right;
+}
+
+.cd-trend-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.cd-trend-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cd-trend-value {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink);
+  text-align: right;
+}
+
+/* ── Recommendations ── */
+
+.cd-recs-panel {
+  padding: 24px 24px 20px;
+}
+
+.cd-recs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cd-rec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s ease;
+}
+
+.cd-rec-item:hover {
+  border-color: #cbd5e1;
+}
+
+.cd-rec-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--accent-strong);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.cd-rec-item p {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1100px) {
+  .cd-scores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cd-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cd-trends {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .cd-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cd-header-actions {
+    width: 100%;
+  }
+
+  .cd-header-actions .cd-btn-primary {
+    flex: 1;
+  }
+
+  .cd-quick-actions {
+    flex-direction: column;
+  }
+
+  .cd-action-card {
+    min-width: auto;
+  }
+
+  .cd-scores {
+    grid-template-columns: 1fr;
+  }
+}
