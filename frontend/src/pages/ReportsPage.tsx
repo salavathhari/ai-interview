@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { reportsApi } from '../services/api';
 import './ReportsPage.css';
 
@@ -15,13 +14,6 @@ interface Report {
   outdated_reason: string | null;
   created_at: string;
   updated_at: string | null;
-}
-
-interface ReportListResponse {
-  reports: Report[];
-  total: number;
-  page: number;
-  per_page: number;
 }
 
 const Icon = {
@@ -50,7 +42,6 @@ const REPORT_TYPE_INFO: Record<string, { label: string; icon: React.ReactNode; c
 };
 
 const ReportsPage: React.FC = () => {
-  const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);

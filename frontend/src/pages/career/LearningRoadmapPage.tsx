@@ -62,6 +62,7 @@ interface RoadmapData {
     hours_today: number;
     activities: string[];
     streak_days: number;
+    needs_analysis?: boolean;
   };
   mentor_tips: MentorTip[];
   skill_gap_summary: {

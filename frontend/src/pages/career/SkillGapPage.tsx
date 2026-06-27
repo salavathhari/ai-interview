@@ -77,11 +77,6 @@ const SkillGapPage: React.FC = () => {
     }
   };
 
-  const getResumeFilename = (resumeId: number): string => {
-    const resume = resumes.find(r => r.id === resumeId);
-    return resume?.filename || `Resume #${resumeId}`;
-  };
-
   const handleAnalyze = async () => {
     if (!selectedResume) return;
     try {

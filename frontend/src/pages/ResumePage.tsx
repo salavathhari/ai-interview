@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import api, { resumeApi } from '../services/api';
+import { resumeApi } from '../services/api';
 import './ResumePage.css';
 
 interface Resume {

@@ -128,8 +128,6 @@ const CodingPage = () => {
   const [code, setCode] = useState('');
   const [savedDraft, setSavedDraft] = useState<string | null>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedCode = useRef<string>('');
-  const resetCodeActionRef = useRef<(() => void) | null>(null);
 
   // Execution
   const [isRunning, setIsRunning] = useState(false);
