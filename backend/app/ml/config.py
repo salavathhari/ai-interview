@@ -1,7 +1,11 @@
 """ML Configuration — device detection, paths, constants."""
 
 import os
-import torch
+try:
+    import torch
+    _HAS_TORCH = True
+except ImportError:
+    _HAS_TORCH = False
 
 ML_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,7 +20,7 @@ for d in [MODELS_DIR, DATASETS_DIR, EMBEDDING_CACHE_DIR, FAISS_INDEX_DIR]:
     os.makedirs(d, exist_ok=True)
 
 # Device
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if _HAS_TORCH and torch.cuda.is_available() else "cpu"
 
 # Embedding model
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"

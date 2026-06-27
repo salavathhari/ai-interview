@@ -2,15 +2,25 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app_v2.db")
 
-# For SQLite, we need 'check_same_thread': False
-connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}
+is_sqlite = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args=connect_args
-)
+if is_sqlite:
+    connect_args = {"check_same_thread": False}
+    engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
+else:
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL,
+        pool_size=5,
+        max_overflow=10,
+        pool_pre_ping=True,
+        pool_recycle=300,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -27,6 +37,9 @@ def init_models():
     from app.models.cheating_log import CheatingLog
     from app.models.job_role import JobRole
     from app.models.api_usage import ApiUsage
+    from app.models.admin_log import AdminLog
+    from app.models.system_health_log import SystemHealthLog
+    from app.models.notification import Notification
     from app.models.career import JobDescription, ResumeAnalysis, SkillGapAnalysis, LearningRoadmap, OptimizedResume, CareerReadiness, CareerReadinessHistory
     from app.models.intelligence import SkillDependency, LearningProgress, CareerRecommendation, PerformanceMetrics, SkillAnalytics
     from app.models.ats_report import ATSReport
