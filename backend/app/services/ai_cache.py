@@ -1,6 +1,9 @@
 import hashlib
 import json
-import redis
+try:
+    import redis
+except ImportError:
+    redis = None
 import os
 from typing import Optional
 
@@ -8,6 +11,8 @@ from typing import Optional
 class AICache:
     def __init__(self):
         try:
+            if redis is None:
+                raise ImportError("redis not installed")
             # Attempt to connect to Redis, fallback to local dict if unavailable
             host = os.getenv("REDIS_HOST", "localhost")
             self.redis = redis.Redis(host=host, port=6379, db=0, decode_responses=True)
