@@ -29,7 +29,9 @@ backend/app/ml/models/saved/*.onnx
 # Databases
 *.sqlite3
 *.db
-!backend/sql_app_v2.db
+
+# Large datasets
+*.csv
 
 # Uploads
 backend/uploads/
