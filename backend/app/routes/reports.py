@@ -191,7 +191,7 @@ def generate_report(
     except Exception as e:
         report.status = "failed"
         db.commit()
-        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Report generation failed. Please try again later.")
 
 
 @router.get("/{report_id}/download")
@@ -309,7 +309,7 @@ def download_report_docx(
     except ImportError:
         raise HTTPException(status_code=501, detail="DOCX export not available (python-docx not installed)")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"DOCX export failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="DOCX export failed. Please try again later.")
 
 
 @router.delete("/{report_id}")

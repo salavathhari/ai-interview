@@ -104,24 +104,27 @@ class CareerService:
                 from app.database import SessionLocal
                 from app.models.api_usage import ApiUsage
                 db = SessionLocal()
-                usage = ApiUsage(
-                    provider="openai",
-                    model=model,
-                    feature="career",
-                    prompt_tokens=response.usage.prompt_tokens if response.usage else 0,
-                    completion_tokens=response.usage.completion_tokens if response.usage else 0,
-                    total_tokens=response.usage.total_tokens if response.usage else 0,
-                    cost=0.0,
-                )
-                db.add(usage)
-                db.commit()
-                db.close()
+                try:
+                    usage = ApiUsage(
+                        provider="openai",
+                        model=model,
+                        feature="career",
+                        prompt_tokens=response.usage.prompt_tokens if response.usage else 0,
+                        completion_tokens=response.usage.completion_tokens if response.usage else 0,
+                        total_tokens=response.usage.total_tokens if response.usage else 0,
+                        cost=0.0,
+                    )
+                    db.add(usage)
+                    db.commit()
+                finally:
+                    db.close()
             except Exception:
                 pass
             
             return json.loads(content)
         except Exception as e:
-            print(f"CareerService AI call failed: {e}")
+            import logging
+            logging.getLogger(__name__).error("CareerService AI call failed: %s", e)
             return None
 
     # ── Job Description Analysis ──
@@ -1728,7 +1731,12 @@ Return the optimized paragraph text (nothing else):"""
         from docx import Document
         import io
 
-        doc = Document(original_file_path)
+        real_path = os.path.realpath(original_file_path)
+        uploads_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "uploads"))
+        if not real_path.startswith(uploads_dir + os.sep) and real_path != uploads_dir:
+            raise ValueError("File path must be within the uploads directory")
+
+        doc = Document(real_path)
 
         # Categorize paragraphs by section for context-aware optimization
         current_section = "header"

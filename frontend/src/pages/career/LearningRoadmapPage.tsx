@@ -694,7 +694,7 @@ const LearningRoadmapPage: React.FC = () => {
                               <div className="lr-topic-section">
                                 <h5>📚 Learning Resources</h5>
                                 {(topic.resources.documentation || []).map((url, i) => (
-                                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="lr-resource-link">
+                                  <a key={i} href={url.startsWith('http') ? url : '#'} target="_blank" rel="noopener noreferrer" className="lr-resource-link">
                                     <Icon.ExternalLink /> {url.split('/')[2]} — Documentation
                                   </a>
                                 ))}

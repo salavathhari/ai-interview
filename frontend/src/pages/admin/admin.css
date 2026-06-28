@@ -1,6 +1,6 @@
 /* Admin Dark Mode SaaS Design System */
 
-:root {
+.admin-layout {
   --admin-bg: #0f1117;
   --admin-surface: #1a1d2e;
   --admin-border: #2d3154;

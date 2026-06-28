@@ -53,7 +53,12 @@ class JobRecommender:
             descriptions.append(" ".join(desc_parts))
             names.append(role_name)
 
-        embeddings = Embedder.encode_batch(descriptions)
+        try:
+            embeddings = Embedder.encode_batch(descriptions)
+        except RuntimeError:
+            # Embedding model unavailable — use empty embeddings, will fall back to heuristic
+            cls._role_embeddings = {"names": names, "embeddings": np.array([])}
+            return
         cls._role_embeddings = {
             "names": names,
             "embeddings": embeddings,
@@ -174,8 +179,14 @@ class JobRecommender:
 
         resume_skills = cls._extract_skills_from_text(resume_text)
 
-        resume_embedding = Embedder.encode(resume_text)
+        try:
+            resume_embedding = Embedder.encode(resume_text)
+        except RuntimeError:
+            # Embedding model unavailable — fall back to pure skill matching
+            return cls._skill_only_recommend(resume_skills, top_k)
         role_embeddings = np.array(cls._role_embeddings["embeddings"])
+        if role_embeddings.size == 0:
+            return cls._skill_only_recommend(resume_skills, top_k)
         query = resume_embedding.reshape(1, -1)
         similarities = Embedder.cosine_similarities(query, role_embeddings)
 
@@ -215,4 +226,32 @@ class JobRecommender:
 
         results.sort(key=lambda x: x["score"], reverse=True)
         results = [r for r in results if r["score"] > 5.0]
+        return results[:top_k]
+
+    @classmethod
+    def _skill_only_recommend(cls, resume_skills: set, top_k: int = 5) -> list[dict]:
+        """Pure keyword-based fallback when embeddings are unavailable."""
+        results = []
+        for role_name, skill_sets in cls._role_skill_sets.items():
+            core_match = resume_skills & skill_sets["core"]
+            secondary_match = resume_skills & skill_sets["secondary"]
+            core_count = len(core_match)
+            secondary_count = len(secondary_match)
+            max_possible = len(skill_sets["core"]) * 2 + len(skill_sets["secondary"])
+            score = (core_count * 2 + secondary_count) / max_possible if max_possible > 0 else 0.0
+            if score > 0:
+                results.append({
+                    "role": role_name,
+                    "score": round(score * 100, 1),
+                    "semantic_similarity": 0.0,
+                    "skill_match": round(score * 100, 1),
+                    "matched_core_skills": sorted(core_match),
+                    "matched_secondary_skills": sorted(secondary_match),
+                    "description": cls._roles.get(role_name, {}).get("description", ""),
+                    "core_skills": cls._roles.get(role_name, {}).get("core_skills", []),
+                    "recommendation_rate": 0.2,
+                    "job_variants": 1,
+                    "source": "skill_only",
+                })
+        results.sort(key=lambda x: x["score"], reverse=True)
         return results[:top_k]

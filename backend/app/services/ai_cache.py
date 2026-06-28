@@ -1,5 +1,6 @@
 import hashlib
 import json
+import threading
 try:
     import redis
 except ImportError:
@@ -10,12 +11,14 @@ from typing import Optional
 # Simple Redis-based or In-Memory cache for AI responses
 class AICache:
     def __init__(self):
+        self._lock = threading.Lock()
         try:
             if redis is None:
                 raise ImportError("redis not installed")
             # Attempt to connect to Redis, fallback to local dict if unavailable
             host = os.getenv("REDIS_HOST", "localhost")
-            self.redis = redis.Redis(host=host, port=6379, db=0, decode_responses=True)
+            password = os.getenv("REDIS_PASSWORD")
+            self.redis = redis.Redis(host=host, port=6379, db=0, decode_responses=True, password=password)
             self.redis.ping()
             self.use_redis = True
         except Exception:
@@ -31,13 +34,15 @@ class AICache:
         if self.use_redis:
             data = self.redis.get(key)
             return json.loads(data) if data else None
-        return self.local_cache.get(key)
+        with self._lock:
+            return self.local_cache.get(key)
 
     def set(self, prompt: str, model: str, response: dict, expire: int = 3600):
         key = self._get_key(prompt, model)
         if self.use_redis:
             self.redis.setex(key, expire, json.dumps(response))
         else:
-            self.local_cache[key] = response
+            with self._lock:
+                self.local_cache[key] = response
 
 ai_cache = AICache()

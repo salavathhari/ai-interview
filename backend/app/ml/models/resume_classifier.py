@@ -59,8 +59,13 @@ class ResumeClassifier:
                 probabilities = cls._model.predict_proba(features)[0]
             elif hasattr(cls._model, "decision_function"):
                 scores = cls._model.decision_function(features)[0]
-                exp_scores = np.exp(scores - np.max(scores))
-                probabilities = exp_scores / exp_scores.sum()
+                min_score = scores.min()
+                max_score = scores.max()
+                range_score = max_score - min_score
+                if range_score > 0:
+                    probabilities = (scores - min_score) / range_score
+                else:
+                    probabilities = np.ones_like(scores) / len(scores)
 
             confidence = 0.0
             if probabilities is not None:

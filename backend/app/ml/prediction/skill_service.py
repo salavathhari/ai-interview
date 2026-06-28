@@ -76,8 +76,11 @@ class SkillService:
         current_set = set(resume_skills.get("all_skills", []))
 
         try:
-            from app.ml.datasets import load_job_roles
-            roles_data = load_job_roles()
+            # #17: Load job roles from the dataset JSON file directly
+            import json
+            from app.ml.config import JOB_ROLES_PATH
+            with open(JOB_ROLES_PATH, "r") as f:
+                roles_data = json.load(f)
         except Exception:
             roles_data = {}
 

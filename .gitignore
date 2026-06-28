@@ -63,3 +63,6 @@ docs/*.pdf
 .cache/
 .pytest_cache/
 .mypy_cache/
+
+.vercel
+.env*.local

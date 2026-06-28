@@ -35,7 +35,7 @@ def client(db_session):
 def test_signup(client):
     response = client.post(
         "/auth/signup",
-        json={"email": "test@pytest.com", "password": "password123", "name": "Tester"}
+        json={"email": "test@pytest.com", "password": "Password123", "name": "Tester"}
     )
     assert response.status_code == 200
     data = response.json()
@@ -46,18 +46,18 @@ def test_login(client):
     # Ensure user exists (from previous test or create new)
     client.post(
         "/auth/signup",
-        json={"email": "login@pytest.com", "password": "password123", "name": "Tester"}
+        json={"email": "login@pytest.com", "password": "Password123", "name": "Tester"}
     )
     response = client.post(
         "/auth/login",
-        json={"email": "login@pytest.com", "password": "password123"}
+        json={"email": "login@pytest.com", "password": "Password123"}
     )
     assert response.status_code == 200
     assert "access_token" in response.json()
 
 def test_admin_access_denied(client):
     # Standard user login
-    r = client.post("/auth/login", json={"email": "test@pytest.com", "password": "password123"})
+    r = client.post("/auth/login", json={"email": "test@pytest.com", "password": "Password123"})
     token = r.json()["access_token"]
     
     response = client.get(

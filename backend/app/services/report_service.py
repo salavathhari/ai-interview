@@ -78,8 +78,9 @@ class ReportService:
         for q in questions:
             history.append({
                 "type": "theory",
-                "question": q.question_text,
-                "answer": q.answer_text,
+                "topic": q.topic or "General",
+                "question": q.question_text[:500],
+                "answer": (q.answer_text or "")[:500],
                 "score": q.score,
                 "feedback": q.feedback
             })
@@ -97,28 +98,76 @@ class ReportService:
             })
         db.close()
 
-        if not api_key:
+        # Build session-based fallback when AI is unavailable
+        def _build_session_fallback():
+            strengths = []
+            weaknesses = []
+            roadmap = []
+            scored_qs = [h for h in history if h.get("score") is not None]
+            avg_score = sum(h["score"] for h in scored_qs) / len(scored_qs) if scored_qs else 0
+
+            high_qs = sorted([h for h in scored_qs if h["score"] >= 7], key=lambda x: x["score"], reverse=True)
+            low_qs = sorted([h for h in scored_qs if h["score"] < 7], key=lambda x: x["score"])
+
+            seen_topics_strengths = set()
+            for h in high_qs[:3]:
+                topic = h.get('topic', 'technical')
+                feedback = (h.get('feedback') or 'solid answer')[:80]
+                if topic in seen_topics_strengths:
+                    strengths.append(f"Strong {topic} follow-up (scored {h['score']}/10 — {feedback})")
+                else:
+                    seen_topics_strengths.add(topic)
+                    strengths.append(f"Strong {topic} response (scored {h['score']}/10 — {feedback})")
+
+            seen_topics_weak = set()
+            for h in low_qs[:3]:
+                topic = h.get('topic', 'technical')
+                feedback = (h.get('feedback') or 'requires more depth')[:80]
+                if topic in seen_topics_weak:
+                    weaknesses.append(f"{topic} follow-up needs improvement (scored {h['score']}/10 — {feedback})")
+                    roadmap.append(f"Practice {topic} with advanced scenarios and edge cases")
+                else:
+                    seen_topics_weak.add(topic)
+                    weaknesses.append(f"{topic} needs improvement (scored {h['score']}/10 — {feedback})")
+                    roadmap.append(f"Review {topic} fundamentals and practice with structured examples")
+
+            if not strengths:
+                strengths = ["Demonstrated willingness to engage with all questions"]
+            if not weaknesses:
+                weaknesses = ["Continue practicing advanced-level questions"]
+            if not roadmap:
+                roadmap = ["Review weak topics with focused notes", "Practice timed answers with clear structure"]
+
+            total_scored = len(scored_qs)
+            confidence = max(0, min(100, round(avg_score * 10))) if total_scored > 0 else 50
+
             return {
-                "summary": "AI summary not available (API Key missing).",
-                "strengths": ["Knowledge of core concepts"],
-                "weaknesses": ["Deep dive required"],
-                "roadmap": ["Study official documentation"],
-                "confidence_score": 70
+                "summary": f"Candidate attempted {len(history)} questions for the {session.role} role with an average score of {avg_score:.1f}/10 across {total_scored} graded questions.",
+                "strengths": strengths,
+                "weaknesses": weaknesses,
+                "roadmap": roadmap,
+                "confidence_score": confidence,
             }
 
-        prompt = f"""
-        Analyze this interview session for the role of {session.role}.
-        Interview Data: {json.dumps(history)}
+        if not api_key:
+            fallback = _build_session_fallback()
+            fallback["summary"] = "AI summary not available (API key missing). Showing session-based analysis."
+            return fallback
 
-        Generate a comprehensive report including:
-        1. Interview Summary: A high-level overview of the candidate's performance.
-        2. Strengths: Top 3 technical or communication strengths.
-        3. Weaknesses: Top 3 areas needing improvement.
-        4. Improvement Roadmap: A step-by-step plan to master these topics.
-        5. Overall Confidence Analysis (Score 0-100%)
+        prompt = f"""You are an expert interview coach. Analyze this {session.role} interview session and give specific, actionable feedback.
 
-        Return as a raw JSON object with keys: "summary", "strengths", "weaknesses", "roadmap", "confidence_score".
-        """
+INTERVIEW DATA:
+{json.dumps(history, indent=2)}
+
+INSTRUCTIONS — be specific and reference actual question topics and scores:
+1. summary: 2-3 sentences about the candidate's overall performance. Mention their strongest and weakest topic areas by name. Reference specific scores.
+2. weaknesses: Exactly 3 items. Each must reference a specific topic they scored lowest on, with their actual score, and WHY they lost points based on their answer and feedback.
+3. strengths: Exactly 3 items. Each must reference a specific topic they scored highest on, with their actual score, and WHAT they did well based on their answer and feedback.
+4. roadmap: Exactly 3 items. Each must be a specific actionable step tied to their weakest topics (not generic advice).
+5. confidence_score: Overall score 0-100 based on average performance.
+
+Return ONLY a JSON object with keys: "summary", "strengths", "weaknesses", "roadmap", "confidence_score".
+Each strengths/weaknesses/roadmap item must be a specific string, not a generic statement."""
 
         try:
             response = client.chat.completions.create(
@@ -126,15 +175,14 @@ class ReportService:
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
             )
-            return json.loads(response.choices[0].message.content)
-        except Exception:
-            return {
-                "summary": "The candidate demonstrates a solid technical foundation but lacks depth in some areas.",
-                "strengths": ["Clear communication", "Good understanding of core concepts", "Strong problem-solving approach"],
-                "weaknesses": ["Shallow knowledge of edge cases", "Inconsistent confidence", "Limited architectural overview"],
-                "roadmap": ["Study advanced patterns", "Practice mock interviews", "Deep dive into system design"],
-                "confidence_score": 80
-            }
+            result = json.loads(response.choices[0].message.content)
+            # Validate AI returned reasonable data
+            if not result.get("strengths") or not result.get("weaknesses"):
+                raise ValueError("AI returned empty strengths or weaknesses")
+            return result
+        except Exception as e:
+            print(f"[REPORT] AI summary failed ({e}), using session-based fallback")
+            return _build_session_fallback()
 
     @staticmethod
     def generate_pdf_report(session, questions):

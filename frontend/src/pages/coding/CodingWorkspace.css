@@ -1,0 +1,321 @@
+/* ─── Main Workspace ──────────────────────────────────────────────────────── */
+
+.coding-workspace {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 42% 58%;
+  background: var(--coding-border);
+  gap: 1px;
+}
+
+/* ─── Problem Pane ────────────────────────────────────────────────────────── */
+
+.problem-pane {
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.problem-header {
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--coding-border);
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.problem-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.problem-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.difficulty-badge {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.difficulty-badge.easy   { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+.difficulty-badge.medium { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+.difficulty-badge.hard   { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+
+.topic-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.topic-tag {
+  background: rgba(163, 113, 247, 0.15);
+  border: 1px solid rgba(163, 113, 247, 0.3);
+  color: var(--purple);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.problem-body {
+  padding: 0 20px 20px;
+  flex: 1;
+}
+
+.problem-section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--coding-border-light);
+}
+
+.problem-section:last-child {
+  border-bottom: none;
+}
+
+.problem-section h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.problem-description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.problem-description code {
+  background: var(--bg-elevated);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-run);
+}
+
+/* Examples */
+.example-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--coding-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.example-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.example-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.example-part {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.example-part span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.example-part pre {
+  margin: 0;
+  background: var(--bg-base);
+  border: 1px solid var(--coding-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.example-explanation {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Constraints */
+.constraints-block {
+  margin: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--coding-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* Notes */
+.notes-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notes-list li {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.notes-list code {
+  background: var(--bg-elevated);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--green);
+}
+
+/* ─── Editor Pane ─────────────────────────────────────────────────────────── */
+
+.editor-pane {
+  background: var(--bg-editor);
+  display: grid;
+  grid-template-rows: auto 1fr 280px;
+  min-height: 0;
+}
+
+/* Toolbar */
+.editor-toolbar {
+  height: 50px;
+  padding: 0 12px;
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.lang-selector-group {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--coding-border);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.lang-tab {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.lang-tab:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-base);
+}
+
+.lang-tab.active {
+  background: var(--accent-run);
+  color: #fff;
+}
+
+.lang-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.run-btn,
+.submit-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.run-btn {
+  background: var(--bg-elevated);
+  border-color: var(--coding-border);
+  color: var(--text-primary);
+}
+
+.run-btn:hover:not(:disabled) {
+  background: var(--accent-run);
+  border-color: var(--accent-run);
+  color: #fff;
+}
+
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.run-btn:disabled,
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Monaco */
+.monaco-frame {
+  min-height: 0;
+  overflow: hidden;
+}

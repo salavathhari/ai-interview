@@ -111,19 +111,19 @@ def setup_data(db_session):
         "session": coding_session
     }
 
+TEST_PASSWORD = "Password123"
+
 def get_token(client, email):
-    # Log in user to obtain access token
     response = client.post(
         "/auth/login",
-        json={"email": email, "password": "password123"}
+        json={"email": email, "password": TEST_PASSWORD}
     )
-    # If the user doesn't have password set in test flow via signup, override auth or use a temporary signup
     return response.json().get("access_token")
 
 def test_admin_endpoints_permissions(client, setup_data):
     # We will register candidate and admin via signup to get correct tokens
-    client.post("/auth/signup", json={"email": "candidate_api@test.com", "password": "password123", "name": "Candidate"})
-    client.post("/auth/signup", json={"email": "admin_api@test.com", "password": "password123", "name": "Admin"})
+    client.post("/auth/signup", json={"email": "candidate_api@test.com", "password": TEST_PASSWORD, "name": "Candidate"})
+    client.post("/auth/signup", json={"email": "admin_api@test.com", "password": TEST_PASSWORD, "name": "Admin"})
     
     # Manually promote admin_api to admin
     db = TestingSessionLocal()

@@ -1,3 +1,5 @@
+@import './components/ui/shared.css';
+
 :root {
   /* ── Core Palette ── */
   --bg: #f8fafc;
@@ -41,6 +43,9 @@
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
+
+  /* ── Breakpoints (reference only — CSS vars can't be used in @media) ── */
+  /* --bp-sm: 640px;  --bp-md: 768px;  --bp-lg: 1024px; */
 
   font-family: var(--sans);
   font-size: 14px;

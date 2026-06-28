@@ -7,7 +7,7 @@ class InterviewSession(Base):
     __tablename__ = "interview_sessions"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     job_role_id = Column(Integer, ForeignKey("job_roles.id"), nullable=True)
     job_description_id = Column(Integer, ForeignKey("job_descriptions.id"), nullable=True)
     role = Column(String)  # e.g., "Software Engineer", "Data Scientist"

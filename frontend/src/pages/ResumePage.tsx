@@ -269,7 +269,7 @@ const ResumePage: React.FC = () => {
             {parsedFields.linkedin && (
               <div className="result-field">
                 <strong>LinkedIn:</strong>{' '}
-                <a href={parsedFields.linkedin} target="_blank" rel="noreferrer">
+                <a href={parsedFields.linkedin.startsWith('http') ? parsedFields.linkedin : '#'} target="_blank" rel="noopener noreferrer">
                   {parsedFields.linkedin}
                 </a>
               </div>
@@ -277,7 +277,7 @@ const ResumePage: React.FC = () => {
             {parsedFields.github && (
               <div className="result-field">
                 <strong>GitHub:</strong>{' '}
-                <a href={parsedFields.github} target="_blank" rel="noreferrer">
+                <a href={parsedFields.github.startsWith('http') ? parsedFields.github : '#'} target="_blank" rel="noopener noreferrer">
                   {parsedFields.github}
                 </a>
               </div>

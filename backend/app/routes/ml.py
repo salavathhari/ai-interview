@@ -5,7 +5,7 @@ import time
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -38,9 +38,29 @@ class RankRequest(BaseModel):
     resume_ids: list[int]
     job_description_id: int
 
+    @validator("resume_ids")
+    def validate_resume_ids(cls, v):
+        if len(v) > 50:
+            raise ValueError("Cannot rank more than 50 resumes at once")
+        if len(v) == 0:
+            raise ValueError("At least one resume_id is required")
+        return v
+
 class SearchRequest(BaseModel):
     query: str
     top_k: Optional[int] = 10
+
+    @validator("query")
+    def validate_query(cls, v):
+        if len(v) > 10000:
+            raise ValueError("Query too long (max 10000 characters)")
+        return v
+
+    @validator("top_k")
+    def validate_top_k(cls, v):
+        if v is not None and (v < 1 or v > 100):
+            raise ValueError("top_k must be between 1 and 100")
+        return v
 
 class RecommendSkillsRequest(BaseModel):
     resume_id: int

@@ -461,7 +461,7 @@ def optimize_resume_format_preserving(
             resume.file_path, resume.extracted_text, analysis, jd_text
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"DOCX optimization failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="DOCX optimization failed. Please try again later.")
 
     # Store optimization record
     optimization = CareerService.optimize_resume_ats(resume.extracted_text, analysis, jd_text)
@@ -605,7 +605,7 @@ def optimize_resume_to_pdf(
             output.seek(0)
             pdf_bytes = output.getvalue()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="PDF generation failed. Please try again later.")
 
     return StreamingResponse(
         BytesIO(pdf_bytes),

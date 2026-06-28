@@ -1,8 +1,11 @@
 """Semantic resume search using FAISS embeddings."""
 
+import logging
 from app.ml.embeddings.embedder import Embedder
 from app.ml.embeddings.faiss_index import get_faiss_index
 from app.ml.utils.text_preprocessor import TextPreprocessor
+
+logger = logging.getLogger(__name__)
 
 
 class SearchService:
@@ -13,7 +16,11 @@ class SearchService:
         cleaned = TextPreprocessor.clean_text(resume_text)
         if not cleaned:
             return
-        embedding = Embedder.encode(cleaned[:5000])
+        try:
+            embedding = Embedder.encode(cleaned[:5000])
+        except RuntimeError:
+            logger.warning("Embedding model unavailable — skipping resume indexing")
+            return
         faiss = get_faiss_index()
         faiss.add(resume_id, embedding)
         faiss.save()
@@ -23,7 +30,11 @@ class SearchService:
         cleaned = TextPreprocessor.clean_text(query_text)
         if not cleaned:
             return []
-        query_embedding = Embedder.encode(cleaned[:5000])
+        try:
+            query_embedding = Embedder.encode(cleaned[:5000])
+        except RuntimeError:
+            logger.warning("Embedding model unavailable — semantic search disabled")
+            return []
         faiss = get_faiss_index()
         results = faiss.search(query_embedding, top_k=top_k)
         return [

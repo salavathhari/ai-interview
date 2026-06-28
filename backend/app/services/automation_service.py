@@ -7,9 +7,12 @@ Also records analytics events and refreshes analytics summaries.
 """
 
 import json
+import logging
 from typing import Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
+
+logger = logging.getLogger(__name__)
 
 from app.models.career import (
     ResumeAnalysis, JobDescription, SkillGapAnalysis, LearningRoadmap, CareerReadiness
@@ -463,6 +466,7 @@ class AutomationService:
             self.db.add(history)
             self.db.commit()
         except Exception:
+            logger.debug("Failed to save career readiness history for user %s", user_id)
             self.db.rollback()  # Non-critical: don't fail readiness if history save fails
 
     def _recalculate_skill_analytics(self, user_id: int):
@@ -521,6 +525,7 @@ class AutomationService:
             })
             self.db.commit()
         except Exception:
+            logger.debug("Failed to mark reports outdated for user %s", user_id)
             self.db.rollback()  # Non-critical
 
     def _update_roadmap_from_new_gap(self, user_id: int, skill_gap_id: int):
@@ -551,7 +556,7 @@ class AutomationService:
                     from app.routes.career import save_roadmap_to_db
                     save_roadmap_to_db(self.db, user_id, roadmap_data, skill_gap_id=skill_gap_id)
             except Exception:
-                pass  # Non-critical: don't fail skill gap save if roadmap generation fails
+                logger.debug("Failed to auto-generate roadmap for user %s", user_id)
 
     def _update_interview_adaptation(self, user_id: int, weak_topics: list):
         """

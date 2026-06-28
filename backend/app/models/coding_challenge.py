@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
 from app.models.user import User
+from app.core.encryption import EncryptedText
 
 
 class CodingChallenge(Base):
@@ -14,18 +15,19 @@ class CodingChallenge(Base):
     difficulty = Column(String)  # "Easy", "Medium", "Hard"
 
     # Multi-language support
-    supported_languages = Column(JSON, default=["python", "java", "cpp", "javascript"])
+    # #19: Use callable defaults to avoid mutable default argument bug
+    supported_languages = Column(JSON, default=lambda: ["python", "java", "cpp", "javascript"])
     starter_codes = Column(JSON)  # {"python": "...", "java": "...", "cpp": "...", "javascript": "..."}
 
     # Problem metadata
-    topics = Column(JSON, default=[])          # ["arrays", "hashmap"]
-    role_tags = Column(JSON, default=[])       # ["SDE", "Backend", "Frontend"]
-    constraints = Column(Text, nullable=True)  # Plain text constraints
-    examples = Column(JSON, default=[])        # [{input, output, explanation}]
+    topics = Column(JSON, default=list)          # ["arrays", "hashmap"]
+    role_tags = Column(JSON, default=list)       # ["SDE", "Backend", "Frontend"]
+    constraints = Column(Text, nullable=True)    # Plain text constraints
+    examples = Column(JSON, default=list)        # [{input, output, explanation}]
 
     # Test cases (split into public/hidden)
-    test_cases = Column(JSON, default=[])        # Public: [{input, expected}]
-    hidden_test_cases = Column(JSON, default=[]) # Hidden: [{input, expected}]
+    test_cases = Column(JSON, default=list)        # Public: [{input, expected}]
+    hidden_test_cases = Column(JSON, default=list) # Hidden: [{input, expected}]
 
     # Execution limits
     time_limit_ms = Column(Integer, default=5000)
@@ -45,20 +47,20 @@ class CodingSubmission(Base):
     __tablename__ = "coding_submissions"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    challenge_id = Column(Integer, ForeignKey("coding_challenges.id"))
-    session_id = Column(Integer, ForeignKey("interview_sessions.id"), nullable=True)
-    coding_session_id = Column(Integer, ForeignKey("coding_sessions.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    challenge_id = Column(Integer, ForeignKey("coding_challenges.id"), index=True)
+    session_id = Column(Integer, ForeignKey("interview_sessions.id"), nullable=True, index=True)
+    coding_session_id = Column(Integer, ForeignKey("coding_sessions.id"), nullable=True, index=True)
 
     # Code submitted
-    code = Column(Text)
+    code = Column(EncryptedText())
     language = Column(String, default="python")
 
     # Execution results
     status = Column(String)  # "Accepted", "Wrong Answer", "Time Limit Exceeded", "Runtime Error", "Compilation Error"
     runtime_ms = Column(Integer, nullable=True)
     memory_kb = Column(Integer, nullable=True)
-    output = Column(Text, nullable=True)
+    output = Column(EncryptedText(), nullable=True)
 
     # Detailed per-test results
     test_results = Column(JSON, nullable=True)  # [{input, expected, actual, passed, runtime_ms}]
@@ -67,7 +69,7 @@ class CodingSubmission(Base):
     correctness_score = Column(Float, nullable=True)  # % test cases passed (0-100)
 
     # AI Code Review
-    ai_feedback = Column(Text, nullable=True)
+    ai_feedback = Column(EncryptedText(), nullable=True)
     ai_score = Column(Float, nullable=True)       # 0-10 code quality
     time_complexity = Column(String, nullable=True)
     space_complexity = Column(String, nullable=True)

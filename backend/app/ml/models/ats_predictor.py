@@ -74,10 +74,13 @@ class ATSPredictor:
             score = max(0, min(100, score))
 
             confidence = 85.0
-            if hasattr(cls._model, "estimators_"):
-                preds = np.array([tree.predict(X)[0] for tree in cls._model.estimators_])
-                std = float(np.std(preds))
-                confidence = max(70, min(98, 95 - std * 2))
+            if hasattr(cls._model, "estimators_") and hasattr(cls._model, "n_estimators"):
+                try:
+                    preds = np.array([est.predict(X)[0] for est in cls._model.estimators_])
+                    std = float(np.std(preds))
+                    confidence = max(70, min(98, 95 - std * 2))
+                except AttributeError:
+                    confidence = 85.0
 
             return {
                 "ats_score": round(score, 1),

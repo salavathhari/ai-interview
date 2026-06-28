@@ -1,7 +1,7 @@
 import { BarChart3, BriefcaseBusiness, ClipboardList, Plus, Search, Sparkles, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { getAccessToken } from '../services/api';
 import './RecruiterPage.css';
 
 type Candidate = {
@@ -63,7 +63,7 @@ const RecruiterPage = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (!token) {
       navigate('/login');
       return;

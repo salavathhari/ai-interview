@@ -29,7 +29,7 @@ import {
   YAxis,
   Cell,
 } from 'recharts';
-import { analyticsApi } from '../services/api';
+import { analyticsApi, getAccessToken } from '../services/api';
 import './AnalyticsPage.css';
 
 type TopicMetric = { topic: string; average_score: number; question_count: number };
@@ -120,7 +120,7 @@ const AnalyticsPage = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (!token) { navigate('/login'); return; }
     analyticsApi.getDashboard()
       .then(res => setAnalytics(res.data))

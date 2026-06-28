@@ -6,12 +6,15 @@ and generates recommendations based on progress.
 """
 
 import json
+import logging
 from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from app.models.career import LearningRoadmap, SkillGapAnalysis, CareerReadiness
 from app.models.intelligence import LearningProgress, SkillAnalytics
+
+logger = logging.getLogger(__name__)
 
 
 class LearningProgressTracker:
@@ -279,6 +282,7 @@ class LearningProgressTracker:
 
             self.db.commit()
         except Exception:
+            logger.debug("Failed to update roadmap progress for user %s", user_id)
             self.db.rollback()
 
     def _update_skill_analytics(self, user_id: int, skill_name: str):
@@ -308,6 +312,7 @@ class LearningProgressTracker:
 
             self.db.commit()
         except Exception:
+            logger.debug("Failed to update skill analytics for %s", skill_name)
             self.db.rollback()
 
     def _boost_skill_mastery(self, user_id: int, skill_name: str):
@@ -336,6 +341,7 @@ class LearningProgressTracker:
 
             self.db.commit()
         except Exception:
+            logger.debug("Failed to boost skill mastery for %s", skill_name)
             self.db.rollback()
 
     def _recalculate_readiness(self, user_id: int):
@@ -369,4 +375,5 @@ class LearningProgressTracker:
             readiness.overall_score = round(min(100, overall), 1)
             self.db.commit()
         except Exception:
+            logger.debug("Failed to recalculate readiness for user %s", user_id)
             self.db.rollback()

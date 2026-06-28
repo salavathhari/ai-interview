@@ -259,28 +259,33 @@ class _RoadmapCache:
         self._cache: Dict[tuple, tuple] = {}  # key -> (result, timestamp)
         self._max_size = max_size
         self._ttl = ttl_seconds
+        import threading
+        self._lock = threading.Lock()
 
     def get(self, key: tuple):
         import time
-        if key in self._cache:
-            result, ts = self._cache[key]
-            if time.time() - ts < self._ttl:
-                return result
-            del self._cache[key]
-        return None
+        with self._lock:
+            if key in self._cache:
+                result, ts = self._cache[key]
+                if time.time() - ts < self._ttl:
+                    return result
+                del self._cache[key]
+            return None
 
     def set(self, key: tuple, result):
         import time
-        if len(self._cache) >= self._max_size:
-            oldest = min(self._cache, key=lambda k: self._cache[k][1])
-            del self._cache[oldest]
-        self._cache[key] = (result, time.time())
+        with self._lock:
+            if len(self._cache) >= self._max_size:
+                oldest = min(self._cache, key=lambda k: self._cache[k][1])
+                del self._cache[oldest]
+            self._cache[key] = (result, time.time())
 
     def invalidate(self, user_id: int):
         """Invalidate all entries for a user."""
-        to_delete = [k for k in self._cache if k[0] == user_id]
-        for k in to_delete:
-            del self._cache[k]
+        with self._lock:
+            to_delete = [k for k in self._cache if k[0] == user_id]
+            for k in to_delete:
+                del self._cache[k]
 
 
 _roadmap_cache = _RoadmapCache()
@@ -715,6 +720,6 @@ class EnhancedRoadmapGenerator:
             try:
                 p = json.loads(val)
                 return p if isinstance(p, list) else []
-            except:
+            except (json.JSONDecodeError, KeyError, TypeError):
                 return []
         return []

@@ -305,7 +305,7 @@ def _compile_java(src_path: str, out_dir: str) -> Optional[str]:
     except subprocess.TimeoutExpired:
         return "Compilation timed out."
     except Exception as e:
-        return str(e)
+        return "Java compilation failed."
 
 
 def _compile_cpp(src_path: str, out_path: str) -> Optional[str]:
@@ -324,14 +324,14 @@ def _compile_cpp(src_path: str, out_path: str) -> Optional[str]:
     except subprocess.TimeoutExpired:
         return "Compilation timed out."
     except Exception as e:
-        return str(e)
+        return "C++ compilation failed."
 
 
 def _compile_typescript(src_path: str, js_out_path: str) -> Optional[str]:
     """Compile TypeScript to JavaScript. Returns error string or None on success."""
     tsc = shutil.which("tsc")
     if not tsc:
-        return "TypeScript compiler (tsc) not found on system PATH. Install with: npm i -g typescript"
+        return "TypeScript compiler (tsc) not found on system PATH."
     try:
         proc = subprocess.run(
             [tsc, "--target", "ES2020", "--module", "commonjs", "--outDir",
@@ -344,16 +344,23 @@ def _compile_typescript(src_path: str, js_out_path: str) -> Optional[str]:
     except subprocess.TimeoutExpired:
         return "TypeScript compilation timed out."
     except Exception as e:
-        return str(e)
+        return "TypeScript compilation failed."
 
 
 # ─── Subprocess Runner ────────────────────────────────────────────────────────
 
 def _run_subprocess(cmd: List[str], stdin_input: str, timeout: int) -> Dict:
     """Run a command, capturing stdout/stderr, with timeout. Estimates memory via resource module on Unix."""
-    import resource
+    try:
+        import resource
+        _has_resource = True
+    except ImportError:
+        _has_resource = False
+
     try:
         def _set_limits():
+            if not _has_resource:
+                return
             try:
                 resource.setrlimit(resource.RLIMIT_AS, (MEMORY_LIMIT_KB * 1024, MEMORY_LIMIT_KB * 1024))
             except (ValueError, OSError):
@@ -366,7 +373,7 @@ def _run_subprocess(cmd: List[str], stdin_input: str, timeout: int) -> Dict:
             text=True,
             timeout=timeout,
             env={"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", "/tmp"), "TMPDIR": os.environ.get("TMPDIR", "/tmp")},
-            preexec_fn=_set_limits if hasattr(resource, "setrlimit") else None,
+            preexec_fn=_set_limits if _has_resource and hasattr(resource, "setrlimit") else None,
         )
 
         # Try to estimate memory from /proc/self/status on Linux
@@ -431,9 +438,10 @@ def _run_docker_python(src_path: str, stdin_input: str, timeout: int) -> Dict:
         }
     except subprocess.TimeoutExpired:
         return {"returncode": 1, "stdout": "", "stderr": "", "timed_out": True, "memory_kb": 0}
-    except Exception:
-        # Docker failed — fall back to local
-        return _run_subprocess([sys.executable, src_path], stdin_input, timeout)
+    except Exception as e:
+        # Docker failed — do NOT silently fall back to local execution
+        # This would bypass the sandbox security model.
+        return {"returncode": 1, "stdout": "", "stderr": f"Docker execution failed: {type(e).__name__}. Code execution sandbox is unavailable.", "timed_out": False, "memory_kb": 0}
 
 
 # ─── Utilities ────────────────────────────────────────────────────────────────

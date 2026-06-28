@@ -160,10 +160,10 @@ const AdminSettingsPage: React.FC = () => {
           <button className="admin-btn outline" style={{ color: 'var(--admin-danger)', borderColor: 'rgba(239, 68, 68, 0.5)' }}>Reset Quotas</button>
         </div>
       </div>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spin { animation: spin 1s linear infinite; }
-      `}} />
+      `}</style>
     </div>
   );
 };

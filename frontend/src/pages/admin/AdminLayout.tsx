@@ -18,7 +18,7 @@ import {
   Search
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { API_BASE_URL } from '../../services/api';
+import { API_BASE_URL, getAccessToken } from '../../services/api';
 import './admin.css';
 
 const AdminLayout: React.FC = () => {
@@ -30,7 +30,7 @@ const AdminLayout: React.FC = () => {
     try {
       await fetch(`${API_BASE_URL}/auth/logout`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        headers: { 'Authorization': `Bearer ${getAccessToken()}` },
       }).catch(() => {});
     } finally {
       logout();

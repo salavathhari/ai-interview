@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { interviewApi, API_BASE_URL } from '../services/api';
+import { interviewApi, API_BASE_URL, getAccessToken } from '../services/api';
 import './InterviewPage.css';
 
 type InterviewStatus = 'connecting' | 'answering' | 'evaluating' | 'feedback' | 'finished';
@@ -219,7 +219,7 @@ const InterviewPage: React.FC = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = getAccessToken();
         if (!token) {
             navigate('/login');
             return;
@@ -311,7 +311,7 @@ const InterviewPage: React.FC = () => {
                     if (statusRef.current !== 'finished') {
                         console.log(`Reconnecting attempt ${reconnectAttemptsRef.current}...`);
                         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-                        const token = localStorage.getItem('token');
+                        const token = getAccessToken();
                         if (token) {
                             const wsHost = API_BASE_URL.replace(/^https?:\/\//, '');
                             const newWs = new WebSocket(`${protocol}//${wsHost}/ws/interview/${sessionId}?token=${token}`);

@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc, and_, case
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import traceback
 import json
 
 from app.database import get_db
@@ -925,16 +926,26 @@ def get_analytics_dashboard(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Full analytics dashboard — returns all sections."""
-    interview = _get_interview_analytics(db, current_user.id)
-    coding = _get_coding_analytics(db, current_user.id)
-    skills = _get_skill_analytics(db, current_user.id)
-    learning = _get_learning_analytics(db, current_user.id)
-    career = _get_career_analytics(db, current_user.id)
-    topics = _get_topic_analytics(db, current_user.id)
-    history = _get_historical_trends(db, current_user.id)
-    predictions = _get_predictions(db, current_user.id)
-    recommendations = _get_recommendations(db, current_user.id)
+    """Full analytics dashboard — returns all sections. Each section is isolated so a crash in one doesn't break the whole dashboard."""
+    _empty_trend = lambda: {"average_score": 0.0, "total_interviews": 0, "weak_topics": [], "strong_topics": [], "progress_trends": [], "role_distribution": {}, "avg_accuracy": 0.0, "avg_communication": 0.0, "avg_confidence": 0.0, "avg_completeness": 0.0, "average_response_speed": 0.0, "hesitation_score": 0.0, "pressure_handling": 100.0, "confidence_estimation": 0.0, "improvement_rate": 0.0}
+
+    def _safe(name, fn, *args):
+        try:
+            return fn(*args)
+        except Exception as e:
+            print(f"[ANALYTICS] {name} failed for user {current_user.id}: {e}")
+            traceback.print_exc()
+            return None
+
+    interview = _safe("interview", _get_interview_analytics, db, current_user.id) or _empty_trend()
+    coding = _safe("coding", _get_coding_analytics, db, current_user.id)
+    skills = _safe("skills", _get_skill_analytics, db, current_user.id)
+    learning = _safe("learning", _get_learning_analytics, db, current_user.id)
+    career = _safe("career", _get_career_analytics, db, current_user.id)
+    topics = _safe("topics", _get_topic_analytics, db, current_user.id)
+    history = _safe("history", _get_historical_trends, db, current_user.id)
+    predictions = _safe("predictions", _get_predictions, db, current_user.id)
+    recommendations = _safe("recommendations", _get_recommendations, db, current_user.id)
 
     return AnalyticsResponse(
         **interview,

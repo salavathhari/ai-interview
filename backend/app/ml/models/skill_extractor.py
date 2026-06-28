@@ -61,7 +61,12 @@ class SkillExtractor:
                 cls._skill_embeddings = {"skills": [], "embeddings": []}
                 return
             import numpy as np
-            embeddings = Embedder.encode_batch(all_skills)
+            try:
+                embeddings = Embedder.encode_batch(all_skills)
+            except RuntimeError:
+                # Embedding model unavailable — skip semantic matching
+                cls._skill_embeddings = {"skills": all_skills, "embeddings": np.array([])}
+                return
             cls._skill_embeddings = {
                 "skills": all_skills,
                 "embeddings": embeddings,
@@ -98,7 +103,10 @@ class SkillExtractor:
         base_result = cls.extract(resume_text)
         cls._build_skill_embeddings()
         import numpy as np
-        resume_embedding = Embedder.encode(resume_text)
+        try:
+            resume_embedding = Embedder.encode(resume_text)
+        except RuntimeError:
+            return base_result
         embeddings_data = cls._skill_embeddings
         if not embeddings_data["skills"]:
             return base_result

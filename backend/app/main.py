@@ -38,8 +38,14 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.core.rate_limit import limiter
+from app.auth.utils import CSRF_COOKIE_NAME
 
 import traceback
+
+
+def _is_production() -> bool:
+    import os
+    return os.getenv("ENVIRONMENT", "development").lower() == "production"
 
 Base.metadata.create_all(bind=engine)
 init_models()
@@ -57,19 +63,32 @@ allowed_origins = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
     "https://ai-interview-frontend.up.railway.app",
-    "https://*.up.railway.app",
-    "https://*.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.(up\.railway\.app|vercel\.app)$",
+    allow_origin_regex=r"https://(ai-interview-frontend\.up\.railway\.app|.*\.vercel\.app)$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     max_age=3600,
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/ws/"):
+        return response
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if _is_production():
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' wss:"
+    return response
 
 
 @app.middleware("http")
@@ -79,21 +98,53 @@ async def add_monitoring(request: Request, call_next):
         return await call_next(request)
     return await monitoring_middleware(request, call_next)
 
-# Explicit OPTIONS handler — guarantees all preflight requests return 200
-@app.options("/{full_path:path}")
-async def options_handler(full_path: str):
-    return JSONResponse(content={}, status_code=200)
+# #9: CSRF validation middleware — double-submit cookie pattern
+# Validates X-CSRF-Token header matches the csrf_token cookie on state-changing requests.
+@app.middleware("http")
+async def csrf_protect(request: Request, call_next):
+    # Skip CSRF for safe methods, auth endpoints (login/signup set the cookie),
+    # and WebSocket connections
+    if request.method in ("GET", "HEAD", "OPTIONS"):
+        return await call_next(request)
+    if request.url.path.startswith("/ws/"):
+        return await call_next(request)
+    if request.url.path.startswith("/auth/"):
+        return await call_next(request)
+
+    # Read CSRF token from cookie
+    cookie_csrf = request.cookies.get(CSRF_COOKIE_NAME)
+    # Read CSRF token from header
+    header_csrf = request.headers.get("X-CSRF-Token")
+
+    # If a CSRF cookie exists, the header must match (double-submit pattern)
+    if cookie_csrf:
+        if not header_csrf or cookie_csrf != header_csrf:
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "CSRF token mismatch"},
+            )
+
+    return await call_next(request)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    # #8: Log the full error server-side only — never expose to clients
     print(f"GLOBAL ERROR: {exc}")
     traceback.print_exc()
-    # Include Access-Control-Allow-Origin so browser can surface the error to the client
-    origin = request.headers.get("origin") or "*"
+    # Return a generic error message without leaking internals
+    # Include CORS headers directly since middleware may not wrap exception responses
+    origin = request.headers.get("origin", "")
+    allowed = origin in allowed_origins or any(
+        origin.endswith(suffix) for suffix in [".vercel.app"]
+    ) if origin else False
+    headers = {}
+    if allowed:
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
     return JSONResponse(
         status_code=500,
-        content={"message": "Internal Server Error", "detail": str(exc)},
-        headers={"Access-Control-Allow-Origin": origin},
+        content={"detail": "An internal error occurred. Please try again later."},
+        headers=headers,
     )
 
 app.include_router(auth_router)

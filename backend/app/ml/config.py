@@ -15,9 +15,12 @@ DATASETS_DIR = os.path.join(ML_ROOT, "datasets")
 EMBEDDING_CACHE_DIR = os.path.join(ML_ROOT, "embeddings", "cache")
 FAISS_INDEX_DIR = os.path.join(ML_ROOT, "embeddings", "indices")
 
-# Ensure directories exist
-for d in [MODELS_DIR, DATASETS_DIR, EMBEDDING_CACHE_DIR, FAISS_INDEX_DIR]:
-    os.makedirs(d, exist_ok=True)
+# Ensure directories exist (safe in read-only containers)
+try:
+    for d in [MODELS_DIR, DATASETS_DIR, EMBEDDING_CACHE_DIR, FAISS_INDEX_DIR]:
+        os.makedirs(d, exist_ok=True)
+except OSError:
+    pass
 
 # Device
 DEVICE = "cuda" if _HAS_TORCH and torch.cuda.is_available() else "cpu"

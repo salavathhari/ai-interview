@@ -2,7 +2,7 @@ import { ArrowLeft, CheckCircle2, Download, Lightbulb, Target, TriangleAlert } f
 import type { CSSProperties } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { interviewApi } from '../services/api';
+import { interviewApi, getAccessToken } from '../services/api';
 import './ReportPage.css';
 
 type Question = {
@@ -54,7 +54,7 @@ const ReportPage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (!token) {
       navigate('/login');
       return;
@@ -207,8 +207,8 @@ const ReportPage = () => {
               <h2>Strengths</h2>
             </div>
             <ul>
-              {strengths.map((item) => (
-                <li key={item}>{item}</li>
+              {strengths.map((item, index) => (
+                <li key={`s-${index}`}>{item}</li>
               ))}
             </ul>
           </article>
@@ -219,8 +219,8 @@ const ReportPage = () => {
               <h2>Weaknesses</h2>
             </div>
             <ul>
-              {weaknesses.map((item) => (
-                <li key={item}>{item}</li>
+              {weaknesses.map((item, index) => (
+                <li key={`w-${index}`}>{item}</li>
               ))}
             </ul>
           </article>
@@ -232,8 +232,8 @@ const ReportPage = () => {
             <h2>AI Suggestions</h2>
           </div>
           <div className="roadmap-list">
-            {roadmap.map((item, index) => (
-              <article key={item}>
+              {roadmap.map((item, index) => (
+                <article key={`r-${index}`}>
                 <span>{index + 1}</span>
                 <p>{item}</p>
               </article>

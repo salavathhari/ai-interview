@@ -14,18 +14,18 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class AIService:
-    STOP_WORDS = {
+    STOP_WORDS = frozenset({
         "a", "an", "and", "are", "as", "at", "be", "between", "by", "can", "do", "does",
         "for", "from", "have", "how", "i", "in", "is", "it", "of", "on", "or", "the",
         "their", "this", "to", "what", "when", "with", "would", "you", "your"
-    }
+    })
 
-    TECHNICAL_SIGNALS = {
+    TECHNICAL_SIGNALS = frozenset({
         "api", "architecture", "cache", "database", "deploy", "design", "docker", "error",
         "index", "latency", "load", "memory", "monitoring", "optimize", "performance",
         "query", "queue", "react", "scalability", "schema", "security", "service", "sql",
         "system", "test", "tradeoff", "transaction"
-    }
+    })
 
     @staticmethod
     def _summarize_prompt(text: str, max_chars: int = 2000) -> str:

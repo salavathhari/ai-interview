@@ -2,14 +2,15 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
+from app.core.encryption import EncryptedString
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    name = Column(EncryptedString(200))
+    email = Column(String(320), unique=True, index=True)  # NOT encrypted — used for login lookups
+    hashed_password = Column(String(500))  # NOT encrypted — already hashed
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     is_recruiter = Column(Boolean, default=False)

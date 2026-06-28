@@ -35,8 +35,8 @@ class ResumeAnalysis(Base):
     __tablename__ = "resume_analyses"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    resume_id = Column(Integer, ForeignKey("resumes.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    resume_id = Column(Integer, ForeignKey("resumes.id"), index=True)
     job_description_id = Column(Integer, ForeignKey("job_descriptions.id"), nullable=True)
     summary = Column(Text, nullable=True)  # AI-generated summary
     detected_skills = Column(Text)  # JSON string
@@ -65,7 +65,7 @@ class SkillGapAnalysis(Base):
     __tablename__ = "skill_gap_analyses"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     resume_analysis_id = Column(Integer, ForeignKey("resume_analyses.id"))
     job_description_id = Column(Integer, ForeignKey("job_descriptions.id"))
     matched_skills = Column(Text)  # JSON string
@@ -85,7 +85,7 @@ class LearningRoadmap(Base):
     __tablename__ = "learning_roadmaps"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     skill_gap_id = Column(Integer, ForeignKey("skill_gap_analyses.id"), nullable=True)
     roadmap_items = Column(Text)  # JSON string - legacy flat topic list
     phases = Column(Text)  # JSON string - structured phase list with topics, projects, etc.
@@ -117,7 +117,7 @@ class OptimizedResume(Base):
     __tablename__ = "optimized_resumes"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     resume_analysis_id = Column(Integer, ForeignKey("resume_analyses.id"))
     optimized_text = Column(Text)  # full optimized resume text
     improvements = Column(Text)  # JSON string - list of improvements made
@@ -138,7 +138,7 @@ class CareerReadiness(Base):
     __tablename__ = "career_readiness"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
     resume_analysis_id = Column(Integer, ForeignKey("resume_analyses.id"), nullable=True)
     skill_gap_id = Column(Integer, ForeignKey("skill_gap_analyses.id"), nullable=True)
     resume_match_score = Column(Float, nullable=True)

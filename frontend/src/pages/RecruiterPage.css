@@ -1,6 +1,6 @@
 .recruiter-shell {
   min-height: 100svh;
-  background: #0f1115;
+  background: var(--bg);
   color: #f8fafc;
   padding: 28px;
   font-family: Inter, Geist, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -39,7 +39,7 @@
 .create-role-button,
 .create-role-panel button,
 .table-action {
-  border: 1px solid #2b3442;
+  border: 1px solid var(--border);
   border-radius: 7px;
   background: #161b22;
   color: #f8fafc;
@@ -71,8 +71,8 @@
 }
 
 .create-role-panel {
-  background: #151922;
-  border: 1px solid #2b3442;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px;
   margin-bottom: 16px;
@@ -94,9 +94,9 @@
 .create-role-panel textarea,
 .candidate-search input {
   width: 100%;
-  border: 1px solid #2b3442;
+  border: 1px solid var(--border);
   border-radius: 7px;
-  background: #0f1115;
+  background: var(--bg);
   color: #f8fafc;
   padding: 10px 11px;
   outline: none;
@@ -125,8 +125,8 @@
 .recruiter-metrics article,
 .candidate-panel,
 .insight-panel {
-  background: #151922;
-  border: 1px solid #2b3442;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
 }
@@ -192,8 +192,8 @@
 
 .candidate-search {
   min-width: 260px;
-  border: 1px solid #2b3442;
-  background: #0f1115;
+  border: 1px solid var(--border);
+  background: var(--bg);
   border-radius: 7px;
   padding: 0 10px;
   display: flex;
@@ -228,13 +228,13 @@
   letter-spacing: 0.08em;
   text-align: left;
   padding: 12px 10px;
-  border-bottom: 1px solid #2b3442;
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
 
 .candidate-table td {
   padding: 14px 10px;
-  border-bottom: 1px solid #242b36;
+  border-bottom: 1px solid var(--surface);
   color: #d7dde8;
   white-space: nowrap;
 }
@@ -244,7 +244,7 @@
 }
 
 .candidate-table tbody tr:hover {
-  background: #191f29;
+  background: var(--surface);
 }
 
 .candidate-cell {
@@ -279,7 +279,7 @@
 
 .candidate-status {
   display: inline-flex;
-  border: 1px solid #364152;
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 4px 9px;
   background: #111722;
@@ -361,7 +361,7 @@
 }
 
 .job-list article {
-  border: 1px solid #242b36;
+  border: 1px solid var(--surface);
   border-radius: 8px;
   padding: 12px;
   background: #111722;
@@ -380,7 +380,7 @@
 
 .recruiter-skeleton {
   border-radius: 10px;
-  background: linear-gradient(90deg, #151922, #1e2632, #151922);
+  background: linear-gradient(90deg, var(--bg), #1e2632, var(--bg));
   background-size: 200% 100%;
   animation: recruiterSkeleton 1.4s ease-in-out infinite;
 }

@@ -128,10 +128,10 @@ const AdminSystemHealthPage: React.FC = () => {
         ))}
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spin { animation: spin 1s linear infinite; }
-      `}} />
+      `}</style>
     </div>
   );
 };

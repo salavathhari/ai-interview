@@ -1,0 +1,155 @@
+/* ─── Shared Component Styles ─────────────────────────────────────────────── */
+/* Extracted from career pages to eliminate duplication.
+   Import this file in index.css or individual page components. */
+
+/* ── Career Page Header ── */
+.career-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.career-header h1 { font-size: 32px; margin-bottom: 6px; }
+.career-header p { color: var(--muted); font-size: 14px; margin: 0; }
+
+/* ── Button Base (shared by .solid and .ghost) ── */
+.solid,
+.ghost {
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+.solid {
+  background: var(--accent-strong);
+  color: #fff;
+}
+.solid:hover { filter: brightness(0.9); }
+.solid:disabled { opacity: 0.6; cursor: not-allowed; }
+.ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+.ghost:hover { background: var(--bg); }
+
+/* ── Panel (card container) ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.panel:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Panel Header ── */
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+.panel-header p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ── Header Actions ── */
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Loading State ── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 120px 0;
+}
+
+/* ── Spinner ── */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-strong);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error Banner ── */
+.error-banner {
+  background: var(--danger-bg, #fef2f2);
+  border: 1px solid var(--danger-border, #fecaca);
+  color: var(--danger-text, #dc2626);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* ── Skill Tags ── */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.skill-tag {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── Progress Bar (standard) ── */
+.progress-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+  background: var(--accent-strong);
+}
+
+/* ── Responsive: career header ── */
+@media (max-width: 768px) {
+  .career-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

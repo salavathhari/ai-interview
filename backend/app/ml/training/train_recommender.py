@@ -8,10 +8,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, accuracy_score
 from xgboost import XGBClassifier
 
-start = time.time()
+# #16: Use config paths instead of hardcoded Windows paths
+from app.ml.config import DATASETS_DIR, MODELS_DIR
 
-DATASETS_DIR = r'C:\Users\salav\OneDrive\Desktop\ai-interview-platform\backend\app\ml\datasets'
-MODELS_DIR = r'C:\Users\salav\OneDrive\Desktop\ai-interview-platform\backend\app\ml\models\saved'
+start = time.time()
 
 CATEGORY_MAP = {
     'INFORMATION-TECHNOLOGY': 'Software Engineer', 'ENGINEERING': 'Software Engineer',

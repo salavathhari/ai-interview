@@ -14,8 +14,8 @@ class MLCache:
         self._ttl = ttl_seconds
 
     def make_key(self, prefix: str, text: str, **kwargs) -> str:
-        raw = f"{prefix}:{text[:500]}:{sorted(kwargs.items())}"
-        return hashlib.md5(raw.encode()).hexdigest()
+        raw = f"{prefix}:{text}:{sorted(kwargs.items())}"
+        return hashlib.sha256(raw.encode()).hexdigest()
 
     def get(self, key: str) -> Optional[Any]:
         if key in self._cache:

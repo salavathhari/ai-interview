@@ -1,7 +1,7 @@
 .report-shell {
   min-height: 100svh;
-  background: #f4f6fa;
-  color: #182230;
+  background: var(--bg);
+  color: var(--ink);
   padding: 28px;
 }
 
@@ -15,12 +15,12 @@
 
 .back-button,
 .download-button {
-  border: 1px solid #cfd6e3;
+  border: 1px solid var(--border);
   border-radius: 6px;
   height: 40px;
   padding: 0 14px;
-  background: #fff;
-  color: #182230;
+  background: var(--surface);
+  color: var(--ink);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -29,9 +29,9 @@
 }
 
 .download-button {
-  background: #155eef;
-  border-color: #155eef;
-  color: #fff;
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--surface);
 }
 
 .download-button:disabled {
@@ -42,9 +42,9 @@
 .report-alert {
   max-width: 1120px;
   margin: 0 auto 14px;
-  border: 1px solid #fecaca;
-  background: #fff1f2;
-  color: #b42318;
+  border: 1px solid var(--danger-border, #fecaca);
+  background: var(--danger-bg, #fef2f2);
+  color: var(--danger);
   border-radius: 6px;
   padding: 10px 12px;
   font-size: 13px;
@@ -53,26 +53,26 @@
 .report-card {
   max-width: 1120px;
   margin: 0 auto;
-  background: #fff;
-  border: 1px solid #dce3ee;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 18px 40px rgba(16, 24, 40, 0.08);
+  box-shadow: 0 18px 40px var(--shadow);
   overflow: hidden;
 }
 
 .report-hero {
   padding: 32px;
-  border-bottom: 1px solid #e4e8f0;
+  border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 28px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--surface) 100%);
 }
 
 .report-eyebrow {
   margin: 0 0 8px;
-  color: #667085;
+  color: var(--muted);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -86,7 +86,7 @@
 }
 
 .report-hero span {
-  color: #667085;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -96,8 +96,8 @@
   aspect-ratio: 1;
   border-radius: 50%;
   background:
-    radial-gradient(circle at center, #fff 0 58%, transparent 59%),
-    conic-gradient(#155eef calc(var(--score) * 1%), #e6ebf2 0);
+    radial-gradient(circle at center, var(--surface) 0 58%, transparent 59%),
+    conic-gradient(var(--accent-strong) calc(var(--score) * 1%), #e6ebf2 0);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -108,12 +108,12 @@
   width: 122px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface);
   display: grid;
   place-items: center;
   align-content: center;
   gap: 4px;
-  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
+  box-shadow: 0 10px 24px var(--shadow);
 }
 
 .score-circle strong {
@@ -123,7 +123,7 @@
 }
 
 .score-circle span {
-  color: #667085;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
 }
@@ -131,14 +131,14 @@
 .summary-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-bottom: 1px solid #e4e8f0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .summary-strip article {
   padding: 18px 24px;
   display: grid;
   gap: 6px;
-  border-right: 1px solid #e4e8f0;
+  border-right: 1px solid var(--border-light);
 }
 
 .summary-strip article:last-child {
@@ -146,11 +146,11 @@
 }
 
 .summary-strip svg {
-  color: #155eef;
+  color: var(--accent-strong);
 }
 
 .summary-strip span {
-  color: #667085;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -169,7 +169,7 @@
 }
 
 .report-summary {
-  border-bottom: 1px solid #e4e8f0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .report-summary h2,
@@ -189,11 +189,11 @@
 .report-columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-bottom: 1px solid #e4e8f0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .report-section:first-child {
-  border-right: 1px solid #e4e8f0;
+  border-right: 1px solid var(--border-light);
 }
 
 .section-heading {
@@ -204,15 +204,15 @@
 }
 
 .strengths .section-heading svg {
-  color: #12b76a;
+  color: var(--success);
 }
 
 .weaknesses .section-heading svg {
-  color: #f79009;
+  color: var(--warning);
 }
 
 .roadmap-section .section-heading svg {
-  color: #155eef;
+  color: var(--accent-strong);
 }
 
 .report-section ul {
@@ -241,11 +241,11 @@
 }
 
 .strengths li::before {
-  background: #12b76a;
+  background: var(--success);
 }
 
 .weaknesses li::before {
-  background: #f79009;
+  background: var(--warning);
 }
 
 .roadmap-list {
@@ -271,7 +271,7 @@
   display: grid;
   place-items: center;
   background: #e8f1ff;
-  color: #155eef;
+  color: var(--accent-strong);
   font-weight: 800;
 }
 
@@ -284,8 +284,8 @@
   min-height: 60svh;
   display: grid;
   place-items: center;
-  background: #f4f6fa;
-  color: #667085;
+  background: var(--bg);
+  color: var(--muted);
   font-weight: 700;
 }
 
@@ -315,6 +315,6 @@
   }
 
   .summary-strip article {
-    border-bottom: 1px solid #e4e8f0;
+    border-bottom: 1px solid var(--border-light);
   }
 }

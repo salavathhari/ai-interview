@@ -1,7 +1,8 @@
+import logging
 import os
+import re
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
@@ -24,7 +25,9 @@ else:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+# #18: Use modern DeclarativeBase instead of deprecated declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 # Import all models to ensure they are registered with Base.metadata
 def init_models():
@@ -56,9 +59,44 @@ def init_models():
     _run_sqlite_migrations()
 
 
+_SQLITE_MIGRATIONS = {
+    "interview_sessions": [
+        ("job_description_id", "INTEGER REFERENCES job_descriptions(id)"),
+    ],
+    "career_readiness": [
+        ("project_score", "REAL"), ("consistency_score", "REAL"),
+        ("learning_score", "REAL"), ("role_match_score", "REAL"),
+        ("company_match_score", "REAL"), ("score_breakdown", "TEXT"),
+        ("target_role", "TEXT"), ("target_company", "TEXT"), ("updated_at", "DATETIME"),
+    ],
+    "career_readiness_history": [
+        ("trigger_event", "TEXT"), ("learning_score", "REAL"),
+    ],
+    "learning_roadmaps": [
+        ("phases", "TEXT"), ("current_phase_index", "INTEGER"),
+        ("daily_plan", "TEXT"), ("mentor_tips", "TEXT"),
+        ("skill_gap_summary", "TEXT"), ("career_goal", "TEXT"),
+        ("target_role", "TEXT"), ("target_company", "TEXT"),
+        ("current_readiness", "REAL"), ("target_readiness", "REAL"),
+        ("interview_readiness", "REAL"), ("coding_readiness", "REAL"),
+        ("version", "INTEGER"), ("updated_at", "DATETIME"),
+    ],
+}
+
+_VALID_IDENTIFIER_RE = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+_VALID_TYPE_RE = re.compile(r"^(INTEGER|REAL|TEXT|DATETIME|BOOLEAN)$")
+
+
+def _validate_identifier(name: str) -> bool:
+    return bool(_VALID_IDENTIFIER_RE.match(name))
+
+
+def _validate_column_type(col_type: str) -> bool:
+    return bool(_VALID_TYPE_RE.match(col_type))
+
+
 def _run_sqlite_migrations():
     """Run SQLite-specific column migrations that create_all() doesn't handle."""
-    import sqlite3
     db_url = str(engine.url)
     if not db_url.startswith("sqlite"):
         return
@@ -67,64 +105,24 @@ def _run_sqlite_migrations():
         conn = engine.raw_connection()
         cursor = conn.cursor()
 
-        # Migrate interview_sessions
-        cursor.execute("PRAGMA table_info(interview_sessions)")
-        columns = {row[1] for row in cursor.fetchall()}
-        if "job_description_id" not in columns:
-            try:
-                cursor.execute("ALTER TABLE interview_sessions ADD COLUMN job_description_id INTEGER REFERENCES job_descriptions(id)")
-            except Exception:
-                pass
-
-        # Migrate career_readiness
-        cursor.execute("PRAGMA table_info(career_readiness)")
-        columns = {row[1] for row in cursor.fetchall()}
-        for col_name, col_type in [
-            ("project_score", "REAL"), ("consistency_score", "REAL"),
-            ("learning_score", "REAL"), ("role_match_score", "REAL"),
-            ("company_match_score", "REAL"), ("score_breakdown", "TEXT"),
-            ("target_role", "TEXT"), ("target_company", "TEXT"), ("updated_at", "DATETIME"),
-        ]:
-            if col_name not in columns:
+        for table, migrations in _SQLITE_MIGRATIONS.items():
+            cursor.execute(f"PRAGMA table_info({table})")
+            columns = {row[1] for row in cursor.fetchall()}
+            for col_name, col_type in migrations:
+                if col_name in columns:
+                    continue
+                if not _validate_identifier(col_name) or not _validate_column_type(col_type):
+                    logging.warning("Skipping invalid migration: %s.%s %s", table, col_name, col_type)
+                    continue
                 try:
-                    cursor.execute(f"ALTER TABLE career_readiness ADD COLUMN {col_name} {col_type}")
-                except Exception:
-                    pass
-
-        # Migrate career_readiness_history
-        cursor.execute("PRAGMA table_info(career_readiness_history)")
-        columns = {row[1] for row in cursor.fetchall()}
-        for col_name, col_type in [
-            ("trigger_event", "TEXT"), ("learning_score", "REAL"),
-        ]:
-            if col_name not in columns:
-                try:
-                    cursor.execute(f"ALTER TABLE career_readiness_history ADD COLUMN {col_name} {col_type}")
-                except Exception:
-                    pass
-
-        # Migrate learning_roadmaps
-        cursor.execute("PRAGMA table_info(learning_roadmaps)")
-        columns = {row[1] for row in cursor.fetchall()}
-        for col_name, col_type in [
-            ("phases", "TEXT"), ("current_phase_index", "INTEGER"),
-            ("daily_plan", "TEXT"), ("mentor_tips", "TEXT"),
-            ("skill_gap_summary", "TEXT"), ("career_goal", "TEXT"),
-            ("target_role", "TEXT"), ("target_company", "TEXT"),
-            ("current_readiness", "REAL"), ("target_readiness", "REAL"),
-            ("interview_readiness", "REAL"), ("coding_readiness", "REAL"),
-            ("version", "INTEGER"), ("updated_at", "DATETIME"),
-        ]:
-            if col_name not in columns:
-                try:
-                    cursor.execute(f"ALTER TABLE learning_roadmaps ADD COLUMN {col_name} {col_type}")
-                except Exception:
-                    pass
+                    cursor.execute(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}")
+                except Exception as e:
+                    logging.debug("Migration skipped for %s.%s: %s", table, col_name, e)
 
         conn.commit()
         conn.close()
-    except Exception:
-        pass
+    except Exception as e:
+        logging.error("SQLite migration failed: %s", e)
 
 def get_db():
     db = SessionLocal()

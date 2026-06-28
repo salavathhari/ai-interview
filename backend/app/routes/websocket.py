@@ -10,6 +10,7 @@ from app.models.cheating_log import CheatingLog
 from app.models.interview_question_metric import InterviewQuestionMetric
 from app.models.career import JobDescription
 from app.services.ai_service import AIService
+from app.core.ws_encryption import session_keys, encrypt_message, decrypt_message
 import asyncio
 import base64
 import json
@@ -127,7 +128,7 @@ def timer_state_for_metric(metric: InterviewQuestionMetric) -> str:
     return "RUNNING"
 
 
-async def receive_interview_message(websocket: WebSocket, timeout_seconds: int | None) -> dict | None:
+async def receive_interview_message(websocket: WebSocket, timeout_seconds: int | None, session_id: int = None) -> dict | None:
     if timeout_seconds is not None and timeout_seconds <= 0:
         return None
     try:
@@ -135,7 +136,15 @@ async def receive_interview_message(websocket: WebSocket, timeout_seconds: int |
             data = await websocket.receive_text()
         else:
             data = await asyncio.wait_for(websocket.receive_text(), timeout=timeout_seconds)
-        return json.loads(data)
+        msg = json.loads(data)
+        # E2E decryption: if client sends encrypted message, decrypt it
+        if msg.get("type") == "encrypted" and session_id and session_keys.has_key(session_id):
+            decrypted = decrypt_message(session_id, msg.get("data", ""))
+            if decrypted is None:
+                await websocket.send_json({"type": "error", "message": "Failed to decrypt message"})
+                return None
+            return decrypted
+        return msg
     except asyncio.TimeoutError:
         return None
 
@@ -187,7 +196,7 @@ async def interview_websocket(
             return
         user_id = user.id
     except Exception as e:
-        await websocket.send_json({"type": "error", "message": f"Token validation error: {str(e)}"})
+        await websocket.send_json({"type": "error", "message": "Token validation failed"})
         await websocket.close(code=4003)
         return
 
@@ -210,6 +219,9 @@ async def interview_websocket(
         session.status = "in-progress"
         db.commit()
 
+    # Generate E2E encryption key for this session
+    session_key_b64 = session_keys.generate_key(session_id)
+
     try:
         answered_count = db.query(Question).filter(
             Question.session_id == session_id,
@@ -221,6 +233,7 @@ async def interview_websocket(
                 "type": "restored",
                 "message": f"Restoring session from question {answered_count + 1}",
                 "answered_count": answered_count,
+                "session_key": session_key_b64,
             })
 
         for i in range(answered_count, TOTAL_QUESTIONS):
@@ -317,7 +330,7 @@ async def interview_websocket(
             was_auto_submitted = False
 
             while question.answer_text is None and user_answer is None and audio_base64 is None:
-                message = await receive_interview_message(websocket, metric_remaining_seconds(metric))
+                message = await receive_interview_message(websocket, metric_remaining_seconds(metric), session_id)
 
                 if message is None:
                     user_answer = ""
@@ -362,7 +375,7 @@ async def interview_websocket(
                     })
                     if i < TOTAL_QUESTIONS - 1:
                         while True:
-                            msg = await receive_interview_message(websocket, None)
+                            msg = await receive_interview_message(websocket, None, session_id)
                             if msg and msg.get("type") == "next_question":
                                 break
                     continue
@@ -377,7 +390,7 @@ async def interview_websocket(
                     db.commit()
                     await websocket.send_json({"type": "paused", "message": "Interview paused. Send 'resume' to continue."})
                     while True:
-                        msg = await receive_interview_message(websocket, None)
+                        msg = await receive_interview_message(websocket, None, session_id)
                         if msg and msg.get("type") == "resume":
                             resume_at = now_utc()
                             paused_seconds = (resume_at - paused_at).total_seconds()
@@ -450,7 +463,7 @@ async def interview_websocket(
 
             if i < TOTAL_QUESTIONS - 1:
                 while True:
-                    msg = await receive_interview_message(websocket, None)
+                    msg = await receive_interview_message(websocket, None, session_id)
                     if msg and msg.get("type") == "next_question":
                         break
 
@@ -518,6 +531,7 @@ async def interview_websocket(
         print(f"WebSocket error: {exc}")
         await websocket.send_json({"type": "error", "message": str(exc)})
     finally:
+        session_keys.remove_key(session_id)
         try:
             await websocket.close()
         except Exception:

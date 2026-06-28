@@ -4,12 +4,37 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:80
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true, // #6: Send cookies (httpOnly refresh token) with every request
 });
 
+// #6: Helper to read a cookie value by name
+function getCookie(name: string): string | null {
+  const match = document.cookie.split('; ').find(row => row.startsWith(`${name}=`));
+  return match ? match.split('=')[1] : null;
+}
+
+// #9: Helper to get CSRF token from cookie
+function getCsrfToken(): string | null {
+  return getCookie('csrf_token');
+}
+
+// #6: Helper to get access token from cookie first, then localStorage for migration
+export function getAccessToken(): string | null {
+  return getCookie('access_token') || localStorage.getItem('token');
+}
+
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // #6: Read access token from cookie first, fall back to localStorage for migration
+  const token = getCookie('access_token') || localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  // #9: Add CSRF token header for state-changing requests
+  if (['post', 'put', 'patch', 'delete'].includes(config.method || '')) {
+    const csrf = getCsrfToken();
+    if (csrf) {
+      config.headers['X-CSRF-Token'] = csrf;
+    }
   }
   return config;
 });
@@ -34,53 +59,53 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      const refreshToken = localStorage.getItem('refresh_token');
+      // #5: Read refresh token from cookie (httpOnly) — JS cannot read httpOnly cookies,
+      // so we send the request and let the browser include the cookie automatically.
+      // The backend reads the refresh token from the cookie.
 
-      if (refreshToken && !originalRequest._retry) {
-        if (isRefreshing) {
-          return new Promise<string>((resolve, reject) => {
-            failedQueue.push({ resolve, reject });
-          }).then(token => {
-            originalRequest.headers['Authorization'] = `Bearer ${token}`;
-            return api(originalRequest);
-          });
-        }
-
-        originalRequest._retry = true;
-        isRefreshing = true;
-
-        try {
-          const resp = await axios.post(`${API_BASE_URL}/auth/refresh`, null, {
-            params: { refresh_token: refreshToken },
-          });
-          const { access_token, refresh_token: newRefresh } = resp.data;
-          localStorage.setItem('token', access_token);
-          localStorage.setItem('refresh_token', newRefresh);
-          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-          processQueue(null, access_token);
-          originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+      if (isRefreshing) {
+        return new Promise<string>((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers['Authorization'] = `Bearer ${token}`;
           return api(originalRequest);
-        } catch (refreshError) {
-          processQueue(refreshError, null);
-          localStorage.removeItem('token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('role');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
-          return Promise.reject(refreshError);
-        } finally {
-          isRefreshing = false;
-        }
+        });
       }
 
-      // No refresh token — clear and redirect
-      localStorage.removeItem('token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('role');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // #5: Send empty body — backend reads refresh_token from httpOnly cookie
+        const resp = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+          withCredentials: true,
+        });
+        const { access_token } = resp.data;
+        // #6: Access token returned in response body — store in memory via cookie
+        document.cookie = `access_token=${access_token}; path=/; SameSite=Lax`;
+        // Also update localStorage for migration compatibility
+        localStorage.setItem('token', access_token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+        processQueue(null, access_token);
+        originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // #6: Clear all token storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('user');
+        document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; httponly;';
+        document.cookie = 'csrf_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
 
+    // For non-401 errors, just reject — don't clear auth or redirect to login
     return Promise.reject(error);
   }
 );
@@ -102,8 +127,13 @@ export const resumeApi = {
     return new Promise<any>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', `${API_BASE_URL}/resumes/upload`);
-      const token = localStorage.getItem('token');
+      // #6: Read token from cookie first, fall back to localStorage
+      const token = getCookie('access_token') || localStorage.getItem('token');
       if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      // #9: Add CSRF header
+      const csrf = getCsrfToken();
+      if (csrf) xhr.setRequestHeader('X-CSRF-Token', csrf);
+      xhr.withCredentials = true;
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable && onProgress) {
           onProgress(Math.round((e.loaded / e.total) * 100));
@@ -193,8 +223,13 @@ export const careerApi = {
     return new Promise<any>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', `${API_BASE_URL}/career/job-description/upload`);
-      const token = localStorage.getItem('token');
+      // #6: Read token from cookie first, fall back to localStorage
+      const token = getCookie('access_token') || localStorage.getItem('token');
       if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      // #9: Add CSRF header
+      const csrf = getCsrfToken();
+      if (csrf) xhr.setRequestHeader('X-CSRF-Token', csrf);
+      xhr.withCredentials = true;
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable && onProgress) {
           onProgress(Math.round((e.loaded / e.total) * 100));

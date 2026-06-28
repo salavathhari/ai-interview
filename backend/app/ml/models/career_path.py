@@ -81,12 +81,19 @@ class CareerPathEngine:
     def _find_closest_role(cls, role: str) -> str:
         role_lower = role.lower()
         best_match = ""
-        best_score = 0
-        for path_role in cls._paths:
-            embedding_a = Embedder.encode(role_lower)
-            embedding_b = Embedder.encode(path_role.lower())
-            score = Embedder.similarity(embedding_a, embedding_b)
-            if score > best_score:
-                best_score = score
-                best_match = path_role
+        try:
+            all_roles = [role_lower] + [r.lower() for r in cls._paths]
+            all_embeddings = Embedder.encode_batch(all_roles)
+            role_embedding = all_embeddings[0:1]
+            path_embeddings = all_embeddings[1:]
+            scores = Embedder.cosine_similarities(role_embedding, path_embeddings)
+            best_idx = int(np.argmax(scores))
+            best_score = float(scores[best_idx])
+            if best_score > 0:
+                best_match = list(cls._paths.keys())[best_idx]
+        except (RuntimeError, ValueError, IndexError):
+            for path_role in cls._paths:
+                if role_lower in path_role.lower() or path_role.lower() in role_lower:
+                    best_match = path_role
+                    break
         return best_match

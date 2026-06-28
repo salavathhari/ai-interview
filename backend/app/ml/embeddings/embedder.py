@@ -3,17 +3,21 @@
 import os
 import hashlib
 import json
+import logging
 from functools import lru_cache
 from typing import Optional
 import numpy as np
 
 from app.ml.config import EMBEDDING_MODEL_NAME, EMBEDDING_DIMENSION, EMBEDDING_CACHE_DIR, DEVICE, MAX_EMBEDDING_CACHE_SIZE
 
+logger = logging.getLogger(__name__)
+
 
 class Embedder:
     """Wrapper around Sentence Transformers with caching."""
 
     _model = None
+    _warned = False
 
     @classmethod
     def _get_model(cls):
@@ -22,7 +26,7 @@ class Embedder:
                 from sentence_transformers import SentenceTransformer
                 cls._model = SentenceTransformer(EMBEDDING_MODEL_NAME, device=DEVICE)
             except Exception as e:
-                print(f"[ML] Failed to load embedding model: {e}")
+                logger.warning(f"[ML] Failed to load embedding model: {e}")
                 cls._model = None
         return cls._model
 
@@ -30,7 +34,11 @@ class Embedder:
     def encode(cls, text: str) -> np.ndarray:
         model = cls._get_model()
         if model is None:
-            return np.random.rand(EMBEDDING_DIMENSION).astype(np.float32)
+            # #20: Raise error instead of returning random vectors that silently corrupt ML results
+            raise RuntimeError(
+                "Embedding model is unavailable. Install sentence-transformers and torch, "
+                "or check that the model 'all-MiniLM-L6-v2' can be loaded."
+            )
         embedding = model.encode(text, convert_to_numpy=True, show_progress_bar=False)
         return embedding.astype(np.float32)
 
@@ -38,7 +46,11 @@ class Embedder:
     def encode_batch(cls, texts: list[str], batch_size: int = 32) -> np.ndarray:
         model = cls._get_model()
         if model is None:
-            return np.random.rand(len(texts), EMBEDDING_DIMENSION).astype(np.float32)
+            # #20: Raise error instead of returning random vectors that silently corrupt ML results
+            raise RuntimeError(
+                "Embedding model is unavailable. Install sentence-transformers and torch, "
+                "or check that the model 'all-MiniLM-L6-v2' can be loaded."
+            )
         embeddings = model.encode(
             texts, batch_size=batch_size, convert_to_numpy=True, show_progress_bar=False
         )

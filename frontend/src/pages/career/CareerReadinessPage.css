@@ -25,63 +25,6 @@
   margin: 0;
 }
 
-.header-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.solid,
-.ghost {
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.solid {
-  background: var(--accent-strong);
-  color: #fff;
-}
-
-.ghost {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--ink);
-}
-
-.error-banner {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 120px 0;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent-strong);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 .readiness-hero {
   display: flex;
   align-items: center;
@@ -163,35 +106,6 @@
   align-items: start;
 }
 
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: var(--shadow-soft);
-}
-
-.panel-header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.panel-header h2 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.panel-header p {
-  color: var(--muted);
-  font-size: 13px;
-  margin: 0;
-}
-
 .scores-breakdown h2 {
   font-size: 18px;
   margin-bottom: 16px;
@@ -229,19 +143,6 @@
 .score-bar-value {
   font-size: 14px;
   font-weight: 700;
-}
-
-.progress-bar-track {
-  height: 8px;
-  border-radius: 999px;
-  background: var(--border);
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.6s ease;
 }
 
 .priority-focus {
@@ -463,12 +364,6 @@
   font-size: 18px;
   margin-bottom: 16px;
   color: var(--ink);
-}
-
-.skill-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 .skill-tag {

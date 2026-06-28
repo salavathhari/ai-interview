@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { codingApi } from '../services/api';
+import { codingApi, getAccessToken } from '../services/api';
 import './CodingPage.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -148,7 +148,7 @@ const CodingPage = () => {
   // ─── Init ──────────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (!token) { navigate('/login'); return; }
 
     const init = async () => {

@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateT
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
+from app.core.encryption import EncryptedString, EncryptedText
 
 
 class Resume(Base):
@@ -11,18 +12,18 @@ class Resume(Base):
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
     filename = Column(String)
     file_path = Column(String)
-    extracted_text = Column(Text)
+    extracted_text = Column(Text)  # NOT encrypted — needed for ML processing
     skills = Column(String, nullable=True)
     content_hash = Column(String(32), nullable=True, index=True)
     version = Column(Integer, default=1)
     is_active = Column(Boolean, default=False, index=True)
-    parsed_name = Column(String, nullable=True)
-    parsed_email = Column(String, nullable=True)
-    parsed_phone = Column(String, nullable=True)
-    parsed_location = Column(String, nullable=True)
-    parsed_linkedin = Column(String, nullable=True)
-    parsed_github = Column(String, nullable=True)
-    parsed_portfolio = Column(String, nullable=True)
+    parsed_name = Column(EncryptedString(200), nullable=True)
+    parsed_email = Column(EncryptedString(320), nullable=True)
+    parsed_phone = Column(EncryptedString(50), nullable=True)
+    parsed_location = Column(EncryptedString(500), nullable=True)
+    parsed_linkedin = Column(EncryptedString(500), nullable=True)
+    parsed_github = Column(EncryptedString(500), nullable=True)
+    parsed_portfolio = Column(EncryptedString(500), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="resumes")
@@ -38,7 +39,7 @@ class ResumeVersion(Base):
     version_number = Column(Integer, nullable=False)
     filename = Column(String)
     file_path = Column(String)
-    extracted_text = Column(Text)
+    extracted_text = Column(Text)  # NOT encrypted — needed for ML processing
     skills = Column(String, nullable=True)
     content_hash = Column(String(32), nullable=True)
     change_reason = Column(String(255), nullable=True)

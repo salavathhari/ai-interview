@@ -210,7 +210,7 @@ async def upload_resume(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Could not save file: {str(e)}",
+            detail="Could not save file. Please try again later.",
         )
 
     try:
@@ -232,7 +232,7 @@ async def upload_resume(
             file_path.unlink()
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Could not extract text from document: {str(e)}",
+            detail="Could not extract text from document. Please check the file format.",
         )
 
     structured_fields = _extract_structured_fields(text)
@@ -253,6 +253,12 @@ async def upload_resume(
 
     content_hash = _compute_content_hash(text)
 
+    # Atomically deactivate all active resumes and insert the new one in one transaction
+    db.query(Resume).filter(
+        Resume.user_id == current_user.id,
+        Resume.is_active == True,
+    ).update({"is_active": False}, synchronize_session="fetch")
+
     new_resume = Resume(
         user_id=current_user.id,
         filename=file.filename,
@@ -270,12 +276,6 @@ async def upload_resume(
         parsed_github=structured_fields.get("github"),
         parsed_portfolio=structured_fields.get("portfolio"),
     )
-
-    db.query(Resume).filter(
-        Resume.user_id == current_user.id,
-        Resume.is_active == True,
-    ).update({"is_active": False})
-
     db.add(new_resume)
     db.commit()
     db.refresh(new_resume)
@@ -546,12 +546,14 @@ def set_active_resume(
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
+    # Single atomic UPDATE: deactivate all + activate target in one statement
+    from sqlalchemy import case
     db.query(Resume).filter(
         Resume.user_id == current_user.id,
-        Resume.is_active == True,
-    ).update({"is_active": False})
-
-    resume.is_active = True
+    ).update(
+        {"is_active": case((Resume.id == resume_id, True), else_=False)},
+        synchronize_session="fetch",
+    )
     db.commit()
 
     return {"message": f"Resume '{resume.filename}' set as active.", "id": resume.id}

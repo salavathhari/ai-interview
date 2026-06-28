@@ -314,7 +314,9 @@ async def upload_job_description(
 
 
 @router.post("/job-description/analyze/{jd_id}")
+@limiter.limit("5/minute")
 def analyze_job_description(
+    request: Request,
     jd_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -564,7 +566,9 @@ async def update_job_description(
 # ──────────────────────────────────────────────
 
 @router.post("/analyze", response_model=dict)
+@limiter.limit("5/minute")
 def analyze_career(
+    request: Request,
     resume_id: int,
     job_description_id: int = None,
     current_user: User = Depends(get_current_user),
@@ -1008,7 +1012,9 @@ def get_roadmap_analytics(
 # ──────────────────────────────────────────────
 
 @router.post("/resume/optimize", response_model=OptimizedResumeResponse)
+@limiter.limit("3/minute")
 def optimize_resume(
+    request: Request,
     resume_analysis_id: int,
     job_description_id: int = None,
     current_user: User = Depends(get_current_user),

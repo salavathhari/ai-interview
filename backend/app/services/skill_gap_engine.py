@@ -53,28 +53,32 @@ class _AnalysisCache:
         self._cache: OrderedDict = OrderedDict()
         self._maxsize = maxsize
         self._ttl = ttl
+        self._lock = __import__("threading").Lock()
 
     def get(self, key: str) -> Optional[Dict]:
-        if key in self._cache:
-            entry = self._cache[key]
-            if time.time() - entry["ts"] < self._ttl:
-                self._cache.move_to_end(key)
-                return entry["data"]
-            del self._cache[key]
-        return None
+        with self._lock:
+            if key in self._cache:
+                entry = self._cache[key]
+                if time.time() - entry["ts"] < self._ttl:
+                    self._cache.move_to_end(key)
+                    return entry["data"]
+                del self._cache[key]
+            return None
 
     def set(self, key: str, data: Dict):
-        if key in self._cache:
-            del self._cache[key]
-        elif len(self._cache) >= self._maxsize:
-            self._cache.popitem(last=False)
-        self._cache[key] = {"data": data, "ts": time.time()}
+        with self._lock:
+            if key in self._cache:
+                del self._cache[key]
+            elif len(self._cache) >= self._maxsize:
+                self._cache.popitem(last=False)
+            self._cache[key] = {"data": data, "ts": time.time()}
 
     def invalidate_user(self, user_id: int):
         prefix = f"user:{user_id}:"
-        keys_to_delete = [k for k in self._cache if k.startswith(prefix)]
-        for k in keys_to_delete:
-            del self._cache[k]
+        with self._lock:
+            keys_to_delete = [k for k in self._cache if k.startswith(prefix)]
+            for k in keys_to_delete:
+                del self._cache[k]
 
 
 _analysis_cache = _AnalysisCache()

@@ -1,3 +1,4 @@
+/* Shared styles imported via shared.css */
 .ats-report-page {
   padding: 32px 40px 48px;
   display: flex;
@@ -6,52 +7,6 @@
   min-height: 100vh;
   background: var(--bg);
 }
-
-.career-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.career-header h1 { font-size: 32px; margin-bottom: 6px; }
-.career-header p { color: var(--muted); font-size: 14px; margin: 0; }
-.header-actions { display: flex; gap: 12px; }
-
-.solid, .ghost {
-  border-radius: 999px; padding: 10px 18px; font-weight: 600; border: none; cursor: pointer; font-size: 14px;
-}
-.solid { background: var(--accent-strong); color: #fff; }
-.ghost { background: transparent; border: 1px solid var(--border); color: var(--ink); }
-
-.error-banner {
-  background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
-  padding: 12px 16px; border-radius: 12px; font-size: 14px;
-}
-
-.loading-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 16px; padding: 120px 0;
-}
-
-.spinner {
-  width: 40px; height: 40px; border: 3px solid var(--border);
-  border-top-color: var(--accent-strong); border-radius: 50%; animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.panel {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
-  padding: 24px; box-shadow: var(--shadow-soft);
-}
-
-.panel-header {
-  display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;
-  padding-bottom: 16px; border-bottom: 1px solid var(--border);
-}
-.panel-header h2 { font-size: 16px; font-weight: 600; margin: 0; }
-.panel-header p { color: var(--muted); font-size: 13px; margin: 0; }
 
 .controls-form { display: flex; flex-direction: column; gap: 16px; }
 .input-field { display: flex; flex-direction: column; gap: 6px; }
@@ -107,9 +62,7 @@
 .breakdown-weight { font-size: 11px; color: var(--muted); }
 .breakdown-score { margin-left: auto; font-size: 20px; font-weight: 700; }
 
-.progress-bar-track { height: 8px; border-radius: 999px; background: var(--border); overflow: hidden; }
 .progress-bar-track.large { height: 12px; }
-.progress-bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
 
 .overview-stats { margin-top: 20px; }
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
@@ -128,8 +81,6 @@
 .keyword-tag.repeated { background: #fee2e2; color: #991b1b; }
 .keyword-tag small { opacity: 0.7; }
 
-.skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.skill-tag { padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; }
 .skill-tag.matched { background: #dcfce7; color: #166534; }
 .skill-tag.missing { background: #fef2f2; color: #991b1b; }
 .skill-tag.additional { background: #e0e7ff; color: #3730a3; }
@@ -221,7 +172,6 @@
 
 @media (max-width: 768px) {
   .ats-report-page { padding: 24px; }
-  .career-header { flex-direction: column; align-items: flex-start; }
   .header-actions { width: 100%; }
   .ats-tabs { flex-wrap: nowrap; overflow-x: auto; }
 }
