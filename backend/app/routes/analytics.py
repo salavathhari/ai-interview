@@ -530,7 +530,7 @@ def _get_career_analytics(db: Session, user_id: int) -> CareerAnalyticsResponse:
     ).order_by(CareerReadiness.created_at.desc()).first()
 
     overall = readiness.overall_score if readiness else 0.0
-    resume_m = readiness.resume_match_score if readiness else 0.0
+    resume_m = (readiness.resume_match_score or 0.0) if readiness else 0.0
     ats = readiness.ats_score if readiness else 0.0
     interview_r = readiness.interview_score if readiness else 0.0
     coding_r = readiness.coding_score if readiness else 0.0

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Sparkles,
+  ArrowLeft,
+  Target,
+  Loader2,
+  Download,
+  GitCompare,
+  X,
+} from 'lucide-react';
 import { careerApi } from '../../services/api';
 import './ResumeOptimizerPage.css';
 
@@ -119,12 +128,13 @@ const ResumeOptimizerPage: React.FC = () => {
     <div className="optimizer-page">
       <header className="career-header">
         <div>
+          <p className="cd-eyebrow">Resume Enhancement</p>
           <h1>Resume Optimizer</h1>
           <p>AI-powered resume optimization tailored to your target role</p>
         </div>
         <div className="header-actions">
-          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}>Dashboard</button>
-          <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}>Skill Gap</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}><ArrowLeft size={15} /> Dashboard</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}><Target size={15} /> Skill Gap</button>
         </div>
       </header>
 
@@ -172,7 +182,7 @@ const ResumeOptimizerPage: React.FC = () => {
                 onClick={handleOptimize}
                 disabled={!selectedAnalysis || loading}
               >
-                {loading ? 'Optimizing...' : 'Optimize Resume'}
+                {loading ? <><Loader2 size={15} className="cd-spin" /> Optimizing...</> : <><Sparkles size={15} /> Optimize Resume</>}
               </button>
             </div>
           </div>
@@ -193,14 +203,14 @@ const ResumeOptimizerPage: React.FC = () => {
                 className="ghost"
                 onClick={() => setShowComparison(!showComparison)}
               >
-                {showComparison ? 'Hide Comparison' : 'Compare Original vs Optimized'}
+                {showComparison ? <><X size={15} /> Hide Comparison</> : <><GitCompare size={15} /> Compare Original vs Optimized</>}
               </button>
               <button
                 type="button"
                 className="solid"
                 onClick={handleDownload}
               >
-                Download Optimized Resume
+                <Download size={15} /> Download Optimized Resume
               </button>
             </div>
 

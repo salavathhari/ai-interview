@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { interviewApi, API_BASE_URL, getAccessToken } from '../services/api';
+import { usePreferences } from '../contexts/PreferencesContext';
+import { useToast } from '../components/ui/Toast';
+import {
+  Volume2, VolumeX, Mic, SkipForward, Pause, Play,
+  RotateCcw, Repeat, Square, Rocket, RefreshCw
+} from 'lucide-react';
 import './InterviewPage.css';
 
 type InterviewStatus = 'connecting' | 'answering' | 'evaluating' | 'feedback' | 'finished';
@@ -9,6 +15,10 @@ type TimerState = 'IDLE' | 'RUNNING' | 'PAUSED' | 'WARNING' | 'SUBMITTED' | 'TIM
 const InterviewPage: React.FC = () => {
     const { sessionId } = useParams();
     const navigate = useNavigate();
+    const { soundAlerts, emailNotif } = usePreferences();
+    const { toast } = useToast();
+    const soundAlertsRef = useRef(soundAlerts);
+    const emailNotifRef = useRef(emailNotif);
     
     const [status, setStatus] = useState<InterviewStatus>('connecting');
     const [timerState, setTimerState] = useState<TimerState>('IDLE');
@@ -37,6 +47,7 @@ const InterviewPage: React.FC = () => {
     const deadlineRef = useRef<number | null>(null);
     const autoSubmittedRef = useRef(false);
     const warningTriggeredRef = useRef(false);
+    const criticalTriggeredRef = useRef(false);
     const socketRef = useRef<WebSocket | null>(null);
     const reconnectAttemptsRef = useRef(0);
     
@@ -56,6 +67,14 @@ const InterviewPage: React.FC = () => {
     useEffect(() => {
         isMutedRef.current = isMuted;
     }, [isMuted]);
+
+    useEffect(() => {
+        soundAlertsRef.current = soundAlerts;
+    }, [soundAlerts]);
+
+    useEffect(() => {
+        emailNotifRef.current = emailNotif;
+    }, [emailNotif]);
 
     // Setup Speech Synthesis & Recognition
     useEffect(() => {
@@ -165,6 +184,7 @@ const InterviewPage: React.FC = () => {
     };
 
     const playWarningSound = () => {
+        if (!soundAlertsRef.current) return;
         try {
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             if (!AudioContextClass) return;
@@ -185,6 +205,31 @@ const InterviewPage: React.FC = () => {
         }
     };
 
+    const playCriticalSound = () => {
+        if (!soundAlertsRef.current) return;
+        try {
+            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioContextClass) return;
+            const audioContext = new AudioContextClass();
+
+            for (let i = 0; i < 3; i++) {
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const start = audioContext.currentTime + i * 0.15;
+                oscillator.frequency.value = 880;
+                gain.gain.setValueAtTime(0.0001, start);
+                gain.gain.exponentialRampToValueAtTime(0.12, start + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.1);
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                oscillator.start(start);
+                oscillator.stop(start + 0.12);
+            }
+        } catch (err) {
+            console.debug('Critical timer sound unavailable', err);
+        }
+    };
+
     const submitAnswer = (wasAutoSubmitted = false) => {
         if (statusRef.current !== 'answering' && !wasAutoSubmitted) return;
         if (autoSubmittedRef.current && wasAutoSubmitted) return;
@@ -195,6 +240,9 @@ const InterviewPage: React.FC = () => {
         if (wasAutoSubmitted) {
             autoSubmittedRef.current = true;
             setTimerState('TIMEOUT');
+            if (emailNotifRef.current) {
+                toast('warning', 'Time ran out — answer auto-submitted');
+            }
         } else {
             setTimerState('SUBMITTED');
         }
@@ -261,6 +309,7 @@ const InterviewPage: React.FC = () => {
                 deadlineRef.current = incomingDeadline;
                 autoSubmittedRef.current = false;
                 warningTriggeredRef.current = Boolean(data.timer_state === 'WARNING');
+                criticalTriggeredRef.current = false;
                 
                 setQuestion(data);
                 setProgress({ current: data.index, total: data.total });
@@ -288,12 +337,19 @@ const InterviewPage: React.FC = () => {
                 setTimerState(data.timer_state === 'TIMEOUT' ? 'TIMEOUT' : 'SUBMITTED');
                 setStatus('feedback');
                 
+                if (emailNotifRef.current) {
+                    toast('info', 'Question evaluated — check your feedback');
+                }
+                
                 // Voice Interview Feature: AI Speaks Feedback
                 speakText(`${data.feedback}. ${data.improvement_tips || ''}`, false);
 
             } else if (data.type === 'completed') {
                 setStatus('finished');
                 setTimerState('IDLE');
+                if (emailNotifRef.current) {
+                    toast('success', 'Interview completed — your report is ready');
+                }
             } else if (data.type === 'error') {
                 setNetworkError(data.message);
             }
@@ -376,6 +432,10 @@ const InterviewPage: React.FC = () => {
                             type: 'timer_warning',
                             question_id: currentQuestionIdRef.current
                         }));
+                    }
+                    if (nextRemaining <= 5 && nextRemaining > 0 && !criticalTriggeredRef.current) {
+                        criticalTriggeredRef.current = true;
+                        playCriticalSound();
                     }
                 } else if (nextRemaining > 15) {
                     setTimerState('RUNNING');
@@ -465,11 +525,11 @@ const InterviewPage: React.FC = () => {
     );
     if (status === 'finished') return (
         <div className="interview-state">
-            <h2>🎉 Voice Interview Complete!</h2>
+            <h2>Voice Interview Complete!</h2>
             <p>Great job! Now let's test your coding skills.</p>
             <div style={{ display: 'flex', gap: 12, marginTop: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button onClick={() => navigate(`/coding/${sessionId}`)} className="primary" style={{ fontSize: 16, padding: '12px 28px' }}>
-                    🚀 Start Coding Round
+                    <Rocket size={18} /> Start Coding Round
                 </button>
                 <button onClick={() => navigate('/dashboard')} className="secondary" style={{ fontSize: 14, padding: '10px 20px' }}>
                     Skip & Go to Dashboard
@@ -489,7 +549,7 @@ const InterviewPage: React.FC = () => {
                     className="secondary"
                     style={{ fontSize: 14, padding: '10px 20px' }}
                 >
-                    🔄 Retry Interview
+                    <RefreshCw size={16} /> Retry Interview
                 </button>
             </div>
         </div>
@@ -533,22 +593,22 @@ const InterviewPage: React.FC = () => {
                 <h2>{question?.question_text}</h2>
                 <div className="voice-controls">
                     <button onClick={replayQuestion} className="control-btn" title="Replay Question" disabled={isAISpeaking}>
-                        🔁 Replay
+                        <RotateCcw size={14} /> Replay
                     </button>
                     <button onClick={repeatQuestion} className="control-btn" title="Request AI to repeat">
-                        🔊 Repeat
+                        <Repeat size={14} /> Repeat
                     </button>
                     <button onClick={stopSpeaking} className="control-btn danger-text" title="Stop Speaking" disabled={!isAISpeaking}>
-                        ⏹ Stop AI
+                        <Square size={14} /> Stop AI
                     </button>
                     <button onClick={toggleMute} className={`control-btn ${isMuted ? 'muted' : ''}`} title="Mute AI">
-                        {isMuted ? '🔇 Muted' : '🔊 Mute AI'}
+                        {isMuted ? <><VolumeX size={14} /> Muted</> : <><Volume2 size={14} /> Mute AI</>}
                     </button>
                     <button onClick={skipQuestion} className="control-btn skip-btn" title="Skip this question">
-                        ⏭ Skip
+                        <SkipForward size={14} /> Skip
                     </button>
                     <button onClick={togglePause} className={`control-btn ${isPaused ? 'pause-active' : ''}`} title={isPaused ? 'Resume interview' : 'Pause interview'}>
-                        {isPaused ? '▶ Resume' : '⏸ Pause'}
+                        {isPaused ? <><Play size={14} /> Resume</> : <><Pause size={14} /> Pause</>}
                     </button>
                     <div className="speed-control">
                         <label htmlFor="voice-speed">Speed: {voiceSpeed}x</label>
@@ -567,8 +627,8 @@ const InterviewPage: React.FC = () => {
                 <div className="answer-header">
                     <h3>Your Answer</h3>
                     <div className="status-indicators">
-                        {isAISpeaking && <span className="indicator speaking-indicator pulse">🔊 AI Speaking...</span>}
-                        {isRecording && <span className="indicator listening-indicator pulse">🎤 Listening...</span>}
+                        {isAISpeaking && <span className="indicator speaking-indicator pulse"><Volume2 size={12} /> AI Speaking...</span>}
+                        {isRecording && <span className="indicator listening-indicator pulse"><Mic size={12} /> Listening...</span>}
                         <span className="status-pill">{statusLabel()}</span>
                     </div>
                 </div>
@@ -586,7 +646,7 @@ const InterviewPage: React.FC = () => {
                         <div className="answer-actions">
                             <button onClick={handleSubmit} className="primary">Submit Answer</button>
                             <button onClick={isRecording ? stopListening : startListening} className={isRecording ? 'danger' : 'secondary'}>
-                                {isRecording ? '⏹ Stop Recording & Submit' : '🎤 Start Recording'}
+                                {isRecording ? <><Square size={14} /> Stop Recording & Submit</> : <><Mic size={14} /> Start Recording</>}
                             </button>
                         </div>
                     </>

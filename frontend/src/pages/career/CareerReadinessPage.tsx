@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { careerApi } from '../../services/api';
+import {
+  ArrowRight, Download, Upload, Search, BookOpen, Loader2, FileText
+} from 'lucide-react';
 import './CareerReadinessPage.css';
 
 interface ReadinessData {
@@ -233,7 +236,7 @@ const CareerReadinessPage: React.FC = () => {
     return (
       <div className="readiness-page">
         <div className="loading-state">
-          <div className="spinner" />
+          <Loader2 size={40} className="spin" style={{ color: 'var(--accent-strong)' }} />
           <p>Loading career readiness...</p>
         </div>
       </div>
@@ -242,16 +245,17 @@ const CareerReadinessPage: React.FC = () => {
 
   return (
     <div className="readiness-page">
+      <span className="readiness-eyebrow">Career Readiness</span>
       <header className="readiness-header">
         <div>
           <h1>Career Readiness</h1>
           <p>Your comprehensive career preparedness overview</p>
         </div>
         <div className="header-actions">
-          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}>Dashboard</button>
-          <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}>Skill Gap</button>
-          <button type="button" className="solid" onClick={handleDownloadReport}>Download Report</button>
-          <button type="button" className="solid" onClick={() => navigate('/career/jd-upload')}>Upload JD</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}><ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}><Search size={16} /> Skill Gap</button>
+          <button type="button" className="solid" onClick={handleDownloadReport}><Download size={16} /> Download Report</button>
+          <button type="button" className="solid" onClick={() => navigate('/career/jd-upload')}><Upload size={16} /> Upload JD</button>
         </div>
       </header>
 
@@ -465,7 +469,7 @@ const CareerReadinessPage: React.FC = () => {
           <div className="resources-list">
             {suggestions.resources.map((resource, idx) => (
               <div key={idx} className="resource-item">
-                <span className="resource-icon">&#128218;</span>
+                <span className="resource-icon"><BookOpen size={18} /></span>
                 <span>{resource}</span>
               </div>
             ))}
@@ -531,14 +535,14 @@ const CareerReadinessPage: React.FC = () => {
 
       <section className="navigation-section">
         <button type="button" className="nav-card" onClick={() => navigate('/career/skill-gap')}>
-          <span className="nav-icon">&#128269;</span>
+          <span className="nav-icon"><Search size={32} /></span>
           <div>
             <h3>Skill Gap Analysis</h3>
             <p>Identify missing skills for your target role</p>
           </div>
         </button>
         <button type="button" className="nav-card" onClick={() => navigate('/career/jd-upload')}>
-          <span className="nav-icon">&#128196;</span>
+          <span className="nav-icon"><FileText size={32} /></span>
           <div>
             <h3>Upload Job Description</h3>
             <p>Analyze how your resume matches specific roles</p>

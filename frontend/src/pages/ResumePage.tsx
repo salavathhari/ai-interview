@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { resumeApi } from '../services/api';
+import {
+  Upload, FileText, Trash2, Eye, GitBranch,
+  CheckCircle2, AlertTriangle, X, Shield, User, Mail,
+  Phone, MapPin, Link as LinkIcon, Globe, Layers
+} from 'lucide-react';
 import './ResumePage.css';
 
 interface Resume {
@@ -183,15 +188,29 @@ const ResumePage: React.FC = () => {
     return uploaded?.parsed_fields || {};
   }, [uploaded]);
 
+  const renderFieldIcon = (key: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      name: <User size={13} />,
+      email: <Mail size={13} />,
+      phone: <Phone size={13} />,
+      location: <MapPin size={13} />,
+      linkedin: <LinkIcon size={13} />,
+      github: <LinkIcon size={13} />,
+      portfolio: <Globe size={13} />,
+    };
+    return icons[key] || null;
+  };
+
   return (
     <div className="resume-shell">
       <header className="resume-header">
         <div>
-          <h1>Resume Upload</h1>
-          <p>Drag your resume into the drop zone to extract skills instantly.</p>
+          <h1>Resume Manager</h1>
+          <p>Upload, manage, and compare your resumes. Extract skills for personalized interview sessions.</p>
         </div>
       </header>
 
+      {/* Upload Card */}
       <section className="upload-card">
         <div
           className={`dropzone ${isDragging ? 'dragging' : ''}`}
@@ -203,6 +222,7 @@ const ResumePage: React.FC = () => {
           onDrop={handleDrop}
         >
           <div>
+            <Upload size={32} style={{ color: 'var(--muted)', marginBottom: 12 }} />
             <h2>Drag & Drop Resume</h2>
             <p>PDF or DOCX files accepted (max 10MB)</p>
             <label className="browse-button">
@@ -215,6 +235,7 @@ const ResumePage: React.FC = () => {
             </label>
             {file && (
               <div className="file-info">
+                <FileText size={14} style={{ color: 'var(--accent-strong)' }} />
                 <span className="file-name">{file.name}</span>
                 <span className="file-size">({(file.size / 1024).toFixed(1)} KB)</span>
               </div>
@@ -237,68 +258,53 @@ const ResumePage: React.FC = () => {
           onClick={handleUpload}
           disabled={!file || uploading}
         >
-          {uploading ? 'Uploading...' : 'Upload Resume'}
+          <Upload size={15} /> {uploading ? 'Uploading...' : 'Upload Resume'}
         </button>
         {error && <p className="error-text">{error}</p>}
       </section>
 
+      {/* Upload Result */}
       {uploaded && (
-        <section className="analysis-card result-success">
-          <h3>Upload Successful</h3>
-          <div className="result-grid">
-            {parsedFields.name && (
-              <div className="result-field">
-                <strong>Name:</strong> {parsedFields.name}
+        <section className="analysis-card">
+          <div className="result-success">
+            <h3><CheckCircle2 size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} /> Upload Successful</h3>
+            <div className="result-grid">
+              {Object.entries(parsedFields).map(([key, value]) => {
+                if (!value) return null;
+                const isLink = key === 'linkedin' || key === 'github' || key === 'portfolio';
+                return (
+                  <div className="result-field" key={key}>
+                    {renderFieldIcon(key)}{' '}
+                    <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{' '}
+                    {isLink ? (
+                      <a href={value.startsWith('http') ? value : '#'} target="_blank" rel="noopener noreferrer">
+                        {value}
+                      </a>
+                    ) : value}
+                  </div>
+                );
+              })}
+            </div>
+            {uploaded.quality && (
+              <div className="result-field" style={{ marginTop: 8 }}>
+                <Shield size={13} style={{ verticalAlign: 'middle' }} />{' '}
+                <strong>Quality Score:</strong> {Math.round(uploaded.quality.quality_score || 0)}/100
               </div>
             )}
-            {parsedFields.email && (
-              <div className="result-field">
-                <strong>Email:</strong> {parsedFields.email}
-              </div>
-            )}
-            {parsedFields.phone && (
-              <div className="result-field">
-                <strong>Phone:</strong> {parsedFields.phone}
-              </div>
-            )}
-            {parsedFields.location && (
-              <div className="result-field">
-                <strong>Location:</strong> {parsedFields.location}
-              </div>
-            )}
-            {parsedFields.linkedin && (
-              <div className="result-field">
-                <strong>LinkedIn:</strong>{' '}
-                <a href={parsedFields.linkedin.startsWith('http') ? parsedFields.linkedin : '#'} target="_blank" rel="noopener noreferrer">
-                  {parsedFields.linkedin}
-                </a>
-              </div>
-            )}
-            {parsedFields.github && (
-              <div className="result-field">
-                <strong>GitHub:</strong>{' '}
-                <a href={parsedFields.github.startsWith('http') ? parsedFields.github : '#'} target="_blank" rel="noopener noreferrer">
-                  {parsedFields.github}
-                </a>
+            {uploaded.duplicate_of && (
+              <div className="result-field duplicate-warning">
+                <AlertTriangle size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />{' '}
+                <strong>Note:</strong> This content is similar to resume #{uploaded.duplicate_of}
               </div>
             )}
           </div>
-          {uploaded.quality && (
-            <div className="result-field">
-              <strong>Quality Score:</strong> {Math.round(uploaded.quality.quality_score || 0)}/100
-            </div>
-          )}
-          {uploaded.duplicate_of && (
-            <div className="result-field duplicate-warning">
-              <strong>Note:</strong> This content is similar to resume #{uploaded.duplicate_of}
-            </div>
-          )}
         </section>
       )}
 
+      {/* Extracted Skills */}
       <section className="analysis-card">
         <div className="analysis-block">
-          <h3>Extracted Skills</h3>
+          <h3><Layers size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} /> Extracted Skills</h3>
           <div className="tag-grid">
             {detectedTechnologies.length > 0 ? (
               detectedTechnologies.map((skill: string) => (
@@ -311,18 +317,19 @@ const ResumePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Resume List */}
       <section className="analysis-card">
         <div className="analysis-block">
           <div className="section-header">
-            <h3>Your Resumes ({resumes.length})</h3>
-            <input
-              type="text"
-              placeholder="Search resumes..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
+            <h3><FileText size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} /> Your Resumes ({resumes.length})</h3>
             <div className="header-actions">
+              <input
+                type="text"
+                placeholder="Search resumes..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
               <button
                 className={`action-btn ${bulkMode ? 'active' : ''}`}
                 onClick={() => {
@@ -349,7 +356,7 @@ const ResumePage: React.FC = () => {
                     }
                   }}
                 >
-                  Delete {selectedIds.length}
+                  <Trash2 size={12} /> Delete {selectedIds.length}
                 </button>
               )}
               <button
@@ -362,7 +369,7 @@ const ResumePage: React.FC = () => {
                   setSelectedIds([]);
                 }}
               >
-                {compareMode ? 'Cancel' : 'Compare'}
+                {compareMode ? 'Cancel' : <><Layers size={12} /> Compare</>}
               </button>
               {compareMode && compareSelection.length === 2 && (
                 <button
@@ -451,7 +458,7 @@ const ResumePage: React.FC = () => {
                           onClick={() => setActive(resume.id)}
                           title="Set as active resume"
                         >
-                          Activate
+                          <CheckCircle2 size={12} /> Activate
                         </button>
                       )}
                       <button
@@ -459,21 +466,21 @@ const ResumePage: React.FC = () => {
                         className="action-btn preview"
                         onClick={() => showPreview(resume)}
                       >
-                        Preview
+                        <Eye size={12} /> Preview
                       </button>
                       <button
                         type="button"
                         className="action-btn versions"
                         onClick={() => loadVersions(resume.id)}
                       >
-                        Versions
+                        <GitBranch size={12} /> Versions
                       </button>
                       <button
                         type="button"
                         className="action-btn delete"
                         onClick={() => deleteResume(resume.id)}
                       >
-                        Delete
+                        <Trash2 size={12} /> Delete
                       </button>
                     </div>
                   </div>
@@ -499,16 +506,17 @@ const ResumePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Preview Section */}
       {selectedResume && previewText && (
         <section className="analysis-card preview-section">
           <div className="section-header">
-            <h3>Resume Preview: {selectedResume.filename}</h3>
+            <h3><Eye size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} /> Resume Preview: {selectedResume.filename}</h3>
             <button
               type="button"
               className="close-btn"
               onClick={() => { setSelectedResume(null); setPreviewText(null); }}
             >
-              Close
+              <X size={14} /> Close
             </button>
           </div>
           <pre className="preview-text">{previewText}</pre>
@@ -520,12 +528,13 @@ const ResumePage: React.FC = () => {
         </section>
       )}
 
+      {/* Compare Result */}
       {compareResult && (
         <section className="analysis-card compare-section">
           <div className="section-header">
-            <h3>Comparison Result</h3>
+            <h3><Layers size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} /> Comparison Result</h3>
             <button type="button" className="close-btn" onClick={() => setCompareResult(null)}>
-              Close
+              <X size={14} /> Close
             </button>
           </div>
           <div className="compare-grid">

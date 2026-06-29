@@ -1,4 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  ArrowLeft,
+  FileText,
+  Download,
+  Trash2,
+  RefreshCw,
+  Plus,
+  AlertTriangle,
+  Loader2,
+  Briefcase,
+  Code2,
+  Target,
+  TrendingUp,
+  BarChart3,
+  FileUp,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { reportsApi } from '../services/api';
 import './ReportsPage.css';
 
@@ -16,32 +33,17 @@ interface Report {
   updated_at: string | null;
 }
 
-const Icon = {
-  FileText: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
-  Download: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-  Trash: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>,
-  Refresh: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>,
-  Plus: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-  AlertTriangle: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
-  Check: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
-  Loader: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rp-spin"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>,
-  Briefcase: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>,
-  Code: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
-  Target: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
-  TrendingUp: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
-  BarChart: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>,
-};
-
 const REPORT_TYPE_INFO: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
-  portfolio: { label: 'Portfolio Report', icon: <Icon.Briefcase />, color: '#2563eb', bg: '#eff6ff' },
-  interview: { label: 'Interview Report', icon: <Icon.BarChart />, color: '#8b5cf6', bg: '#f5f3ff' },
-  coding: { label: 'Coding Report', icon: <Icon.Code />, color: '#10b981', bg: '#ecfdf5' },
-  ats: { label: 'ATS Report', icon: <Icon.Target />, color: '#f59e0b', bg: '#fffbeb' },
-  'skill-gap': { label: 'Skill Gap Report', icon: <Icon.Target />, color: '#06b6d4', bg: '#ecfeff' },
-  'career-readiness': { label: 'Career Readiness', icon: <Icon.TrendingUp />, color: '#ef4444', bg: '#fef2f2' },
+  portfolio: { label: 'Portfolio Report', icon: <Briefcase size={18} />, color: '#2563eb', bg: '#eff6ff' },
+  interview: { label: 'Interview Report', icon: <BarChart3 size={18} />, color: '#8b5cf6', bg: '#f5f3ff' },
+  coding: { label: 'Coding Report', icon: <Code2 size={18} />, color: '#10b981', bg: '#ecfdf5' },
+  ats: { label: 'ATS Report', icon: <Target size={18} />, color: '#f59e0b', bg: '#fffbeb' },
+  'skill-gap': { label: 'Skill Gap Report', icon: <Target size={18} />, color: '#06b6d4', bg: '#ecfeff' },
+  'career-readiness': { label: 'Career Readiness', icon: <TrendingUp size={18} />, color: '#ef4444', bg: '#fef2f2' },
 };
 
 const ReportsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -153,21 +155,29 @@ const ReportsPage: React.FC = () => {
     }
   };
 
+  const totalSize = reports.reduce((sum, r) => sum + (r.file_size ?? 0), 0);
+  const readyCount = reports.filter(r => r.status === 'ready').length;
+  const outdatedCount = reports.filter(r => r.is_outdated).length;
+
   return (
     <div className="rp-container" ref={wrapperRef}>
       <header className="rp-header">
         <div>
+          <p className="rp-eyebrow">Document Center</p>
           <h1>Reports</h1>
-          <p className="rp-subtitle">Generate and download comprehensive career reports</p>
+          <span className="rp-subtitle">Generate and download comprehensive career reports</span>
         </div>
         <div className="rp-header-actions">
+          <button className="rp-back-btn" onClick={() => navigate('/dashboard')}>
+            <ArrowLeft size={15} /> Dashboard
+          </button>
           <div className="rp-generate-wrapper">
             <button
               className="rp-btn rp-btn-primary"
               onClick={() => setShowGenerateMenu(!showGenerateMenu)}
               disabled={generating}
             >
-              {generating ? <Icon.Loader /> : <Icon.Plus />}
+              {generating ? <Loader2 size={15} className="rp-spin" /> : <Plus size={15} />}
               {generating ? `Generating ${generatingType}...` : 'Generate Report'}
             </button>
             {showGenerateMenu && (
@@ -190,9 +200,50 @@ const ReportsPage: React.FC = () => {
 
       {error && (
         <div className="rp-alert">
-          <Icon.AlertTriangle />
+          <AlertTriangle size={16} />
           <span>{error}</span>
           <button onClick={() => setError(null)}>Dismiss</button>
+        </div>
+      )}
+
+      {!loading && reports.length > 0 && (
+        <div className="rp-stats-row">
+          <div className="rp-stat-card">
+            <div className="rp-stat-icon" style={{ color: '#2563eb', background: '#eff6ff' }}>
+              <FileText size={20} />
+            </div>
+            <div className="rp-stat-info">
+              <span>Total Reports</span>
+              <strong>{total}</strong>
+            </div>
+          </div>
+          <div className="rp-stat-card">
+            <div className="rp-stat-icon" style={{ color: '#10b981', background: '#ecfdf5' }}>
+              <FileUp size={20} />
+            </div>
+            <div className="rp-stat-info">
+              <span>Ready</span>
+              <strong>{readyCount}</strong>
+            </div>
+          </div>
+          <div className="rp-stat-card">
+            <div className="rp-stat-icon" style={{ color: '#f59e0b', background: '#fffbeb' }}>
+              <AlertTriangle size={20} />
+            </div>
+            <div className="rp-stat-info">
+              <span>Outdated</span>
+              <strong>{outdatedCount}</strong>
+            </div>
+          </div>
+          <div className="rp-stat-card">
+            <div className="rp-stat-icon" style={{ color: '#8b5cf6', background: '#f5f3ff' }}>
+              <Download size={20} />
+            </div>
+            <div className="rp-stat-info">
+              <span>Total Size</span>
+              <strong>{formatFileSize(totalSize)}</strong>
+            </div>
+          </div>
         </div>
       )}
 
@@ -208,7 +259,6 @@ const ReportsPage: React.FC = () => {
             key={type}
             className={`rp-filter-btn ${filterType === type ? 'active' : ''}`}
             onClick={() => { setFilterType(type); setPage(1); }}
-            style={filterType === type ? { borderColor: info.color, color: info.color } : {}}
           >
             {info.label}
           </button>
@@ -227,11 +277,13 @@ const ReportsPage: React.FC = () => {
         </div>
       ) : reports.length === 0 ? (
         <div className="rp-empty">
-          <Icon.FileText />
+          <div className="rp-empty-icon">
+            <FileText size={36} />
+          </div>
           <h3>No Reports Yet</h3>
           <p>Generate your first report to get started</p>
           <button className="rp-btn rp-btn-primary" onClick={() => generateReport('portfolio')}>
-            <Icon.Plus /> Generate Portfolio Report
+            <Plus size={15} /> Generate Portfolio Report
           </button>
         </div>
       ) : (
@@ -251,12 +303,12 @@ const ReportsPage: React.FC = () => {
                   </div>
                   {report.is_outdated && (
                     <span className="rp-badge rp-badge-outdated">
-                      <Icon.AlertTriangle /> Outdated
+                      <AlertTriangle size={12} /> Outdated
                     </span>
                   )}
                   {report.status === 'generating' && (
                     <span className="rp-badge rp-badge-generating">
-                      <Icon.Loader /> Generating
+                      <Loader2 size={12} className="rp-spin" /> Generating
                     </span>
                   )}
                 </div>
@@ -304,7 +356,7 @@ const ReportsPage: React.FC = () => {
 
                 <div className="rp-card-footer">
                   <span className="rp-file-size">
-                    <Icon.FileText /> {formatFileSize(report.file_size)}
+                    <FileText size={14} /> {formatFileSize(report.file_size)}
                   </span>
                   <div className="rp-card-actions">
                     <div className="rp-download-wrapper">
@@ -314,15 +366,15 @@ const ReportsPage: React.FC = () => {
                         disabled={report.status !== 'ready'}
                         title="Download"
                       >
-                        <Icon.Download />
+                        <Download size={15} />
                       </button>
                       {downloadMenuId === report.id && (
                         <div className="rp-download-menu">
                           <button className="rp-menu-item" onClick={() => downloadReport(report, 'pdf')}>
-                            <Icon.FileText /> PDF
+                            <FileText size={14} /> PDF
                           </button>
                           <button className="rp-menu-item" onClick={() => downloadReport(report, 'docx')}>
-                            <Icon.FileText /> DOCX
+                            <FileText size={14} /> DOCX
                           </button>
                         </div>
                       )}
@@ -333,7 +385,7 @@ const ReportsPage: React.FC = () => {
                         onClick={() => generateReport(report.report_type)}
                         title="Regenerate"
                       >
-                        <Icon.Refresh />
+                        <RefreshCw size={15} />
                       </button>
                     )}
                     <button
@@ -341,7 +393,7 @@ const ReportsPage: React.FC = () => {
                       onClick={() => deleteReport(report.id)}
                       title="Delete"
                     >
-                      <Icon.Trash />
+                      <Trash2 size={15} />
                     </button>
                   </div>
                 </div>

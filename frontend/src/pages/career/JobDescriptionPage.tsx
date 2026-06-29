@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { careerApi } from '../../services/api';
+import { ArrowRight, Trash2, Search, FileText, Upload, Loader2 } from 'lucide-react';
 import './JobDescriptionPage.css';
 
 interface JobDescription {
@@ -182,14 +183,15 @@ const JobDescriptionPage: React.FC = () => {
 
   return (
     <div className="jd-page">
+      <span className="jd-eyebrow">Job Descriptions</span>
       <header className="career-header">
         <div>
           <h1>Job Descriptions</h1>
           <p>Upload and analyze job descriptions to optimize your resume</p>
         </div>
         <div className="header-actions">
-          <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}>Skill Gap Analysis</button>
-          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}>Dashboard</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}><Search size={16} /> Skill Gap Analysis</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}><ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Dashboard</button>
         </div>
       </header>
 
@@ -270,7 +272,7 @@ const JobDescriptionPage: React.FC = () => {
                   </div>
                 )}
                 <button type="submit" className="solid" disabled={!selectedFile || !title.trim() || uploading}>
-                  {uploading ? `Uploading... ${uploadProgress}%` : 'Upload & Analyze'}
+                  {uploading ? <><Loader2 size={16} className="spin" /> Uploading... {uploadProgress}%</> : <><Upload size={16} /> Upload & Analyze</>}
                 </button>
               </form>
             ) : (
@@ -305,7 +307,7 @@ const JobDescriptionPage: React.FC = () => {
                   />
                 </label>
                 <button type="submit" className="solid" disabled={!pasteText.trim() || !title.trim() || uploading}>
-                  {uploading ? 'Analyzing...' : 'Analyze JD'}
+                  {uploading ? <><Loader2 size={16} className="spin" /> Analyzing...</> : <><FileText size={16} /> Analyze JD</>}
                 </button>
               </form>
             )}
@@ -464,13 +466,13 @@ const JobDescriptionPage: React.FC = () => {
                         )}
                       </div>
                       <div className="jd-item-actions">
-                        <button
-                          type="button"
-                          className="delete-btn"
-                          onClick={(e) => deleteJD(jd.id, e)}
-                        >
-                          Delete
-                        </button>
+                      <button
+                        type="button"
+                        className="delete-btn"
+                        onClick={(e) => deleteJD(jd.id, e)}
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
                       </div>
                     </li>
                   ))}

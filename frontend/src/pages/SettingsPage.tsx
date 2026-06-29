@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../components/ui/Toast';
+import { usePreferences } from '../contexts/PreferencesContext';
 import { userApi } from '../services/api';
+import { User, Shield, Settings, AlertTriangle } from 'lucide-react';
 import './SettingsPage.css';
 
 type Tab = 'profile' | 'security' | 'preferences' | 'danger';
@@ -16,6 +18,7 @@ interface Profile {
 
 const SettingsPage: React.FC = () => {
   const { toast } = useToast();
+  const { emailNotif, setEmailNotif, soundAlerts, setSoundAlerts } = usePreferences();
   const [activeTab, setActiveTab] = useState<Tab>('profile');
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -30,9 +33,11 @@ const SettingsPage: React.FC = () => {
   const [passwordMsg, setPasswordMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
-  const [emailNotif, setEmailNotif] = useState(() => localStorage.getItem('emailNotif') !== 'false');
-  const [soundAlerts, setSoundAlerts] = useState(() => localStorage.getItem('soundAlerts') !== 'false');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    return saved;
+  });
   const [prefMsg, setPrefMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [deleteConfirm, setDeleteConfirm] = useState('');
@@ -99,8 +104,7 @@ const SettingsPage: React.FC = () => {
 
   const handlePrefSave = () => {
     localStorage.setItem('theme', theme);
-    localStorage.setItem('emailNotif', String(emailNotif));
-    localStorage.setItem('soundAlerts', String(soundAlerts));
+    document.documentElement.setAttribute('data-theme', theme);
     setPrefMsg({ type: 'success', text: 'Preferences saved.' });
     toast('success', 'Preferences saved');
     setTimeout(() => setPrefMsg(null), 3000);
@@ -127,10 +131,10 @@ const SettingsPage: React.FC = () => {
   };
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: 'profile', label: 'Profile', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> },
-    { id: 'security', label: 'Security', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> },
-    { id: 'preferences', label: 'Preferences', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> },
-    { id: 'danger', label: 'Danger Zone', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> },
+    { id: 'profile', label: 'Profile', icon: <User size={18} /> },
+    { id: 'security', label: 'Security', icon: <Shield size={18} /> },
+    { id: 'preferences', label: 'Preferences', icon: <Settings size={18} /> },
+    { id: 'danger', label: 'Danger Zone', icon: <AlertTriangle size={18} /> },
   ];
 
   return (
@@ -318,7 +322,11 @@ const SettingsPage: React.FC = () => {
                         key={t}
                         type="button"
                         className={`theme-btn ${theme === t ? 'active' : ''}`}
-                        onClick={() => setTheme(t)}
+                        onClick={() => {
+                          setTheme(t);
+                          document.documentElement.setAttribute('data-theme', t);
+                          localStorage.setItem('theme', t);
+                        }}
                       >
                         {t === 'light' ? 'Light' : 'Dark'}
                       </button>
@@ -334,7 +342,7 @@ const SettingsPage: React.FC = () => {
                   <button
                     type="button"
                     className={`toggle-switch ${emailNotif ? 'on' : 'off'}`}
-                    onClick={() => setEmailNotif(v => !v)}
+                    onClick={() => setEmailNotif(!emailNotif)}
                     aria-label="Toggle email notifications"
                   >
                     <span className="toggle-knob" />
@@ -349,7 +357,7 @@ const SettingsPage: React.FC = () => {
                   <button
                     type="button"
                     className={`toggle-switch ${soundAlerts ? 'on' : 'off'}`}
-                    onClick={() => setSoundAlerts(v => !v)}
+                    onClick={() => setSoundAlerts(!soundAlerts)}
                     aria-label="Toggle sound alerts"
                   >
                     <span className="toggle-knob" />

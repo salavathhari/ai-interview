@@ -44,9 +44,18 @@
   height: 24px;
 }
 
+.cd-eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .cd-header h1 {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0 0 4px 0;
   letter-spacing: -0.03em;
   color: var(--ink);
@@ -186,8 +195,8 @@
 
 .cd-action-card:hover {
   border-color: var(--accent-strong);
-  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
 }
 
 .cd-action-card > svg:last-child {
@@ -253,9 +262,9 @@
 }
 
 .cd-score-card:hover {
-  box-shadow: var(--shadow);
-  border-color: #cbd5e1;
-  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-color: rgba(37, 99, 235, 0.2);
+  transform: translateY(-3px);
 }
 
 .cd-score-accent {
@@ -405,17 +414,35 @@
 
 .cd-panel {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 24px;
-  box-shadow: var(--shadow-soft);
-  transition: box-shadow 0.15s ease;
+  transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.cd-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-strong), #7c3aed);
+  opacity: 0;
+  transition: opacity 0.25s;
 }
 
 .cd-panel:hover {
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.cd-panel:hover::before {
+  opacity: 1;
 }
 
 .cd-panel-header {
@@ -719,15 +746,15 @@
 
 .cd-trend-card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 20px;
-  box-shadow: var(--shadow-soft);
-  transition: box-shadow 0.15s ease;
+  transition: all 0.25s ease;
 }
 
 .cd-trend-card:hover {
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-color: rgba(37, 99, 235, 0.15);
 }
 
 .cd-trend-header {

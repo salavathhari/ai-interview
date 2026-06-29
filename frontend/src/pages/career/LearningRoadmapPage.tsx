@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { careerApi } from '../../services/api';
+import {
+  BookOpen, Target, Clock, Calendar, CheckCircle, ArrowRight, Sparkles,
+  TrendingUp, Brain, Code2, Mic, Loader2, AlertTriangle, Trash2, ExternalLink,
+  Flame, Star, Zap
+} from 'lucide-react';
 import './LearningRoadmapPage.css';
 
 interface CodingProblem {
@@ -94,27 +99,7 @@ interface SavedRoadmap {
   created_at: string;
 }
 
-const Icon = {
-  Book: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>,
-  Target: () => <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
-  Clock: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-  Calendar: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
-  Check: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
-  CheckCircle: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
-  ArrowRight: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
-  Sparkles: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L9 12l-7 3 7 3 3 10 3-10 7-3-7-3z"/></svg>,
-  TrendUp: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
-  Brain: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A5.5 5.5 0 004 7.5c0 1.33.47 2.55 1.26 3.5H4a3 3 0 000 6h1.5"/><path d="M14.5 2A5.5 5.5 0 0120 7.5c0 1.33-.47 2.55-1.26 3.5H20a3 3 0 010 6h-1.5"/><path d="M12 2v20"/></svg>,
-  Code: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
-  Mic: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>,
-  Loader: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lr-spin"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>,
-  AlertTriangle: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
-  Trash: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>,
-  ExternalLink: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
-  Flame: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>,
-  Star: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
-  Zap: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-};
+
 
 const LearningRoadmapPage: React.FC = () => {
   const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
@@ -286,11 +271,11 @@ const LearningRoadmapPage: React.FC = () => {
 
   const getTipIcon = (type: string) => {
     switch (type) {
-      case 'priority': return <Icon.Target />;
-      case 'urgent': return <Icon.Flame />;
-      case 'success': return <Icon.CheckCircle />;
-      case 'warning': return <Icon.AlertTriangle />;
-      default: return <Icon.Sparkles />;
+      case 'priority': return <Target size={18} />;
+      case 'urgent': return <Flame size={18} />;
+      case 'success': return <CheckCircle size={18} />;
+      case 'warning': return <AlertTriangle size={18} />;
+      default: return <Sparkles size={18} />;
     }
   };
 
@@ -298,9 +283,7 @@ const LearningRoadmapPage: React.FC = () => {
     return (
       <div className="lr-page">
         <div className="lr-loading">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lr-spin" style={{ width: 40, height: 40, color: '#8b5cf6' }}>
-            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
-          </svg>
+          <Loader2 size={40} className="lr-spin" style={{ color: '#8b5cf6' }} />
           <p>Loading your learning journey...</p>
         </div>
       </div>
@@ -310,9 +293,10 @@ const LearningRoadmapPage: React.FC = () => {
   return (
     <div className="lr-page">
       {/* Header */}
+      <span className="lr-eyebrow">Learning Roadmap</span>
       <header className="lr-header">
         <div className="lr-header-left">
-          <div className="lr-header-icon"><Icon.Book /></div>
+          <div className="lr-header-icon"><BookOpen size={24} /></div>
           <div>
             <h1>AI Learning Planner</h1>
             <p>Your personalized career learning journey</p>
@@ -320,7 +304,7 @@ const LearningRoadmapPage: React.FC = () => {
         </div>
         <div className="lr-header-actions">
           <button type="button" className="lr-btn lr-btn-ghost" onClick={() => navigate('/career/dashboard')}>
-            Dashboard
+            <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Back to Dashboard
           </button>
           {savedRoadmaps.length > 0 && (
             <button type="button" className="lr-btn lr-btn-ghost lr-btn-sm" onClick={() => setRoadmapData(null)}>
@@ -332,7 +316,7 @@ const LearningRoadmapPage: React.FC = () => {
 
       {error && (
         <div className="lr-error">
-          <Icon.AlertTriangle />
+          <AlertTriangle size={18} />
           <span>{error}</span>
         </div>
       )}
@@ -344,7 +328,7 @@ const LearningRoadmapPage: React.FC = () => {
             <section className="lr-generate">
               <div className="lr-generate-card">
                 <div className="lr-generate-left">
-                  <div className="lr-generate-icon"><Icon.Sparkles /></div>
+                  <div className="lr-generate-icon"><Sparkles size={20} /></div>
                   <div>
                     <h3>Generate AI Learning Roadmap</h3>
                     <p>Create a personalized learning journey from your skill gap analysis</p>
@@ -360,7 +344,7 @@ const LearningRoadmapPage: React.FC = () => {
                     ))}
                   </select>
                   <button type="button" className="lr-btn lr-btn-primary" onClick={handleGenerateEnhanced} disabled={!selectedGapId || generating}>
-                    <Icon.Sparkles /> Generate Journey
+                    <Sparkles size={16} /> Generate Journey
                   </button>
                 </div>
               </div>
@@ -369,7 +353,7 @@ const LearningRoadmapPage: React.FC = () => {
             <section className="lr-generate">
               <div className="lr-generate-card" style={{ borderLeftColor: '#2563eb' }}>
                 <div className="lr-generate-left">
-                  <div className="lr-generate-icon" style={{ background: '#eff6ff', color: '#2563eb' }}><Icon.Target /></div>
+                  <div className="lr-generate-icon" style={{ background: '#eff6ff', color: '#2563eb' }}><Target size={20} /></div>
                   <div>
                     <h3>Run a Skill Gap Analysis First</h3>
                     <p>Generate a roadmap by first analyzing your skills against a job description</p>
@@ -377,7 +361,7 @@ const LearningRoadmapPage: React.FC = () => {
                 </div>
                 <div className="lr-generate-right">
                   <button type="button" className="lr-btn lr-btn-primary" onClick={() => navigate('/career/skill-gap')}>
-                    <Icon.ArrowRight /> Go to Skill Gap Analysis
+                    <ArrowRight size={16} /> Go to Skill Gap Analysis
                   </button>
                 </div>
               </div>
@@ -432,7 +416,7 @@ const LearningRoadmapPage: React.FC = () => {
                         } catch {}
                       }}>View</button>
                       <button type="button" className="lr-btn lr-btn-danger lr-btn-sm" disabled={deleting === rm.id} onClick={() => handleDeleteRoadmap(rm.id)}>
-                        {deleting === rm.id ? '...' : <Icon.Trash />}
+                        {deleting === rm.id ? '...' : <Trash2 size={14} />}
                       </button>
                     </div>
                   </div>
@@ -446,7 +430,7 @@ const LearningRoadmapPage: React.FC = () => {
       {/* Generating state */}
       {generating && (
         <div className="lr-loading" style={{ padding: '80px 0' }}>
-          <Icon.Loader />
+          <Loader2 size={40} className="lr-spin" style={{ color: '#8b5cf6' }} />
           <p>Building your personalized learning journey...</p>
           <span style={{ fontSize: 12, color: '#94a3b8' }}>Analyzing skill gaps, dependencies, and career goals</span>
         </div>
@@ -458,7 +442,7 @@ const LearningRoadmapPage: React.FC = () => {
           {/* Career Goal Banner */}
           <section className="lr-goal-banner">
             <div className="lr-goal-content">
-              <div className="lr-goal-icon"><Icon.Target /></div>
+              <div className="lr-goal-icon"><Target size={26} /></div>
               <div className="lr-goal-text">
                 <h2>Career Goal: {roadmapData.career_goal}</h2>
                 <p>
@@ -470,13 +454,13 @@ const LearningRoadmapPage: React.FC = () => {
             </div>
             <div className="lr-goal-scores">
               <div className="lr-score-pill">
-                <Icon.TrendUp />
+                <TrendingUp size={18} />
                 <span>{roadmapData.current_readiness}%</span>
                 <label>Current</label>
               </div>
               <div className="lr-score-arrow">→</div>
               <div className="lr-score-pill lr-score-pill--target">
-                <Icon.Star />
+                <Star size={18} />
                 <span>{roadmapData.target_readiness}%</span>
                 <label>Target</label>
               </div>
@@ -486,7 +470,7 @@ const LearningRoadmapPage: React.FC = () => {
           {/* Stats Row */}
           <section className="lr-stats-row">
             <div className="lr-stat-card">
-              <div className="lr-stat-icon" style={{ background: '#eff6ff', color: '#2563eb' }}><Icon.Brain /></div>
+              <div className="lr-stat-icon" style={{ background: '#eff6ff', color: '#2563eb' }}><Brain size={18} /></div>
               <div className="lr-stat-info">
                 <span className="lr-stat-value">{getOverallProgress()}%</span>
                 <span className="lr-stat-label">Overall Progress</span>
@@ -496,7 +480,7 @@ const LearningRoadmapPage: React.FC = () => {
               </div>
             </div>
             <div className="lr-stat-card">
-              <div className="lr-stat-icon" style={{ background: '#fef3c7', color: '#d97706' }}><Icon.Mic /></div>
+              <div className="lr-stat-icon" style={{ background: '#fef3c7', color: '#d97706' }}><Mic size={18} /></div>
               <div className="lr-stat-info">
                 <span className="lr-stat-value">{roadmapData.interview_readiness}%</span>
                 <span className="lr-stat-label">Interview Ready</span>
@@ -506,7 +490,7 @@ const LearningRoadmapPage: React.FC = () => {
               </div>
             </div>
             <div className="lr-stat-card">
-              <div className="lr-stat-icon" style={{ background: '#f0fdf4', color: '#16a34a' }}><Icon.Code /></div>
+              <div className="lr-stat-icon" style={{ background: '#f0fdf4', color: '#16a34a' }}><Code2 size={18} /></div>
               <div className="lr-stat-info">
                 <span className="lr-stat-value">{roadmapData.coding_readiness}%</span>
                 <span className="lr-stat-label">Coding Ready</span>
@@ -516,7 +500,7 @@ const LearningRoadmapPage: React.FC = () => {
               </div>
             </div>
             <div className="lr-stat-card">
-              <div className="lr-stat-icon" style={{ background: '#fdf2f8', color: '#db2777' }}><Icon.Flame /></div>
+              <div className="lr-stat-icon" style={{ background: '#fdf2f8', color: '#db2777' }}><Flame size={18} /></div>
               <div className="lr-stat-info">
                 <span className="lr-stat-value">{roadmapData.daily_plan?.streak_days || 0}</span>
                 <span className="lr-stat-label">Day Streak</span>
@@ -531,7 +515,7 @@ const LearningRoadmapPage: React.FC = () => {
           <section className="lr-dual-row">
             <div className="lr-daily-card">
               <div className="lr-daily-header">
-                <Icon.Zap />
+                <Zap size={20} />
                 <h3>Today's Learning Plan</h3>
               </div>
               {roadmapData.daily_plan?.today_focus && roadmapData.daily_plan.today_focus !== 'Continue learning' && roadmapData.daily_plan?.needs_analysis !== true ? (
@@ -549,7 +533,7 @@ const LearningRoadmapPage: React.FC = () => {
                     ))}
                   </div>
                   <div className="lr-daily-footer">
-                    <Icon.Clock />
+                    <Clock size={16} />
                     <span>{roadmapData.daily_plan?.hours_today || 2} hours planned today</span>
                   </div>
                 </>
@@ -567,7 +551,7 @@ const LearningRoadmapPage: React.FC = () => {
 
             <div className="lr-gap-card">
               <div className="lr-gap-header">
-                <Icon.Target />
+                <Target size={20} />
                 <h3>Skill Gap Summary</h3>
               </div>
               <div className="lr-gap-ring">
@@ -618,7 +602,7 @@ const LearningRoadmapPage: React.FC = () => {
 
             {(roadmapData.phases || []).length === 0 ? (
               <div className="lr-phase-empty" style={{ padding: '32px 20px', textAlign: 'center', background: 'var(--card)', borderRadius: 12, border: '1px dashed var(--border)' }}>
-                <div style={{ width: 40, height: 40, margin: '0 auto 12px', color: 'var(--muted)' }}><Icon.Target /></div>
+                <div style={{ width: 40, height: 40, margin: '0 auto 12px', color: 'var(--muted)' }}><Target size={40} /></div>
                 <p style={{ color: 'var(--muted)', fontSize: 13, margin: '0 0 4px' }}>
                   No learning phases generated yet.
                 </p>
@@ -645,8 +629,8 @@ const LearningRoadmapPage: React.FC = () => {
                     <span className="lr-badge" style={{ background: getPriorityColor(roadmapData.phases[activePhase].priority), color: '#fff' }}>
                       {roadmapData.phases[activePhase].priority}
                     </span>
-                    <span className="lr-phase-meta-item"><Icon.Clock /> {roadmapData.phases[activePhase].estimated_hours}h</span>
-                    <span className="lr-phase-meta-item"><Icon.Calendar /> {roadmapData.phases[activePhase].estimated_weeks}w</span>
+                    <span className="lr-phase-meta-item"><Clock size={14} /> {roadmapData.phases[activePhase].estimated_hours}h</span>
+                    <span className="lr-phase-meta-item"><Calendar size={14} /> {roadmapData.phases[activePhase].estimated_weeks}w</span>
                   </div>
                 </div>
 
@@ -657,7 +641,7 @@ const LearningRoadmapPage: React.FC = () => {
 
                 {/* Milestone */}
                 <div className="lr-milestone-banner">
-                  <Icon.Star />
+                  <Star size={16} />
                   <span>Milestone: {roadmapData.phases[activePhase].milestone}</span>
                 </div>
 
@@ -670,13 +654,13 @@ const LearningRoadmapPage: React.FC = () => {
                       <div key={tIdx} className={`lr-topic-card ${isComplete ? 'lr-topic-card--done' : ''}`}>
                         <div className="lr-topic-header" onClick={() => setExpandedTopic(isExpanded ? null : `${activePhase}-${tIdx}`)}>
                           <button className="lr-topic-check" onClick={(e) => { e.stopPropagation(); toggleTopicComplete(topic.name); }}>
-                            {isComplete ? <Icon.CheckCircle /> : <span className="lr-topic-check-empty" />}
+                            {isComplete ? <CheckCircle size={16} /> : <span className="lr-topic-check-empty" />}
                           </button>
                           <div className="lr-topic-info">
                             <h4>{topic.name}</h4>
                             <div className="lr-topic-tags">
                               <span className="lr-tag" style={{ background: getDifficultyColor(topic.difficulty) + '20', color: getDifficultyColor(topic.difficulty) }}>{topic.difficulty}</span>
-                              <span className="lr-tag lr-tag--hours"><Icon.Clock /> {topic.estimated_hours}h</span>
+                              <span className="lr-tag lr-tag--hours"><Clock size={10} /> {topic.estimated_hours}h</span>
                               {topic.prerequisites?.length > 0 && (
                                 <span className="lr-tag lr-tag--prereq">Prereqs: {topic.prerequisites.join(', ')}</span>
                               )}
@@ -695,17 +679,17 @@ const LearningRoadmapPage: React.FC = () => {
                                 <h5>📚 Learning Resources</h5>
                                 {(topic.resources.documentation || []).map((url, i) => (
                                   <a key={i} href={url.startsWith('http') ? url : '#'} target="_blank" rel="noopener noreferrer" className="lr-resource-link">
-                                    <Icon.ExternalLink /> {url.split('/')[2]} — Documentation
+                                    <ExternalLink size={12} /> {url.split('/')[2]} — Documentation
                                   </a>
                                 ))}
                                 {(topic.resources.videos || []).map((vid, i) => (
                                   <div key={i} className="lr-resource-item">
-                                    <Icon.Book /> {vid}
+                                    <BookOpen size={12} /> {vid}
                                   </div>
                                 ))}
                                 {(topic.resources.practice_projects || []).map((proj, i) => (
                                   <div key={i} className="lr-resource-item lr-resource-item--project">
-                                    <Icon.Code /> {proj}
+                                    <Code2 size={12} /> {proj}
                                   </div>
                                 ))}
                               </div>
@@ -751,7 +735,7 @@ const LearningRoadmapPage: React.FC = () => {
           {(roadmapData.mentor_tips || []).length > 0 && (
             <section className="lr-mentor-section">
               <div className="lr-mentor-header">
-                <Icon.Sparkles />
+                <Sparkles size={22} />
                 <h2>AI Mentor Recommendations</h2>
               </div>
               <div className="lr-mentor-grid">
@@ -762,7 +746,7 @@ const LearningRoadmapPage: React.FC = () => {
                     <p>{tip.message}</p>
                     {tip.action && tip.action_url && (
                       <button className="lr-btn lr-btn-ghost lr-btn-sm" onClick={() => navigate(tip.action_url!)}>
-                        {tip.action} <Icon.ArrowRight />
+                        {tip.action} <ArrowRight size={16} />
                       </button>
                     )}
                   </div>

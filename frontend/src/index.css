@@ -236,3 +236,31 @@ button:disabled {
   body { background: var(--bg); color: var(--ink); }
   ::selection { background: rgba(59, 130, 246, 0.3); }
 }
+
+/* ── Dark Mode (manual toggle via data-theme) ── */
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --card: #1e293b;
+  --ink: #f1f5f9;
+  --ink-secondary: #cbd5e1;
+  --muted: #94a3b8;
+  --border: #334155;
+  --border-light: #1e293b;
+
+  --accent-strong: #3b82f6;
+  --accent-strong-hover: #60a5fa;
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-soft: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body { background: var(--bg); color: var(--ink); }
+[data-theme="dark"] ::selection { background: rgba(59, 130, 246, 0.3); }
+
+@keyframes spin { to { transform: rotate(360deg); } }

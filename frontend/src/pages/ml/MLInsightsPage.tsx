@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  Sparkles,
+  Brain,
+  Target,
+  Briefcase,
+  Rocket,
+  Link,
+  Loader2,
+  BarChart3,
+  LayoutDashboard,
+  ArrowLeft,
+} from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import { resumeApi, mlApi } from '../../services/api';
 import './MLInsightsPage.css';
-
-const Icon = {
-  Spark: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L9 12l-7 3 7 3 3 10 3-10 7-3-7-3z"/></svg>,
-  Brain: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a4 4 0 014 4c0 .73-.2 1.41-.54 2A4 4 0 0118 10a4 4 0 01-2 3.46V18a2 2 0 01-2 2h0a2 2 0 01-2-2v-4.54A4 4 0 0110 10a4 4 0 012.54-2A4 4 0 0112 6a4 4 0 014-4z"/></svg>,
-  Target: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
-  Briefcase: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>,
-  Rocket: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>,
-  Link: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>,
-  Loader: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-spin"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>,
-  BarChart: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>,
-  Layout: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>,
-};
 
 const Gauge: React.FC<{ value: number; max?: number; size?: number; color: string; label: string; sub?: string; suffix?: string }> = ({ value, max = 100, size = 120, color, label, sub, suffix = '' }) => {
   const r = (size - 16) / 2;
@@ -103,6 +104,7 @@ const SKILL_LABELS: Record<string, string> = {
 const PIE_COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#f97316'];
 
 const MLInsightsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [selectedResumeId, setSelectedResumeId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'jobs' | 'analytics'>('overview');
@@ -167,10 +169,10 @@ const MLInsightsPage: React.FC = () => {
   }, [skills]);
 
   const tabs = [
-    { key: 'overview' as const, label: 'Overview', icon: <Icon.Layout /> },
-    { key: 'skills' as const, label: 'Skills', icon: <Icon.Target /> },
-    { key: 'jobs' as const, label: 'Jobs & Career', icon: <Icon.Briefcase /> },
-    { key: 'analytics' as const, label: 'Analytics', icon: <Icon.BarChart /> },
+    { key: 'overview' as const, label: 'Overview', icon: <LayoutDashboard size={15} /> },
+    { key: 'skills' as const, label: 'Skills', icon: <Target size={15} /> },
+    { key: 'jobs' as const, label: 'Jobs & Career', icon: <Briefcase size={15} /> },
+    { key: 'analytics' as const, label: 'Analytics', icon: <BarChart3 size={15} /> },
   ];
 
   return (
@@ -184,12 +186,15 @@ const MLInsightsPage: React.FC = () => {
           </div>
         </div>
         <div className="ml-top-bar-actions">
+          <button className="ml-btn-primary" style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1.5px solid var(--border)', boxShadow: 'none' }} onClick={() => navigate('/dashboard')}>
+            <ArrowLeft size={15} /> Dashboard
+          </button>
           <select className="ml-select" value={selectedResumeId || ''} onChange={e => setSelectedResumeId(Number(e.target.value))}>
             <option value="">Select a resume...</option>
             {resumes.map(r => <option key={r.id} value={r.id}>{r.filename}</option>)}
           </select>
           <button className="ml-btn-primary" onClick={runFullAnalysis} disabled={!selectedResumeId || loading}>
-            {loading ? <><Icon.Loader /> Analyzing...</> : <><Icon.Spark /> Run Analysis</>}
+            {loading ? <><Loader2 size={15} className="ml-spin" /> Analyzing...</> : <><Sparkles size={15} /> Run Analysis</>}
           </button>
         </div>
       </div>
@@ -219,7 +224,7 @@ const MLInsightsPage: React.FC = () => {
               {classification ? (
                 <>
                   <div className="ml-classification-badge">
-                    <Icon.Brain /> {classification.predicted_role}
+                    <Brain size={18} /> {classification.predicted_role}
                   </div>
                   <div style={{ width: '100%' }}>
                     <div className="ml-job-bar">
@@ -249,7 +254,7 @@ const MLInsightsPage: React.FC = () => {
           <div className="ml-content-grid">
             <div className="ml-panel">
               <div className="ml-panel-header">
-                <h2><Icon.Briefcase /> Job Recommendations</h2>
+                <h2><Briefcase size={18} /> Job Recommendations</h2>
                 {jobs.length > 0 && <span className="count">{jobs.length} roles</span>}
               </div>
               {jobs.length > 0 ? jobs.slice(0, 5).map((job, i) => (
@@ -261,12 +266,12 @@ const MLInsightsPage: React.FC = () => {
                   </div>
                   <span className="ml-job-score" style={{ color: scoreColor(job.score) }}>{job.score}%</span>
                 </div>
-              )) : <div className="ml-empty"><Icon.Briefcase /><p>Run analysis to see recommendations</p></div>}
+              )) : <div className="ml-empty"><Briefcase size={40} /><p>Run analysis to see recommendations</p></div>}
             </div>
 
             <div className="ml-panel">
               <div className="ml-panel-header">
-                <h2><Icon.Rocket /> Career Progression</h2>
+                <h2><Rocket size={18} /> Career Progression</h2>
               </div>
               {careerPath.length > 0 ? (
                 <div className="ml-timeline">
@@ -286,14 +291,14 @@ const MLInsightsPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              ) : <div className="ml-empty"><Icon.Rocket /><p>Run analysis to see career path</p></div>}
+              ) : <div className="ml-empty"><Rocket size={40} /><p>Run analysis to see career path</p></div>}
             </div>
           </div>
 
           {skillGap && (
             <div className="ml-panel">
               <div className="ml-panel-header">
-                <h2><Icon.Link /> Skill Gap Analysis</h2>
+                <h2><Link size={18} /> Skill Gap Analysis</h2>
                 <span className="count">{skillGap.match_percentage}% match</span>
               </div>
               <SkillGapBar matched={skillGap.matched.length} partial={skillGap.partial.length} missing={skillGap.missing.length} />
@@ -322,7 +327,7 @@ const MLInsightsPage: React.FC = () => {
 
           {!hasRun && !loading && (
             <div className="ml-panel ml-empty-panel">
-              <Icon.Spark />
+              <Sparkles size={48} />
               <h2>Select a resume and run analysis</h2>
               <p>Get AI-powered classification, ATS scoring, skill extraction, and career recommendations</p>
             </div>
@@ -338,7 +343,7 @@ const MLInsightsPage: React.FC = () => {
                 <SkillCatCard key={k} title={SKILL_LABELS[k]} skills={(skills as any)[k] || []} color={SKILL_COLORS[k]} />
               ))}
             </div>
-          ) : <div className="ml-panel"><div className="ml-empty"><Icon.Target /><p>Run analysis to see extracted skills</p></div></div>}
+          ) : <div className="ml-panel"><div className="ml-empty"><Target size={40} /><p>Run analysis to see extracted skills</p></div></div>}
         </>
       )}
 
@@ -346,7 +351,7 @@ const MLInsightsPage: React.FC = () => {
         <div className="ml-content-grid">
           <div className="ml-panel">
             <div className="ml-panel-header">
-              <h2><Icon.Briefcase /> Job Recommendations</h2>
+              <h2><Briefcase size={18} /> Job Recommendations</h2>
             </div>
             {jobs.length > 0 ? jobs.map((job, i) => (
               <div key={i} className="ml-job-item">
@@ -357,12 +362,12 @@ const MLInsightsPage: React.FC = () => {
                 </div>
                 <span className="ml-job-score" style={{ color: scoreColor(job.score) }}>{job.score}%</span>
               </div>
-            )) : <div className="ml-empty"><Icon.Briefcase /><p>No recommendations</p></div>}
+            )) : <div className="ml-empty"><Briefcase size={40} /><p>No recommendations</p></div>}
           </div>
 
           <div className="ml-panel">
             <div className="ml-panel-header">
-              <h2><Icon.Rocket /> Career Path</h2>
+              <h2><Rocket size={18} /> Career Path</h2>
             </div>
             {careerPath.length > 0 ? (
               <div className="ml-timeline">
@@ -382,7 +387,7 @@ const MLInsightsPage: React.FC = () => {
                   </div>
                 ))}
               </div>
-            ) : <div className="ml-empty"><Icon.Rocket /><p>No career path data</p></div>}
+            ) : <div className="ml-empty"><Rocket size={40} /><p>No career path data</p></div>}
           </div>
         </div>
       )}
@@ -405,7 +410,7 @@ const MLInsightsPage: React.FC = () => {
 
           <div className="ml-content-grid">
             <div className="ml-panel">
-              <div className="ml-panel-header"><h2><Icon.BarChart /> Role Distribution</h2></div>
+              <div className="ml-panel-header"><h2><BarChart3 size={18} /> Role Distribution</h2></div>
               {rolePieData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
@@ -415,11 +420,11 @@ const MLInsightsPage: React.FC = () => {
                     <Tooltip content={<ChartTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
-              ) : <div className="ml-empty"><Icon.BarChart /><p>No classification data</p></div>}
+              ) : <div className="ml-empty"><BarChart3 size={40} /><p>No classification data</p></div>}
             </div>
 
             <div className="ml-panel">
-              <div className="ml-panel-header"><h2><Icon.BarChart /> Quality Distribution</h2></div>
+              <div className="ml-panel-header"><h2><BarChart3 size={18} /> Quality Distribution</h2></div>
               {qualityBarData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={qualityBarData}>
@@ -431,13 +436,13 @@ const MLInsightsPage: React.FC = () => {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-              ) : <div className="ml-empty"><Icon.BarChart /><p>No quality data</p></div>}
+              ) : <div className="ml-empty"><BarChart3 size={40} /><p>No quality data</p></div>}
             </div>
           </div>
 
           <div className="ml-content-grid">
             <div className="ml-panel">
-              <div className="ml-panel-header"><h2><Icon.Target /> Skill Radar</h2></div>
+              <div className="ml-panel-header"><h2><Target size={18} /> Skill Radar</h2></div>
               {skillRadarData.some(d => d.A > 0) ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <RadarChart data={skillRadarData}>
@@ -447,11 +452,11 @@ const MLInsightsPage: React.FC = () => {
                     <Radar name="Skills" dataKey="A" stroke="#7c3aed" fill="#7c3aed" fillOpacity={0.2} />
                   </RadarChart>
                 </ResponsiveContainer>
-              ) : <div className="ml-empty"><Icon.Target /><p>No skill data</p></div>}
+              ) : <div className="ml-empty"><Target size={40} /><p>No skill data</p></div>}
             </div>
 
             <div className="ml-panel">
-              <div className="ml-panel-header"><h2><Icon.Target /> Skill Distribution</h2></div>
+              <div className="ml-panel-header"><h2><Target size={18} /> Skill Distribution</h2></div>
               {skills ? Object.keys(SKILL_COLORS).map(k => {
                 const count = ((skills as any)[k] || []).length;
                 const pct = Math.min((count / 15) * 100, 100);
@@ -462,7 +467,7 @@ const MLInsightsPage: React.FC = () => {
                     <span className="ml-hbar-value">{count}</span>
                   </div>
                 );
-              }) : <div className="ml-empty"><Icon.Target /><p>No skill data</p></div>}
+              }) : <div className="ml-empty"><Target size={40} /><p>No skill data</p></div>}
             </div>
           </div>
         </>

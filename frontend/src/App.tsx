@@ -1,122 +1,146 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { PreferencesProvider } from './contexts/PreferencesContext';
 import { ToastProvider } from './components/ui/Toast';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
 
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import LandingPage from './pages/LandingPage';
-import NotFoundPage from './pages/NotFoundPage';
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
-import DashboardPage from './pages/DashboardPage';
-import InterviewPage from './pages/InterviewPage';
-import InterviewSetupPage from './pages/InterviewSetupPage';
-import CodingPage from './pages/CodingPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import ReportPage from './pages/ReportPage';
-import ResumePage from './pages/ResumePage';
-import SettingsPage from './pages/SettingsPage';
-import RecruiterPage from './pages/RecruiterPage';
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const InterviewPage = lazy(() => import('./pages/InterviewPage'));
+const InterviewSetupPage = lazy(() => import('./pages/InterviewSetupPage'));
+const CodingPage = lazy(() => import('./pages/CodingPage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const ReportPage = lazy(() => import('./pages/ReportPage'));
+const ResumePage = lazy(() => import('./pages/ResumePage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const RecruiterPage = lazy(() => import('./pages/RecruiterPage'));
 
-import CareerDashboardPage from './pages/career/CareerDashboardPage';
-import JobDescriptionPage from './pages/career/JobDescriptionPage';
-import SkillGapPage from './pages/career/SkillGapPage';
-import ResumeOptimizerPage from './pages/career/ResumeOptimizerPage';
-import ATSReportPage from './pages/career/ATSReportPage';
-import LearningRoadmapPage from './pages/career/LearningRoadmapPage';
-import CareerReadinessPage from './pages/career/CareerReadinessPage';
-import ReportsPage from './pages/ReportsPage';
+const CareerDashboardPage = lazy(() => import('./pages/career/CareerDashboardPage'));
+const JobDescriptionPage = lazy(() => import('./pages/career/JobDescriptionPage'));
+const SkillGapPage = lazy(() => import('./pages/career/SkillGapPage'));
+const ResumeOptimizerPage = lazy(() => import('./pages/career/ResumeOptimizerPage'));
+const ATSReportPage = lazy(() => import('./pages/career/ATSReportPage'));
+const LearningRoadmapPage = lazy(() => import('./pages/career/LearningRoadmapPage'));
+const CareerReadinessPage = lazy(() => import('./pages/career/CareerReadinessPage'));
+const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 
-import MLInsightsPage from './pages/ml/MLInsightsPage';
+const MLInsightsPage = lazy(() => import('./pages/ml/MLInsightsPage'));
 
-import AdminPage from './pages/AdminPage';
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
-import AdminUsersPage from './pages/admin/AdminUsersPage';
-import AdminRecruitersPage from './pages/admin/AdminRecruitersPage';
-import AdminInterviewsPage from './pages/admin/AdminInterviewsPage';
-import AdminVoicePage from './pages/admin/AdminVoicePage';
-import AdminAIUsagePage from './pages/admin/AdminAIUsagePage';
-import AdminReportsPage from './pages/admin/AdminReportsPage';
-import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
-import AdminSystemHealthPage from './pages/admin/AdminSystemHealthPage';
-import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage';
-import AdminSettingsPage from './pages/admin/AdminSettingsPage';
-import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
-import AdminCodingPage from './pages/admin/AdminCodingPage';
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
+const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
+const AdminRecruitersPage = lazy(() => import('./pages/admin/AdminRecruitersPage'));
+const AdminInterviewsPage = lazy(() => import('./pages/admin/AdminInterviewsPage'));
+const AdminVoicePage = lazy(() => import('./pages/admin/AdminVoicePage'));
+const AdminAIUsagePage = lazy(() => import('./pages/admin/AdminAIUsagePage'));
+const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
+const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'));
+const AdminSystemHealthPage = lazy(() => import('./pages/admin/AdminSystemHealthPage'));
+const AdminAuditLogsPage = lazy(() => import('./pages/admin/AdminAuditLogsPage'));
+const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
+const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage'));
+const AdminCodingPage = lazy(() => import('./pages/admin/AdminCodingPage'));
+
+function PageLoader() {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      height: '100vh', color: 'var(--muted, #888)', fontSize: '0.875rem'
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{
+          width: 24, height: 24, border: '2.5px solid var(--border, #e5e7eb)',
+          borderTopColor: 'var(--accent-strong, #2563eb)', borderRadius: '50%',
+          animation: 'spin 0.6s linear infinite', margin: '0 auto 0.75rem'
+        }} />
+        Loading...
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <ToastProvider>
-          <Router>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+        <PreferencesProvider>
+          <ToastProvider>
+            <Router>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
 
-              {/* Candidate routes (with shared AppLayout) */}
-              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/resume" element={<ResumePage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
-                <Route path="/report" element={<ReportPage />} />
-                <Route path="/report/:sessionId" element={<ReportPage />} />
-                <Route path="/interview-setup" element={<InterviewSetupPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
+                  {/* Candidate routes (with shared AppLayout) */}
+                  <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/resume" element={<ResumePage />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
+                    <Route path="/report" element={<ReportPage />} />
+                    <Route path="/report/:sessionId" element={<ReportPage />} />
+                    <Route path="/interview-setup" element={<InterviewSetupPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
 
-                {/* Career routes */}
-                <Route path="/career/dashboard" element={<CareerDashboardPage />} />
-                <Route path="/career/jd-upload" element={<JobDescriptionPage />} />
-                <Route path="/career/skill-gap" element={<SkillGapPage />} />
-                <Route path="/career/resume-optimizer" element={<ResumeOptimizerPage />} />
-                <Route path="/career/ats-report" element={<ATSReportPage />} />
-                <Route path="/career/learning-roadmap" element={<LearningRoadmapPage />} />
-                <Route path="/career/readiness" element={<CareerReadinessPage />} />
+                    {/* Career routes */}
+                    <Route path="/career/dashboard" element={<CareerDashboardPage />} />
+                    <Route path="/career/jd-upload" element={<JobDescriptionPage />} />
+                    <Route path="/career/skill-gap" element={<SkillGapPage />} />
+                    <Route path="/career/resume-optimizer" element={<ResumeOptimizerPage />} />
+                    <Route path="/career/ats-report" element={<ATSReportPage />} />
+                    <Route path="/career/learning-roadmap" element={<LearningRoadmapPage />} />
+                    <Route path="/career/readiness" element={<CareerReadinessPage />} />
 
-                {/* Reports */}
-                <Route path="/reports" element={<ReportsPage />} />
+                    {/* Reports */}
+                    <Route path="/reports" element={<ReportsPage />} />
 
-                {/* ML Insights */}
-                <Route path="/ml-insights" element={<MLInsightsPage />} />
+                    {/* ML Insights */}
+                    <Route path="/ml-insights" element={<MLInsightsPage />} />
 
-                {/* Recruiter */}
-                <Route path="/recruiter" element={<RecruiterPage />} />
-              </Route>
+                    {/* Recruiter */}
+                    <Route path="/recruiter" element={<RecruiterPage />} />
+                  </Route>
 
-              {/* Full-screen routes (no layout) */}
-              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                <Route path="/interview/:sessionId" element={<InterviewPage />} />
-                <Route path="/coding" element={<CodingPage />} />
-                <Route path="/coding/:sessionId" element={<CodingPage />} />
-              </Route>
+                  {/* Full-screen routes (no layout) */}
+                  <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                    <Route path="/interview/:sessionId" element={<InterviewPage />} />
+                    <Route path="/coding" element={<CodingPage />} />
+                    <Route path="/coding/:sessionId" element={<CodingPage />} />
+                  </Route>
 
-              {/* Admin routes (own layout) */}
-              <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
-                <Route path="dashboard" element={<AdminDashboardPage />} />
-                <Route path="users" element={<AdminUsersPage />} />
-                <Route path="recruiters" element={<AdminRecruitersPage />} />
-                <Route path="interviews" element={<AdminInterviewsPage />} />
-                <Route path="voice" element={<AdminVoicePage />} />
-                <Route path="ai-usage" element={<AdminAIUsagePage />} />
-                <Route path="reports" element={<AdminReportsPage />} />
-                <Route path="analytics" element={<AdminAnalyticsPage />} />
-                <Route path="system-health" element={<AdminSystemHealthPage />} />
-                <Route path="audit-logs" element={<AdminAuditLogsPage />} />
-                <Route path="settings" element={<AdminSettingsPage />} />
-                <Route path="notifications" element={<AdminNotificationsPage />} />
-                <Route path="coding" element={<AdminCodingPage />} />
-              </Route>
+                  {/* Admin routes (own layout) */}
+                  <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
+                    <Route path="dashboard" element={<AdminDashboardPage />} />
+                    <Route path="users" element={<AdminUsersPage />} />
+                    <Route path="recruiters" element={<AdminRecruitersPage />} />
+                    <Route path="interviews" element={<AdminInterviewsPage />} />
+                    <Route path="voice" element={<AdminVoicePage />} />
+                    <Route path="ai-usage" element={<AdminAIUsagePage />} />
+                    <Route path="reports" element={<AdminReportsPage />} />
+                    <Route path="analytics" element={<AdminAnalyticsPage />} />
+                    <Route path="system-health" element={<AdminSystemHealthPage />} />
+                    <Route path="audit-logs" element={<AdminAuditLogsPage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
+                    <Route path="notifications" element={<AdminNotificationsPage />} />
+                    <Route path="coding" element={<AdminCodingPage />} />
+                  </Route>
 
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Router>
-        </ToastProvider>
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </Router>
+          </ToastProvider>
+        </PreferencesProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

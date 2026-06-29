@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Zap,
+  Briefcase,
+  Rocket,
+  GraduationCap,
+  Ruler,
+  BookOpen,
+  Key,
+  Loader2,
+  Download,
+  Sparkles,
+  FileDown,
+  File,
+  CheckCircle,
+  X,
+} from 'lucide-react';
 import { careerApi, resumeApi } from '../../services/api';
 import './ATSReportPage.css';
 
@@ -270,13 +287,13 @@ const ATSReportPage: React.FC = () => {
   const parsedAdditionalSkills = parseJSON(report?.additional_skills) || [];
 
   const breakdownItems = report ? [
-    { label: 'Keyword Match', score: report.keyword_score, weight: '35%', icon: '🔑' },
-    { label: 'Skills Match', score: report.skills_score, weight: '20%', icon: '⚡' },
-    { label: 'Experience', score: report.experience_score, weight: '15%', icon: '💼' },
-    { label: 'Projects', score: report.projects_score, weight: '10%', icon: '🚀' },
-    { label: 'Education', score: report.education_score, weight: '5%', icon: '🎓' },
-    { label: 'Formatting', score: report.formatting_score, weight: '10%', icon: '📐' },
-    { label: 'Readability', score: report.readability_score, weight: '5%', icon: '📖' },
+    { label: 'Keyword Match', score: report.keyword_score, weight: '35%', icon: <Key size={20} /> },
+    { label: 'Skills Match', score: report.skills_score, weight: '20%', icon: <Zap size={20} /> },
+    { label: 'Experience', score: report.experience_score, weight: '15%', icon: <Briefcase size={20} /> },
+    { label: 'Projects', score: report.projects_score, weight: '10%', icon: <Rocket size={20} /> },
+    { label: 'Education', score: report.education_score, weight: '5%', icon: <GraduationCap size={20} /> },
+    { label: 'Formatting', score: report.formatting_score, weight: '10%', icon: <Ruler size={20} /> },
+    { label: 'Readability', score: report.readability_score, weight: '5%', icon: <BookOpen size={20} /> },
   ] : [];
 
   if (fetchingData) {
@@ -291,11 +308,12 @@ const ATSReportPage: React.FC = () => {
     <div className="ats-report-page">
       <header className="career-header">
         <div>
+          <p className="cd-eyebrow">ATS Analysis</p>
           <h1>ATS Resume Analysis</h1>
           <p>Comprehensive Applicant Tracking System compatibility analysis</p>
         </div>
         <div className="header-actions">
-          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}>Dashboard</button>
+          <button type="button" className="ghost" onClick={() => navigate('/career/dashboard')}><ArrowLeft size={15} /> Dashboard</button>
           <button type="button" className="solid" onClick={() => navigate('/career/resume-optimizer')}>Resume Optimizer</button>
         </div>
       </header>
@@ -353,16 +371,16 @@ const ATSReportPage: React.FC = () => {
               <p>Overall applicant tracking system compatibility</p>
               <div className="hero-actions">
                 <button type="button" className="solid" onClick={handleOptimize} disabled={optimizing}>
-                  {optimizing ? 'Optimizing...' : 'Quick Optimize'}
+                  {optimizing ? <><Loader2 size={15} className="cd-spin" /> Optimizing...</> : <><Sparkles size={15} /> Quick Optimize</>}
                 </button>
                 <button type="button" className="solid" onClick={handleOptimizeDocx} disabled={optimizing} style={{ background: '#6366f1' }}>
-                  {optimizing ? 'Generating...' : 'Optimize as DOCX'}
+                  {optimizing ? <><Loader2 size={15} className="cd-spin" /> Generating...</> : <><FileDown size={15} /> Optimize as DOCX</>}
                 </button>
                 <button type="button" className="solid" onClick={handleOptimizePdf} disabled={optimizing} style={{ background: '#8b5cf6' }}>
-                  {optimizing ? 'Generating...' : 'Optimize as PDF'}
+                  {optimizing ? <><Loader2 size={15} className="cd-spin" /> Generating...</> : <><File size={15} /> Optimize as PDF</>}
                 </button>
                 <button type="button" className="ghost" onClick={handleDownloadReport}>
-                  Download Report
+                  <Download size={15} /> Download Report
                 </button>
               </div>
             </div>
@@ -383,7 +401,7 @@ const ATSReportPage: React.FC = () => {
                 {breakdownItems.map((item, idx) => (
                   <div key={idx} className="breakdown-card">
                     <div className="breakdown-header">
-                      <span className="breakdown-icon">{item.icon}</span>
+                      <span className="breakdown-icon" style={{ color: getScoreColor(item.score) }}>{item.icon}</span>
                       <div>
                         <h3>{item.label}</h3>
                         <span className="breakdown-weight">Weight: {item.weight}</span>
@@ -465,11 +483,11 @@ const ATSReportPage: React.FC = () => {
                 <div className="progress-bar-track large"><div className="progress-bar-fill" style={{ width: `${parsedFormatting.score}%`, background: getScoreColor(parsedFormatting.score) }} /></div>
                 <div className="format-checks">
                   <div className={`check-item ${parsedFormatting.has_tables ? 'fail' : 'pass'}`}>
-                    <span className="check-icon">{parsedFormatting.has_tables ? '✗' : '✓'}</span>
+                    <span className="check-icon">{parsedFormatting.has_tables ? <X size={12} /> : <CheckCircle size={12} />}</span>
                     <span>Tables: {parsedFormatting.has_tables ? 'Detected (ATS may not parse)' : 'None detected'}</span>
                   </div>
                   <div className={`check-item ${parsedFormatting.has_bullets ? 'pass' : 'fail'}`}>
-                    <span className="check-icon">{parsedFormatting.has_bullets ? '✓' : '✗'}</span>
+                    <span className="check-icon">{parsedFormatting.has_bullets ? <CheckCircle size={12} /> : <X size={12} />}</span>
                     <span>Bullet Points: {parsedFormatting.has_bullets ? 'Found' : 'Not found'}</span>
                   </div>
                 </div>
@@ -590,10 +608,10 @@ const ATSReportPage: React.FC = () => {
 
               <div className="rec-actions">
                 <button type="button" className="solid" onClick={handleOptimize} disabled={optimizing}>
-                  {optimizing ? 'Optimizing...' : 'Quick Optimize'}
+                  {optimizing ? <><Loader2 size={15} className="cd-spin" /> Optimizing...</> : <><Sparkles size={15} /> Quick Optimize</>}
                 </button>
                 <button type="button" className="solid" onClick={handleOptimizeDocx} disabled={optimizing} style={{ background: '#6366f1' }}>
-                  {optimizing ? 'Generating...' : 'Optimize as DOCX'}
+                  {optimizing ? <><Loader2 size={15} className="cd-spin" /> Generating...</> : <><FileDown size={15} /> Optimize as DOCX</>}
                 </button>
                 <button type="button" className="ghost" onClick={() => navigate('/career/skill-gap')}>
                   View Skill Gap
@@ -637,13 +655,13 @@ const ATSReportPage: React.FC = () => {
                 })()}
                 <div className="optimized-actions">
                   <button type="button" className="solid" onClick={handleDownloadOptimized}>
-                    Download TXT
+                    <Download size={15} /> Download TXT
                   </button>
                   <button type="button" className="solid" onClick={handleDownloadOptimizedDocx} style={{ background: '#6366f1' }}>
-                    Download DOCX
+                    <FileDown size={15} /> Download DOCX
                   </button>
                   <button type="button" className="solid" onClick={handleDownloadOptimizedPdf} style={{ background: '#8b5cf6' }}>
-                    Download PDF
+                    <File size={15} /> Download PDF
                   </button>
                   <button type="button" className="ghost" onClick={() => setShowOptimized(false)}>
                     Close Preview

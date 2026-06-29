@@ -68,7 +68,7 @@ allowed_origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://(ai-interview-frontend\.up\.railway\.app|.*\.vercel\.app)$",
+    allow_origin_regex=r"https://(ai-interview-frontend\.up\.railway\.app|.*\.vercel\.app|.*\.web\.app|.*\.firebaseapp\.com)$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -135,7 +135,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     # Include CORS headers directly since middleware may not wrap exception responses
     origin = request.headers.get("origin", "")
     allowed = origin in allowed_origins or any(
-        origin.endswith(suffix) for suffix in [".vercel.app"]
+        origin.endswith(suffix) for suffix in [".vercel.app", ".web.app", ".firebaseapp.com"]
     ) if origin else False
     headers = {}
     if allowed:

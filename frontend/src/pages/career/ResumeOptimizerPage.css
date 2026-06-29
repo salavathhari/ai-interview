@@ -1,23 +1,179 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Resume Optimizer — Professional AI Resume Enhancement
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .optimizer-page {
-  padding: 32px 40px 48px;
+  padding: 28px 32px 48px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  min-height: 100vh;
+  gap: 24px;
+  min-height: 100svh;
   background: var(--bg);
 }
 
+/* ── Header ── */
+.career-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.career-header .cd-eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.career-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+.career-header p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Buttons ── */
+.ghost, .solid {
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.ghost {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--ink);
+}
+
+.ghost:hover {
+  border-color: #cbd5e1;
+  background: var(--border-light);
+}
+
+.solid {
+  background: var(--accent-strong);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.solid:hover:not(:disabled) {
+  background: #1d4ed8;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
 .solid:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* ── Error ── */
+.error-banner {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: opt-slide-in 0.2s ease-out;
+}
+
+@keyframes opt-slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Panel ── */
+.panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-strong), #7c3aed);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.panel:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.panel:hover::before {
+  opacity: 1;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+
+.panel-header p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+
+/* ── Layout ── */
 .optimizer-layout {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+/* ── Controls ── */
 .controls-form {
   display: flex;
   flex-direction: column;
@@ -27,24 +183,41 @@
 .input-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .input-field span {
-  font-weight: 500;
-  font-size: 13px;
+  font-weight: 600;
+  font-size: 11px;
   color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .input-field select {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
   padding: 10px 14px;
-  font-size: 14px;
+  font-size: 13px;
   font-family: inherit;
   background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
 }
 
+.input-field select:focus {
+  outline: none;
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Loading Overlay ── */
 .optimizing-overlay {
   display: flex;
   flex-direction: column;
@@ -54,14 +227,40 @@
   padding: 80px 0;
 }
 
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-strong);
+  border-radius: 50%;
+  animation: opt-spin 0.8s linear infinite;
+}
+
+@keyframes opt-spin {
+  to { transform: rotate(360deg); }
+}
+
 .optimizing-overlay p {
   color: var(--muted);
   font-size: 14px;
+  font-weight: 500;
 }
 
+/* ── Loading State ── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 120px 0;
+  color: var(--muted);
+}
+
+/* ── Result Actions ── */
 .result-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 8px;
 }
 
@@ -71,6 +270,7 @@
   gap: 20px;
 }
 
+/* ── Comparison Grid ── */
 .comparison-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -78,12 +278,13 @@
   align-items: start;
 }
 
+/* ── Text Preview ── */
 .text-preview {
   background: var(--bg);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: 12px;
-  padding: 16px;
-  font-size: 14px;
+  padding: 18px;
+  font-size: 13px;
   line-height: 1.7;
   color: var(--ink);
   max-height: 400px;
@@ -91,24 +292,33 @@
   white-space: pre-wrap;
 }
 
+/* ── Improvement List ── */
 .improvement-list {
   margin: 0;
   padding: 0 0 0 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .improvement-list li {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
-  color: var(--ink);
-  padding: 10px 14px;
+  color: #166534;
+  padding: 12px 16px;
   border-radius: 10px;
   background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  border: 1.5px solid #bbf7d0;
+  border-left: 3px solid #10b981;
+  transition: all 0.15s;
 }
 
+.improvement-list li:hover {
+  border-color: #10b981;
+  transform: translateX(2px);
+}
+
+/* ── Result Grid ── */
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -116,56 +326,67 @@
   align-items: start;
 }
 
+/* ── Skill Tags ── */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .skill-tag {
   padding: 6px 14px;
   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid;
+  transition: all 0.2s;
+}
+
+.skill-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .skill-tag.optimized {
   background: #dbeafe;
   color: #1e40af;
+  border-color: #bfdbfe;
 }
 
 .skill-tag.keyword {
   background: #fef3c7;
   color: #92400e;
+  border-color: #fde68a;
 }
 
+/* ── Experience Items ── */
 .experience-item {
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--ink);
+  transition: background 0.15s;
 }
 
 .experience-item:last-child {
   border-bottom: none;
 }
 
-@media (max-width: 1100px) {
-  .comparison-grid {
-    grid-template-columns: 1fr;
-  }
+.experience-item:hover {
+  background: rgba(37, 99, 235, 0.02);
+  margin: 0 -18px;
+  padding: 12px 18px;
+}
 
-  .result-grid {
-    grid-template-columns: 1fr;
-  }
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .comparison-grid { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .optimizer-page {
-    padding: 24px;
-  }
-
-  .career-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .header-actions {
-    width: 100%;
-  }
+  .optimizer-page { padding: 16px; }
+  .career-header { flex-direction: column; }
+  .header-actions { width: 100%; }
 }

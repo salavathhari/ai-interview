@@ -22,17 +22,25 @@
 .history-drawer-header button {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--text-dim);
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.history-drawer-header button:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
 }
 
 .history-empty {
   color: var(--text-dim);
   font-size: 13px;
   text-align: center;
-  padding: 12px;
+  padding: 16px;
 }
 
 .history-table {
@@ -42,11 +50,14 @@
 }
 
 .history-table th {
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--text-dim);
+  font-weight: 700;
   text-align: left;
-  padding: 4px 8px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--coding-border);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .history-table td {
@@ -55,8 +66,16 @@
   color: var(--text-primary);
 }
 
+.history-table tbody tr {
+  transition: background 0.1s;
+}
+
 .history-table tbody tr:hover {
   background: var(--bg-elevated);
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .lang-badge {
