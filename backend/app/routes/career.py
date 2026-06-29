@@ -398,7 +398,25 @@ def get_job_descriptions(
         (page - 1) * per_page
     ).limit(per_page).all()
     return {
-        "items": items,
+        "items": [
+            {
+                "id": jd.id,
+                "title": jd.title,
+                "company": jd.company,
+                "source": jd.source,
+                "required_skills": json.loads(jd.required_skills) if jd.required_skills else [],
+                "preferred_skills": json.loads(jd.preferred_skills) if jd.preferred_skills else [],
+                "technologies": json.loads(jd.technologies) if jd.technologies else [],
+                "experience_years": jd.experience_years,
+                "education_requirements": jd.education_requirements,
+                "soft_skills": json.loads(jd.soft_skills) if jd.soft_skills else [],
+                "keywords": json.loads(jd.keywords) if jd.keywords else [],
+                "responsibilities": json.loads(jd.responsibilities) if jd.responsibilities else [],
+                "is_analyzed": jd.is_analyzed,
+                "created_at": jd.created_at,
+            }
+            for jd in items
+        ],
         "total": total,
         "page": page,
         "per_page": per_page,
