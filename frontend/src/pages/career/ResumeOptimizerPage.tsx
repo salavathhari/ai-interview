@@ -39,6 +39,8 @@ interface OptimizedResume {
   optimized_projects: string[];
   optimized_keywords: string[];
   optimized_experience: string[];
+  format: string;
+  file_path: string | null;
 }
 
 const ResumeOptimizerPage: React.FC = () => {
@@ -89,6 +91,8 @@ const ResumeOptimizerPage: React.FC = () => {
         optimized_projects: typeof raw.optimized_projects === 'string' ? JSON.parse(raw.optimized_projects) : (raw.optimized_projects || []),
         optimized_keywords: typeof raw.optimized_keywords === 'string' ? JSON.parse(raw.optimized_keywords) : (raw.optimized_keywords || []),
         optimized_experience: typeof raw.optimized_experience === 'string' ? JSON.parse(raw.optimized_experience) : (raw.optimized_experience || []),
+        format: raw.format || 'pdf',
+        file_path: raw.file_path || null,
       });
       const analysis = analyses.find((a) => a.id === selectedAnalysis);
       if (analysis) {
@@ -101,16 +105,63 @@ const ResumeOptimizerPage: React.FC = () => {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!result) return;
-    const blob = new Blob([result.optimized_text], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'optimized_resume.txt';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const fmt = result.format || 'pdf';
+    if (fmt === 'docx') {
+      try {
+        const resp = await careerApi.downloadOptimizedDocx(result.id);
+        const blob = new Blob([resp.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'optimized_resume.docx';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch {
+        const blob = new Blob([result.optimized_text], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'optimized_resume.txt';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    } else if (fmt === 'pdf') {
+      try {
+        const resp = await careerApi.downloadOptimizedPdf(result.id);
+        const blob = new Blob([resp.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'optimized_resume.pdf';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch {
+        const blob = new Blob([result.optimized_text], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'optimized_resume.txt';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    } else {
+      const blob = new Blob([result.optimized_text], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'optimized_resume.txt';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
   };
 
   if (fetchingData) {

@@ -6,6 +6,9 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: true,
+    hmr: {
+      overlay: false,
+    },
   },
   build: {
     rollupOptions: {

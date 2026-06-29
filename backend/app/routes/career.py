@@ -1066,6 +1066,9 @@ def optimize_resume(
         jd.raw_text if jd else None,
     )
 
+    original_ext = os.path.splitext(resume.filename or "")[1].lower() if resume.filename else ""
+    resume_format = "docx" if original_ext == ".docx" else "pdf"
+
     optimized = OptimizedResume(
         user_id=current_user.id,
         resume_analysis_id=analysis.id,
@@ -1076,11 +1079,66 @@ def optimize_resume(
         optimized_projects=json.dumps(optimized_data.get("optimized_projects", [])),
         optimized_keywords=json.dumps(optimized_data.get("optimized_keywords", [])),
         optimized_experience=json.dumps(optimized_data.get("optimized_experience", [])),
-        format="pdf",
+        format=resume_format,
     )
     db.add(optimized)
     db.commit()
     db.refresh(optimized)
+
+    # Generate format-preserved file matching the original upload format
+    try:
+        optimized_text = optimized_data.get("optimized_text", resume.extracted_text)
+        analysis_dict = CareerService.calculate_comprehensive_ats_score(
+            resume.extracted_text, jd.raw_text if jd else None
+        )
+
+        if original_ext == ".docx" and resume.file_path and os.path.exists(resume.file_path):
+            docx_bytes = CareerService.optimize_docx_format_preserving(
+                resume.file_path, resume.extracted_text, analysis_dict, jd.raw_text if jd else None
+            )
+            docx_dir = os.path.join("uploads", "optimized")
+            os.makedirs(docx_dir, exist_ok=True)
+            docx_path = os.path.join(docx_dir, f"optimized_{optimized.id}.docx")
+            with open(docx_path, "wb") as f:
+                f.write(docx_bytes)
+            optimized.file_path = docx_path
+            optimized.format = "docx"
+        else:
+            from reportlab.lib.pagesizes import letter
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+            from reportlab.lib.styles import getSampleStyleSheet
+            from reportlab.lib.units import inch
+            import io as _io
+
+            output = _io.BytesIO()
+            pdf_doc = SimpleDocTemplate(output, pagesize=letter,
+                rightMargin=0.5*inch, leftMargin=0.5*inch,
+                topMargin=0.5*inch, bottomMargin=0.5*inch)
+            styles = getSampleStyleSheet()
+            story = []
+            for line in optimized_text.split("\n"):
+                safe = line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                if not safe.strip():
+                    story.append(Spacer(1, 4))
+                elif safe.strip().isupper() or (len(safe.strip()) < 60 and safe.strip().replace(" ", "").isupper()):
+                    story.append(Spacer(1, 6))
+                    story.append(Paragraph(safe, styles["Heading2"]))
+                else:
+                    story.append(Paragraph(safe, styles["Normal"]))
+            pdf_doc.build(story)
+            output.seek(0)
+            pdf_dir = os.path.join("uploads", "optimized")
+            os.makedirs(pdf_dir, exist_ok=True)
+            pdf_path = os.path.join(pdf_dir, f"optimized_{optimized.id}.pdf")
+            with open(pdf_path, "wb") as f:
+                f.write(output.getvalue())
+            optimized.file_path = pdf_path
+            optimized.format = "pdf"
+
+        db.commit()
+        db.refresh(optimized)
+    except Exception:
+        pass
 
     # Trigger readiness recalculation after optimization
     try:

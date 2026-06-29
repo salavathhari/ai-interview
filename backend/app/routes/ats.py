@@ -658,7 +658,11 @@ def download_optimized_pdf(
         raise HTTPException(status_code=404, detail="Optimized resume not found")
 
     docx_path = os.path.join("uploads", "optimized", f"optimized_{optimize_id}.docx")
-    if os.path.exists(docx_path):
+    pdf_path = os.path.join("uploads", "optimized", f"optimized_{optimize_id}.pdf")
+    if os.path.exists(pdf_path):
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
+    elif os.path.exists(docx_path):
         with open(docx_path, "rb") as f:
             docx_bytes = f.read()
         pdf_bytes = CareerService.docx_to_pdf(docx_bytes)
