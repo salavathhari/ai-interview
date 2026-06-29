@@ -229,8 +229,8 @@
 .lr-goal-icon svg { width: 28px; height: 28px; }
 
 .lr-goal-text { min-width: 0; flex: 1; }
-.lr-goal-text h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px 0; word-wrap: break-word; }
-.lr-goal-text p { font-size: 14px; color: rgba(255,255,255,0.7); margin: 0; }
+.lr-goal-text h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px 0; word-wrap: break-word; color: #fff; }
+.lr-goal-text p { font-size: 14px; color: rgba(255,255,255,0.75); margin: 0; }
 
 .lr-goal-scores { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
 
