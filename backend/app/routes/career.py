@@ -806,6 +806,27 @@ def get_skill_gap(
 #  LEARNING ROADMAP
 # ──────────────────────────────────────────────
 
+
+def _calculate_learning_streak(db: Session, user_id: int) -> int:
+    """Calculate consecutive-day learning streak from LearningProgress records."""
+    from datetime import date, timedelta
+    from app.models.intelligence import LearningProgress
+
+    dates = set()
+    for p in db.query(LearningProgress.completed_at).filter(
+        LearningProgress.user_id == user_id,
+        LearningProgress.completed_at.isnot(None),
+    ).all():
+        if p[0]:
+            dates.add(p[0].date() if hasattr(p[0], 'date') else p[0])
+
+    streak = 0
+    d = date.today()
+    while d in dates:
+        streak += 1
+        d -= timedelta(days=1)
+    return streak
+
 @router.post("/roadmap/generate", response_model=LearningRoadmapResponse)
 @limiter.limit("3/minute")
 def generate_roadmap(
@@ -869,7 +890,7 @@ def get_current_roadmap(
             "created_at": str(roadmap.created_at) if roadmap.created_at else None,
         },
         "phases": json.loads(roadmap.phases) if roadmap.phases else [],
-        "daily_plan": json.loads(roadmap.daily_plan) if roadmap.daily_plan else {},
+        "daily_plan": {**(json.loads(roadmap.daily_plan) if roadmap.daily_plan else {}), "streak_days": _calculate_learning_streak(db, current_user.id)},
         "mentor_tips": json.loads(roadmap.mentor_tips) if roadmap.mentor_tips else [],
         "skill_gap_summary": json.loads(roadmap.skill_gap_summary) if roadmap.skill_gap_summary else {},
     }
@@ -997,6 +1018,7 @@ def generate_enhanced_roadmap(
     db.refresh(roadmap)
 
     roadmap_data["roadmap_id"] = roadmap.id
+    roadmap_data.setdefault("daily_plan", {})["streak_days"] = _calculate_learning_streak(db, current_user.id)
     return roadmap_data
 
 
@@ -1813,6 +1835,28 @@ def update_roadmap_progress(
     
     if completed_topics is not None:
         roadmap.completed_topics = json.dumps(completed_topics)
+
+        # Create LearningProgress records for newly completed topics so streak tracking works
+        from app.models.intelligence import LearningProgress
+        from datetime import datetime, timezone
+        existing_progress = {
+            p.topic_name for p in db.query(LearningProgress.topic_name).filter(
+                LearningProgress.user_id == current_user.id,
+                LearningProgress.roadmap_id == roadmap_id,
+            ).all()
+        }
+        for topic_name in completed_topics:
+            if topic_name not in existing_progress:
+                db.add(LearningProgress(
+                    user_id=current_user.id,
+                    roadmap_id=roadmap_id,
+                    topic_name=topic_name,
+                    status="completed",
+                    progress_percentage=100.0,
+                    started_at=datetime.now(timezone.utc),
+                    completed_at=datetime.now(timezone.utc),
+                ))
+        db.flush()
     
     # Count all individual topics across all phases for accurate percentage
     phases = json.loads(roadmap.phases) if roadmap.phases else []
