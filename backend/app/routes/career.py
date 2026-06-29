@@ -853,7 +853,21 @@ def get_current_roadmap(
         return {"roadmap": None, "message": "No active roadmap. Generate one to get started."}
 
     return {
-        "roadmap": roadmap,
+        "roadmap": {
+            "id": roadmap.id,
+            "career_goal": roadmap.career_goal,
+            "total_hours": roadmap.total_hours,
+            "estimated_weeks": roadmap.estimated_weeks,
+            "current_readiness": roadmap.current_readiness,
+            "target_readiness": roadmap.target_readiness,
+            "interview_readiness": roadmap.interview_readiness,
+            "coding_readiness": roadmap.coding_readiness,
+            "completed_topics": roadmap.completed_topics,
+            "status": roadmap.status,
+            "progress_percentage": roadmap.progress_percentage,
+            "version": roadmap.version,
+            "created_at": str(roadmap.created_at) if roadmap.created_at else None,
+        },
         "phases": json.loads(roadmap.phases) if roadmap.phases else [],
         "daily_plan": json.loads(roadmap.daily_plan) if roadmap.daily_plan else {},
         "mentor_tips": json.loads(roadmap.mentor_tips) if roadmap.mentor_tips else [],

@@ -118,21 +118,20 @@ const LearningRoadmapPage: React.FC = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  // Auto-generate when navigated from SkillGapPage with ?gap= and no active roadmap
+  // Auto-generate when navigated from SkillGapPage with ?gap=
   useEffect(() => {
-    if (!loading && !roadmapData && !generating) {
-      const urlGapId = Number(searchParams.get('gap'));
-      if (urlGapId && selectedGapId === urlGapId) {
-        handleGenerateEnhanced();
-      }
+    const urlGapId = Number(searchParams.get('gap'));
+    if (!loading && !generating && urlGapId && selectedGapId === urlGapId && !roadmapData) {
+      handleGenerateEnhanced();
     }
   }, [loading, selectedGapId]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [currentResp, gapsResp, historyResp] = await Promise.all([
-        careerApi.getCurrentRoadmap().catch(() => ({ data: { roadmap: null } })),
+      const urlGapId = Number(searchParams.get('gap'));
+
+      const [gapsResp, historyResp] = await Promise.all([
         careerApi.getSkillGapAnalyses(),
         careerApi.getRoadmapHistory().catch(() => ({ data: { roadmaps: [] } })),
       ]);
@@ -141,36 +140,38 @@ const LearningRoadmapPage: React.FC = () => {
       setSavedRoadmaps(historyResp.data.roadmaps || []);
 
       // Auto-select gap from URL query param or if there's just one
-      const urlGapId = Number(searchParams.get('gap'));
       if (urlGapId && gaps.some((g: any) => g.id === urlGapId)) {
         setSelectedGapId(urlGapId);
       } else if (gaps.length === 1 && !selectedGapId) {
         setSelectedGapId(gaps[0].id);
       }
 
-      // Load active roadmap with full metadata
-      if (currentResp.data.roadmap) {
-        const rm = currentResp.data;
-        const roadmap = rm.roadmap;
-        try {
-          const completed = roadmap.completed_topics ? JSON.parse(roadmap.completed_topics) : [];
-          setCompletedTopics(new Set(completed));
-        } catch { setCompletedTopics(new Set()); }
+      // Only load existing roadmap if not navigating with ?gap= (which means user wants a new generation)
+      if (!urlGapId) {
+        const currentResp = await careerApi.getCurrentRoadmap().catch(() => ({ data: { roadmap: null } }));
+        if (currentResp.data.roadmap) {
+          const rm = currentResp.data;
+          const roadmap = rm.roadmap;
+          try {
+            const completed = roadmap.completed_topics ? JSON.parse(roadmap.completed_topics) : [];
+            setCompletedTopics(new Set(completed));
+          } catch { setCompletedTopics(new Set()); }
 
-        setRoadmapData({
-          roadmap_id: roadmap.id,
-          career_goal: roadmap.career_goal || 'Software Engineer',
-          total_hours: roadmap.total_hours || 0,
-          estimated_weeks: roadmap.estimated_weeks || 0,
-          current_readiness: roadmap.current_readiness || 0,
-          target_readiness: roadmap.target_readiness || 85,
-          phases: rm.phases || [],
-          daily_plan: rm.daily_plan || { today_focus: 'Continue learning', hours_today: 2, activities: [], streak_days: 0 },
-          mentor_tips: rm.mentor_tips || [],
-          skill_gap_summary: rm.skill_gap_summary || { matched_count: 0, missing_count: 0, priority_count: 0, match_percentage: 0 },
-          interview_readiness: roadmap.interview_readiness || 0,
-          coding_readiness: roadmap.coding_readiness || 0,
-        });
+          setRoadmapData({
+            roadmap_id: roadmap.id,
+            career_goal: roadmap.career_goal || 'Software Engineer',
+            total_hours: roadmap.total_hours || 0,
+            estimated_weeks: roadmap.estimated_weeks || 0,
+            current_readiness: roadmap.current_readiness || 0,
+            target_readiness: roadmap.target_readiness || 85,
+            phases: rm.phases || [],
+            daily_plan: rm.daily_plan || { today_focus: 'Continue learning', hours_today: 2, activities: [], streak_days: 0 },
+            mentor_tips: rm.mentor_tips || [],
+            skill_gap_summary: rm.skill_gap_summary || { matched_count: 0, missing_count: 0, priority_count: 0, match_percentage: 0 },
+            interview_readiness: roadmap.interview_readiness || 0,
+            coding_readiness: roadmap.coding_readiness || 0,
+          });
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load data');
