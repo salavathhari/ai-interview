@@ -13,6 +13,7 @@ import {
   ClipboardCheck,
   Map,
   ChevronRight,
+  CheckCircle2,
 } from 'lucide-react';
 import { careerApi, resumeApi } from '../../services/api';
 import './SkillGapPage.css';
@@ -65,6 +66,7 @@ const SkillGapPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [analysisPage, setAnalysisPage] = useState(1);
   const [analysisTotal, setAnalysisTotal] = useState(0);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,9 +97,12 @@ const SkillGapPage: React.FC = () => {
     if (!selectedResume) return;
     try {
       setLoading(true);
+      setAnalysisComplete(false);
       setError(null);
       const resp = await careerApi.analyzeCareer(selectedResume, selectedJd || undefined);
       setResult(resp.data.skill_gap || null);
+      setAnalysisComplete(true);
+      setTimeout(() => setAnalysisComplete(false), 2500);
       loadOptions();
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Analysis failed');
@@ -202,11 +207,17 @@ const SkillGapPage: React.FC = () => {
             </label>
             <button
               type="button"
-              className="sg-btn sg-btn-primary"
+              className={`sg-btn sg-btn-primary ${loading ? 'btn--analyzing btn--pulse' : ''} ${analysisComplete ? 'btn--success' : ''}`}
               onClick={handleAnalyze}
               disabled={!selectedResume || loading}
             >
-              {loading ? <><Loader2 size={15} className="sg-spin" /> Analyzing...</> : <><Zap size={15} /> Analyze Skills</>}
+              {loading ? (
+                <><Loader2 size={15} className="btn-spinner" /> Analyzing...</>
+              ) : analysisComplete ? (
+                <><CheckCircle2 size={15} /> Analysis Complete</>
+              ) : (
+                <><Zap size={15} /> Analyze Skills</>
+              )}
             </button>
           </div>
         </div>

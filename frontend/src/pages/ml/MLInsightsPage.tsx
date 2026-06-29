@@ -10,6 +10,7 @@ import {
   BarChart3,
   LayoutDashboard,
   ArrowLeft,
+  CheckCircle2,
 } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { useNavigate } from 'react-router-dom';
@@ -111,6 +112,7 @@ const MLInsightsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasRun, setHasRun] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
 
   const [classification, setClassification] = useState<Classification | null>(null);
   const [skills, setSkills] = useState<SkillData | null>(null);
@@ -133,7 +135,7 @@ const MLInsightsPage: React.FC = () => {
 
   const runFullAnalysis = useCallback(async () => {
     if (!selectedResumeId) return;
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setAnalysisComplete(false);
     try {
       const r = await mlApi.analyzeFull(selectedResumeId);
       const d = r.data;
@@ -145,6 +147,8 @@ const MLInsightsPage: React.FC = () => {
       setCareerPath(d.career_path?.recommended_paths || []);
       setSkillGap(d.skill_gap);
       setHasRun(true);
+      setAnalysisComplete(true);
+      setTimeout(() => setAnalysisComplete(false), 2500);
       loadAnalytics();
     } catch (e: any) { setError(e.response?.data?.detail || 'Analysis failed'); }
     finally { setLoading(false); }
@@ -193,8 +197,18 @@ const MLInsightsPage: React.FC = () => {
             <option value="">Select a resume...</option>
             {resumes.map(r => <option key={r.id} value={r.id}>{r.filename}</option>)}
           </select>
-          <button className="ml-btn-primary" onClick={runFullAnalysis} disabled={!selectedResumeId || loading}>
-            {loading ? <><Loader2 size={15} className="ml-spin" /> Analyzing...</> : <><Sparkles size={15} /> Run Analysis</>}
+          <button
+            className={`ml-btn-primary ${loading ? 'btn--analyzing btn--pulse' : ''} ${analysisComplete ? 'btn--success' : ''}`}
+            onClick={runFullAnalysis}
+            disabled={!selectedResumeId || loading}
+          >
+            {loading ? (
+              <><Loader2 size={15} className="btn-spinner" /> Analyzing...</>
+            ) : analysisComplete ? (
+              <><CheckCircle2 size={15} /> Analysis Complete</>
+            ) : (
+              <><Sparkles size={15} /> Run Analysis</>
+            )}
           </button>
         </div>
       </div>

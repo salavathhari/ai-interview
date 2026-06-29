@@ -37,9 +37,20 @@
 
 .analytics-header span {
   display: block;
-  color: var(--muted);
+  color: #475569;
   margin-top: 6px;
   font-size: 14px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .analytics-header span {
+  color: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .analytics-header span {
+    color: #94a3b8;
+  }
 }
 
 .analytics-header button {
@@ -94,9 +105,22 @@
 }
 
 .tab-btn.active {
-  color: var(--accent-strong);
+  color: #1d4ed8;
   border-bottom-color: var(--accent-strong);
-  background: rgba(37, 99, 235, 0.04);
+  background: rgba(37, 99, 235, 0.06);
+  font-weight: 700;
+}
+
+[data-theme="dark"] .tab-btn.active {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tab-btn.active {
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.1);
+  }
 }
 
 /* ─── Summary Cards ─────────────────────────────────────────────────────── */

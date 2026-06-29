@@ -13,6 +13,7 @@ import {
   Download,
   Sparkles,
   FileDown,
+  CheckCircle2,
   File,
   CheckCircle,
   X,
@@ -82,6 +83,7 @@ const ATSReportPage: React.FC = () => {
   const [optimizing, setOptimizing] = useState(false);
   const [optimized, setOptimized] = useState<OptimizedResume | null>(null);
   const [showOptimized, setShowOptimized] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => { loadData(); }, []);
@@ -108,11 +110,14 @@ const ATSReportPage: React.FC = () => {
     if (!selectedResume) return;
     try {
       setLoading(true);
+      setAnalysisComplete(false);
       setError(null);
       setOptimized(null);
       setShowOptimized(false);
       const resp = await careerApi.analyzeATS(selectedResume, selectedJd || undefined);
       setReport(resp.data);
+      setAnalysisComplete(true);
+      setTimeout(() => setAnalysisComplete(false), 2500);
       loadData();
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Analysis failed');
@@ -345,8 +350,19 @@ const ATSReportPage: React.FC = () => {
                 ))}
               </select>
             </label>
-            <button type="button" className="solid" onClick={handleAnalyze} disabled={!selectedResume || loading}>
-              {loading ? 'Analyzing...' : 'Analyze Resume'}
+            <button
+              type="button"
+              className={`solid ${loading ? 'btn--analyzing btn--pulse' : ''} ${analysisComplete ? 'btn--success' : ''}`}
+              onClick={handleAnalyze}
+              disabled={!selectedResume || loading}
+            >
+              {loading ? (
+                <><Loader2 size={15} className="btn-spinner" /> Analyzing...</>
+              ) : analysisComplete ? (
+                <><CheckCircle2 size={15} /> Analysis Complete</>
+              ) : (
+                'Analyze Resume'
+              )}
             </button>
           </div>
         </div>

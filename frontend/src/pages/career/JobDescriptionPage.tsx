@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { careerApi } from '../../services/api';
-import { ArrowRight, Trash2, Search, FileText, Upload, Loader2 } from 'lucide-react';
+import { ArrowRight, Trash2, Search, FileText, Upload, Loader2, CheckCircle2 } from 'lucide-react';
 import './JobDescriptionPage.css';
 
 interface JobDescription {
@@ -48,6 +48,8 @@ const JobDescriptionPage: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedJd, setSelectedJd] = useState<JobDescription | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pasteAnalysisComplete, setPasteAnalysisComplete] = useState(false);
+  const [reanalyzeComplete, setReanalyzeComplete] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,6 +128,7 @@ const JobDescriptionPage: React.FC = () => {
     try {
       setUploading(true);
       setError(null);
+      setPasteAnalysisComplete(false);
       const formData = new FormData();
       formData.append('raw_text', pasteText);
       formData.append('title', title);
@@ -133,6 +136,8 @@ const JobDescriptionPage: React.FC = () => {
 
       const resp = await careerApi.uploadJobDescription(formData);
       setSelectedJd(resp.data);
+      setPasteAnalysisComplete(true);
+      setTimeout(() => setPasteAnalysisComplete(false), 2500);
       setTitle('');
       setCompany('');
       setPasteText('');
@@ -159,8 +164,11 @@ const JobDescriptionPage: React.FC = () => {
     try {
       setAnalyzing(jdId);
       setError(null);
+      setReanalyzeComplete(null);
       const resp = await careerApi.analyzeJobDescription(jdId);
       setSelectedJd(resp.data);
+      setReanalyzeComplete(jdId);
+      setTimeout(() => setReanalyzeComplete(null), 2500);
       loadJDs();
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to re-analyze JD');
@@ -306,8 +314,15 @@ const JobDescriptionPage: React.FC = () => {
                     required
                   />
                 </label>
-                <button type="submit" className="solid" disabled={!pasteText.trim() || !title.trim() || uploading}>
-                  {uploading ? <><Loader2 size={16} className="spin" /> Analyzing...</> : <><FileText size={16} /> Analyze JD</>}
+                <button type="submit" className={`solid ${uploading ? 'btn--analyzing btn--pulse' : ''} ${pasteAnalysisComplete ? 'btn--success' : ''}`}
+                  disabled={!pasteText.trim() || !title.trim() || uploading}>
+                  {uploading ? (
+                    <><Loader2 size={16} className="btn-spinner" /> Analyzing...</>
+                  ) : pasteAnalysisComplete ? (
+                    <><CheckCircle2 size={16} /> Analysis Complete</>
+                  ) : (
+                    <><FileText size={16} /> Analyze JD</>
+                  )}
                 </button>
               </form>
             )}
@@ -322,21 +337,33 @@ const JobDescriptionPage: React.FC = () => {
                   {!selectedJd.is_analyzed && (
                     <button
                       type="button"
-                      className="solid small"
+                      className={`solid small ${analyzing === selectedJd.id ? 'btn--analyzing btn--pulse' : ''} ${reanalyzeComplete === selectedJd.id ? 'btn--success' : ''}`}
                       onClick={() => reanalyzeJD(selectedJd.id)}
                       disabled={analyzing === selectedJd.id}
                     >
-                      {analyzing === selectedJd.id ? 'Analyzing...' : 'Analyze Now'}
+                      {analyzing === selectedJd.id ? (
+                        <><Loader2 size={15} className="btn-spinner" /> Analyzing...</>
+                      ) : reanalyzeComplete === selectedJd.id ? (
+                        <><CheckCircle2 size={15} /> Complete</>
+                      ) : (
+                        'Analyze Now'
+                      )}
                     </button>
                   )}
                   {selectedJd.is_analyzed && (
                     <button
                       type="button"
-                      className="ghost small"
+                      className={`ghost small ${analyzing === selectedJd.id ? 'btn--analyzing' : ''} ${reanalyzeComplete === selectedJd.id ? 'btn--success' : ''}`}
                       onClick={() => reanalyzeJD(selectedJd.id)}
                       disabled={analyzing === selectedJd.id}
                     >
-                      {analyzing === selectedJd.id ? 'Re-analyzing...' : 'Re-analyze'}
+                      {analyzing === selectedJd.id ? (
+                        <><Loader2 size={15} className="btn-spinner" /> Re-analyzing...</>
+                      ) : reanalyzeComplete === selectedJd.id ? (
+                        <><CheckCircle2 size={15} /> Complete</>
+                      ) : (
+                        'Re-analyze'
+                      )}
                     </button>
                   )}
                 </div>

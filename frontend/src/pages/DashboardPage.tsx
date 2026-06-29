@@ -4,8 +4,9 @@ import { resumeApi, interviewApi, analyticsApi } from '../services/api';
 import {
   Plus, Download, Mic, FileText, Sparkles, BarChart3, Brain,
   Users, TrendingUp, AlertTriangle, Star, Play, Upload,
-  ChevronRight, Calendar
+  ChevronRight, Calendar, Loader2
 } from 'lucide-react';
+import { Skeleton } from '../components/ui/Skeleton';
 import './DashboardPage.css';
 
 const DashboardPage: React.FC = () => {
@@ -14,6 +15,7 @@ const DashboardPage: React.FC = () => {
     const [interviews, setInterviews] = useState<any[]>([]);
     const [analytics, setAnalytics] = useState<any>(null);
     const [role, setRole] = useState('');
+    const [metricsLoading, setMetricsLoading] = useState(true);
     const navigate = useNavigate();
 
     const performancePoints = useMemo(() => {
@@ -80,6 +82,8 @@ const DashboardPage: React.FC = () => {
             setAnalytics(resp.data);
         } catch (error) {
             console.error(error);
+        } finally {
+            setMetricsLoading(false);
         }
     };
 
@@ -165,30 +169,45 @@ const DashboardPage: React.FC = () => {
 
             {/* Metrics */}
             <section className="metric-grid">
-                <article className="metric-card">
-                    <div className="metric-icon"><Users size={20} /></div>
-                    <p>Total Interviews</p>
-                    <h3>{analytics?.total_interviews ?? interviews.length}</h3>
-                    <span>Sessions completed</span>
-                </article>
-                <article className="metric-card">
-                    <div className="metric-icon"><TrendingUp size={20} /></div>
-                    <p>Average Score</p>
-                    <h3>{analytics ? `${analytics.average_score.toFixed(1)}%` : '0.0%'}</h3>
-                    <span>Across all rounds</span>
-                </article>
-                <article className="metric-card">
-                    <div className="metric-icon"><AlertTriangle size={20} /></div>
-                    <p>Weakest Topic</p>
-                    <h3>{weakestTopic}</h3>
-                    <span>Priority to improve</span>
-                </article>
-                <article className="metric-card">
-                    <div className="metric-icon"><Star size={20} /></div>
-                    <p>Best Skill</p>
-                    <h3>{bestSkill}</h3>
-                    <span>Highest confidence area</span>
-                </article>
+                {metricsLoading ? (
+                    <>
+                        {[1, 2, 3, 4].map((i) => (
+                            <article key={i} className="metric-card metric-card--loading">
+                                <div className="metric-icon"><Skeleton width={40} height={40} variant="rect" /></div>
+                                <Skeleton width="55%" height={12} />
+                                <Skeleton width="40%" height={32} variant="rect" />
+                                <Skeleton width="70%" height={12} />
+                            </article>
+                        ))}
+                    </>
+                ) : (
+                    <>
+                        <article className="metric-card">
+                            <div className="metric-icon"><Users size={20} /></div>
+                            <p>Total Interviews</p>
+                            <h3>{analytics?.total_interviews ?? interviews.length}</h3>
+                            <span>Sessions completed</span>
+                        </article>
+                        <article className="metric-card">
+                            <div className="metric-icon"><TrendingUp size={20} /></div>
+                            <p>Average Score</p>
+                            <h3>{analytics ? `${analytics.average_score.toFixed(1)}%` : '0.0%'}</h3>
+                            <span>Across all rounds</span>
+                        </article>
+                        <article className="metric-card">
+                            <div className="metric-icon"><AlertTriangle size={20} /></div>
+                            <p>Weakest Topic</p>
+                            <h3>{weakestTopic}</h3>
+                            <span>Priority to improve</span>
+                        </article>
+                        <article className="metric-card">
+                            <div className="metric-icon"><Star size={20} /></div>
+                            <p>Best Skill</p>
+                            <h3>{bestSkill}</h3>
+                            <span>Highest confidence area</span>
+                        </article>
+                    </>
+                )}
             </section>
 
             {/* Charts */}

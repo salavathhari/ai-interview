@@ -27,8 +27,20 @@
 
 .dashboard-header > div:first-child p {
   font-size: 14px;
-  color: var(--muted);
+  color: #475569;
   margin: 0;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .dashboard-header > div:first-child p,
+:root[data-theme="dark"] .dashboard-header > div:first-child p {
+  color: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dashboard-header > div:first-child p {
+    color: #94a3b8;
+  }
 }
 
 .header-actions {
@@ -248,6 +260,24 @@
 .metric-card > span {
   font-size: 12px;
   color: var(--muted);
+}
+
+.metric-card--loading {
+  pointer-events: none;
+}
+
+.metric-card--loading .metric-icon {
+  opacity: 0.5;
+}
+
+.metric-card--loading .skeleton {
+  border-radius: 6px;
+}
+
+/* ── Pulse animation for loading states ── */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 /* ── Chart Grid ── */
