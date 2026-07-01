@@ -11,7 +11,7 @@ class ResumeBase(BaseModel):
 class ResumeResponse(BaseModel):
     id: int
     filename: str
-    extracted_text: str
+    extracted_text: Optional[str] = ""
     skills: Optional[str] = None
     content_hash: Optional[str] = None
     version: int = 1

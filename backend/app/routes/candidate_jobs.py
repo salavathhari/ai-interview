@@ -356,6 +356,17 @@ def my_applications(
     db: Session = Depends(get_db),
 ):
     """List candidate's applications with status."""
+    try:
+        return _my_applications_impl(status, page, per_page, candidate, db)
+    except Exception as e:
+        import traceback
+        print(f"ERROR in my_applications: {e}")
+        traceback.print_exc()
+        raise
+
+
+def _my_applications_impl(status, page, per_page, candidate, db):
+    """List candidate's applications with status."""
     query = db.query(Application).filter(Application.user_id == candidate.id)
     if status:
         query = query.filter(Application.status == status)

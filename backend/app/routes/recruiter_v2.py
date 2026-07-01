@@ -15,6 +15,8 @@ from app.auth.utils import get_current_user
 from app.models.user import User
 from app.models.job_role import JobRole
 from app.models.interview_session import InterviewSession
+from app.models.question import Question
+from app.models.interview_question_metric import InterviewQuestionMetric
 from app.models.coding_challenge import CodingSession, CodingSubmission
 from app.models.resume import Resume
 from app.models.career import ResumeAnalysis, SkillGapAnalysis, CareerReadiness
@@ -122,71 +124,60 @@ def _get_candidate_scores_batch(db: Session, user_ids: list) -> dict:
     Batch retrieve candidate scores for multiple users (optimized - no N+1).
     Returns: {user_id: {ats_score, interview_score, coding_score, career_readiness}}
     """
+    import traceback as _tb
+
     scores_by_user = {uid: {} for uid in user_ids}
-    
+
     if not user_ids:
         return scores_by_user
-    
+
+    def _latest_per_user(model, score_col, order_col=None, filter_conditions=None):
+        order = (order_col or model.created_at).desc()
+        rn = func.row_number().over(
+            partition_by=model.user_id,
+            order_by=order
+        ).label("rn")
+        cols = [model.user_id, score_col.label("score"), rn]
+        q = db.query(*cols)
+        q = q.filter(model.user_id.in_(user_ids))
+        if filter_conditions:
+            for cond in filter_conditions:
+                q = q.filter(cond)
+        subq = q.subquery()
+        return db.query(subq.c.user_id, subq.c.score).filter(subq.c.rn == 1).all()
+
     # Batch 1: Latest resume analysis per user
-    resume_analyses = db.query(
-        ResumeAnalysis.user_id,
-        func.max(ResumeAnalysis.created_at).label("latest_date"),
-        func.first_value(ResumeAnalysis.ats_score).over(
-            partition_by=ResumeAnalysis.user_id,
-            order_by=ResumeAnalysis.created_at.desc()
-        ).label("ats_score"),
-        func.first_value(ResumeAnalysis.resume_match_score).over(
-            partition_by=ResumeAnalysis.user_id,
-            order_by=ResumeAnalysis.created_at.desc()
-        ).label("resume_match"),
-    ).filter(ResumeAnalysis.user_id.in_(user_ids)).group_by(ResumeAnalysis.user_id).all()
-    
-    for ra in resume_analyses:
-        scores_by_user[ra.user_id]["ats_score"] = ra.ats_score
-        scores_by_user[ra.user_id]["resume_match"] = ra.resume_match
-    
-    # Batch 2: Latest interview session per user
-    interviews = db.query(
-        InterviewSession.user_id,
-        func.first_value(InterviewSession.score).over(
-            partition_by=InterviewSession.user_id,
-            order_by=InterviewSession.ended_at.desc()
-        ).label("interview_score"),
-    ).filter(
-        InterviewSession.user_id.in_(user_ids),
-        InterviewSession.status == "completed"
-    ).group_by(InterviewSession.user_id).all()
-    
-    for iv in interviews:
-        scores_by_user[iv.user_id]["interview_score"] = iv.interview_score
-    
-    # Batch 3: Latest coding session per user
-    codings = db.query(
-        CodingSession.user_id,
-        func.first_value(CodingSession.coding_score).over(
-            partition_by=CodingSession.user_id,
-            order_by=CodingSession.ended_at.desc()
-        ).label("coding_score"),
-    ).filter(
-        CodingSession.user_id.in_(user_ids),
-        CodingSession.status == "submitted"
-    ).group_by(CodingSession.user_id).all()
-    
-    for cs in codings:
-        scores_by_user[cs.user_id]["coding_score"] = cs.coding_score
-    
+    rows = _latest_per_user(ResumeAnalysis, ResumeAnalysis.ats_score)
+    for uid, score in rows:
+        scores_by_user[uid]["ats_score"] = score
+
+    rows = _latest_per_user(ResumeAnalysis, ResumeAnalysis.resume_match_score)
+    for uid, score in rows:
+        scores_by_user[uid]["resume_match"] = score
+
+    # Batch 2: Latest completed interview session per user
+    rows = _latest_per_user(
+        InterviewSession, InterviewSession.score,
+        order_col=InterviewSession.ended_at,
+        filter_conditions=[InterviewSession.status == "completed"]
+    )
+    for uid, score in rows:
+        scores_by_user[uid]["interview_score"] = score
+
+    # Batch 3: Latest submitted coding session per user
+    rows = _latest_per_user(
+        CodingSession, CodingSession.coding_score,
+        order_col=CodingSession.ended_at,
+        filter_conditions=[CodingSession.status == "submitted"]
+    )
+    for uid, score in rows:
+        scores_by_user[uid]["coding_score"] = score
+
     # Batch 4: Latest career readiness per user
-    readiness = db.query(
-        CareerReadiness.user_id,
-        func.first_value(CareerReadiness.overall_score).over(
-            partition_by=CareerReadiness.user_id,
-            order_by=CareerReadiness.created_at.desc()
-        ).label("overall_score"),
-    ).filter(CareerReadiness.user_id.in_(user_ids)).group_by(CareerReadiness.user_id).all()
-    
-    for cr in readiness:
-        scores_by_user[cr.user_id]["career_readiness"] = cr.overall_score
-    
+    rows = _latest_per_user(CareerReadiness, CareerReadiness.overall_score)
+    for uid, score in rows:
+        scores_by_user[uid]["career_readiness"] = score
+
     return scores_by_user
 
 
@@ -973,7 +964,8 @@ def create_application(
         application_id=application.id,
         from_stage=None,
         to_stage="applied",
-        recruiter_id=recruiter.id,
+        actor_id=recruiter.id,
+        actor_role="recruiter",
     )
     db.add(history)
     db.commit()
@@ -1091,10 +1083,67 @@ def update_application_stage(
         from_stage=old_stage,
         to_stage=stage_in.status,
         reason=stage_in.reason,
-        recruiter_id=recruiter.id,
+        actor_id=recruiter.id,
+        actor_role="recruiter",
     )
     db.add(history)
     db.commit()
+
+    # Auto-create sessions when moving to interview or coding stage
+    created_session_id = None
+    if stage_in.status == "interview_scheduled" and not app.interview_session_id:
+        template = None
+        if jp.interview_template_id:
+            template = db.query(InterviewTemplate).filter(
+                InterviewTemplate.id == jp.interview_template_id,
+                InterviewTemplate.recruiter_id == recruiter.id,
+            ).first()
+        session = InterviewSession(
+            user_id=app.user_id,
+            job_role_id=jp.job_role_id,
+            role=jp.title or "Software Engineer",
+            difficulty=template.difficulty if template else "Medium",
+            interview_type=template.interview_type if template else "Technical",
+            status="pending",
+        )
+        db.add(session)
+        db.commit()
+        db.refresh(session)
+        app.interview_session_id = session.id
+        db.commit()
+        created_session_id = session.id
+        log_activity(db, recruiter.id, "interview_auto_assigned", "application", app.id,
+                     {"session_id": session.id})
+        user_obj = db.query(User).filter(User.id == app.user_id).first()
+        create_notification(db, app.user_id, "Interview Scheduled",
+                            f"An interview has been scheduled for {jp.title or 'a position'}. Please check your dashboard.")
+
+    elif stage_in.status == "coding_round" and not app.coding_session_id:
+        template = None
+        challenge_id = None
+        if jp.coding_template_id:
+            template = db.query(CodingTemplate).filter(
+                CodingTemplate.id == jp.coding_template_id,
+                CodingTemplate.recruiter_id == recruiter.id,
+            ).first()
+            if template and template.challenge_ids:
+                challenge_id = template.challenge_ids[0]
+        coding_session = CodingSession(
+            user_id=app.user_id,
+            challenge_id=challenge_id,
+            status="in_progress",
+        )
+        db.add(coding_session)
+        db.commit()
+        db.refresh(coding_session)
+        app.coding_session_id = coding_session.id
+        db.commit()
+        created_session_id = coding_session.id
+        log_activity(db, recruiter.id, "coding_auto_assigned", "application", app.id,
+                     {"coding_session_id": coding_session.id})
+        user_obj = db.query(User).filter(User.id == app.user_id).first()
+        create_notification(db, app.user_id, "Coding Round Assigned",
+                            f"A coding assessment has been assigned for {jp.title or 'a position'}. Please check your dashboard.")
 
     log_activity(db, recruiter.id, "stage_changed", "application", app.id,
                  {"from": old_stage, "to": stage_in.status, "reason": stage_in.reason})
@@ -1345,7 +1394,8 @@ def shortlist_application(
         from_stage=app.status,
         to_stage=app.status,
         reason=f"Shortlist action: {action_in.action}. {action_in.reason or ''}",
-        recruiter_id=recruiter.id,
+        actor_id=recruiter.id,
+        actor_role="recruiter",
     )
     db.add(history)
     db.commit()
@@ -1432,10 +1482,11 @@ def create_offer(
 
     history = ApplicationHistory(
         application_id=app_id,
-        from_stage=app.status,
+        from_stage="selected",
         to_stage="offer_released",
         reason="Offer created",
-        recruiter_id=recruiter.id,
+        actor_id=recruiter.id,
+        actor_role="recruiter",
     )
     db.add(history)
     db.commit()
@@ -1784,12 +1835,15 @@ def assign_interview(
     db.refresh(session)
 
     # Update application stage
+    old_status = app.status
     app.status = "interview_scheduled"
     history = ApplicationHistory(
         application_id=app_id,
+        from_stage=old_status,
         to_stage="interview_scheduled",
         reason=f"Interview assigned (session #{session.id})",
-        recruiter_id=recruiter.id,
+        actor_id=recruiter.id,
+        actor_role="recruiter",
     )
     db.add(history)
     db.commit()
@@ -1845,12 +1899,15 @@ def assign_coding(
     db.refresh(coding_session)
 
     # Update application stage
+    old_status = app.status
     app.status = "coding_round"
     history = ApplicationHistory(
         application_id=app_id,
+        from_stage=old_status,
         to_stage="coding_round",
         reason=f"Coding assigned (session #{coding_session.id})",
-        recruiter_id=recruiter.id,
+        actor_id=recruiter.id,
+        actor_role="recruiter",
     )
     db.add(history)
     db.commit()

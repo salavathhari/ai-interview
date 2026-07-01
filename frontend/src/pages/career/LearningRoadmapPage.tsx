@@ -78,6 +78,7 @@ interface RoadmapData {
   };
   interview_readiness: number;
   coding_readiness: number;
+  status?: string;
 }
 
 interface SkillGapAnalysis {
@@ -170,7 +171,10 @@ const LearningRoadmapPage: React.FC = () => {
             skill_gap_summary: rm.skill_gap_summary || { matched_count: 0, missing_count: 0, priority_count: 0, match_percentage: 0 },
             interview_readiness: roadmap.interview_readiness || 0,
             coding_readiness: roadmap.coding_readiness || 0,
+            status: roadmap.status || 'active',
           });
+          // Sync active phase with backend's current_phase_index
+          setActivePhase(roadmap.current_phase_index || 0);
         }
       }
     } catch (err: any) {
@@ -226,13 +230,22 @@ const LearningRoadmapPage: React.FC = () => {
     finally { setDeleting(null); }
   };
 
-  const toggleTopicComplete = (topicName: string) => {
+  const toggleTopicComplete = async (topicName: string) => {
     const newCompleted = new Set(completedTopics);
     if (newCompleted.has(topicName)) newCompleted.delete(topicName);
     else newCompleted.add(topicName);
     setCompletedTopics(newCompleted);
     if (roadmapData?.roadmap_id) {
-      careerApi.updateRoadmapProgress(roadmapData.roadmap_id, Array.from(newCompleted)).catch(() => {});
+      try {
+        const resp = await careerApi.updateRoadmapProgress(roadmapData.roadmap_id, Array.from(newCompleted));
+        if (resp.data?.current_phase_index !== undefined) {
+          setActivePhase(resp.data.current_phase_index);
+        }
+        // Sync status from backend (e.g. "completed" when all topics done)
+        if (resp.data?.status) {
+          setRoadmapData(prev => prev ? { ...prev, status: resp.data.status } : prev);
+        }
+      } catch { /* ignore */ }
     }
   };
 
@@ -410,7 +423,9 @@ const LearningRoadmapPage: React.FC = () => {
                             skill_gap_summary: gapSummary,
                             interview_readiness: roadmap.interview_readiness || 0,
                             coding_readiness: roadmap.coding_readiness || 0,
+                            status: roadmap.status || 'active',
                           });
+                          setActivePhase(roadmap.current_phase_index || 0);
                           if (roadmap.completed_topics) {
                             setCompletedTopics(new Set(JSON.parse(roadmap.completed_topics)));
                           }
@@ -467,6 +482,17 @@ const LearningRoadmapPage: React.FC = () => {
               </div>
             </div>
           </section>
+
+          {/* Roadmap Completed Banner */}
+          {roadmapData.status === 'completed' && (
+            <section className="lr-completion-banner">
+              <div className="lr-completion-icon"><CheckCircle size={32} /></div>
+              <div className="lr-completion-text">
+                <h2>Roadmap Completed!</h2>
+                <p>Congratulations! You've completed all learning phases for your {roadmapData.career_goal} journey.</p>
+              </div>
+            </section>
+          )}
 
           {/* Stats Row */}
           <section className="lr-stats-row">
@@ -590,15 +616,21 @@ const LearningRoadmapPage: React.FC = () => {
             </div>
 
             <div className="lr-phase-tabs">
-              {(roadmapData.phases || []).map((phase, idx) => (
-                <button key={idx} className={`lr-phase-tab ${activePhase === idx ? 'lr-phase-tab--active' : ''}`} onClick={() => setActivePhase(idx)}>
-                  <span className="lr-phase-num">{phase.phase_number}</span>
-                  <span className="lr-phase-tab-title">{phase.title}</span>
-                  <div className="lr-phase-tab-bar">
-                    <div className="lr-phase-tab-fill" style={{ width: `${getPhaseProgress(phase)}%` }} />
-                  </div>
-                </button>
-              ))}
+              {(roadmapData.phases || []).map((phase, idx) => {
+                const phaseProgress = getPhaseProgress(phase);
+                const isPhaseComplete = phaseProgress === 100;
+                return (
+                  <button key={idx} className={`lr-phase-tab ${activePhase === idx ? 'lr-phase-tab--active' : ''} ${isPhaseComplete ? 'lr-phase-tab--done' : ''}`} onClick={() => setActivePhase(idx)}>
+                    <span className="lr-phase-num">
+                      {isPhaseComplete ? <CheckCircle size={14} /> : phase.phase_number}
+                    </span>
+                    <span className="lr-phase-tab-title">{phase.title}</span>
+                    <div className="lr-phase-tab-bar">
+                      <div className="lr-phase-tab-fill" style={{ width: `${phaseProgress}%`, background: isPhaseComplete ? '#10b981' : undefined }} />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             {(roadmapData.phases || []).length === 0 ? (
@@ -731,6 +763,37 @@ const LearningRoadmapPage: React.FC = () => {
               </div>
             )}
           </section>
+
+          {/* Complete Roadmap Button */}
+          {roadmapData.status !== 'completed' && getOverallProgress() === 100 && (
+            <section className="lr-complete-section">
+              <div className="lr-complete-card">
+                <div className="lr-complete-card-left">
+                  <CheckCircle size={36} />
+                  <div>
+                    <h3>All topics completed!</h3>
+                    <p>Mark your roadmap as complete to finalize your progress.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="lr-btn lr-btn-primary lr-btn-complete"
+                  onClick={async () => {
+                    if (!roadmapData?.roadmap_id) return;
+                    try {
+                      const allTopicNames = roadmapData.phases.flatMap(p => p.topics.map(t => t.name));
+                      const resp = await careerApi.updateRoadmapProgress(roadmapData.roadmap_id, allTopicNames);
+                      if (resp.data?.status) {
+                        setRoadmapData(prev => prev ? { ...prev, status: resp.data.status } : prev);
+                      }
+                    } catch { /* ignore */ }
+                  }}
+                >
+                  <CheckCircle size={18} /> Complete Roadmap
+                </button>
+              </div>
+            </section>
+          )}
 
           {/* AI Mentor Tips */}
           {(roadmapData.mentor_tips || []).length > 0 && (

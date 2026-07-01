@@ -6,11 +6,12 @@ import io
 import uuid
 import pdfplumber
 from pathlib import Path
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status, Query, Request
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status, Query, Request, Body
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sa_func
 from typing import List, Optional
+from pydantic import BaseModel
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
@@ -821,7 +822,10 @@ def _calculate_learning_streak(db: Session, user_id: int) -> int:
             dates.add(p[0].date() if hasattr(p[0], 'date') else p[0])
 
     streak = 0
+    # Start from today; if no activity today, start from yesterday
     d = date.today()
+    if d not in dates:
+        d -= timedelta(days=1)
     while d in dates:
         streak += 1
         d -= timedelta(days=1)
@@ -1817,12 +1821,16 @@ def delete_optimized_resume(
     return {"message": "Optimized resume deleted"}
 
 
+class RoadmapProgressRequest(BaseModel):
+    completed_topics: list[str] = []
+
+
 @router.patch("/roadmap/{roadmap_id}/progress")
 @limiter.limit("30/minute")
 def update_roadmap_progress(
     request: Request,
     roadmap_id: int,
-    completed_topics: list[str] = None,
+    completed_topics: list[str] = Body(default=[], embed=True),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -1833,52 +1841,82 @@ def update_roadmap_progress(
     if not roadmap:
         raise HTTPException(status_code=404, detail="Roadmap not found")
     
-    if completed_topics is not None:
-        roadmap.completed_topics = json.dumps(completed_topics)
+    # Use LearningProgressTracker for proper tracking (phase auto-advance, skill analytics, readiness)
+    from app.models.intelligence import LearningProgress
+    from app.services.learning_progress_tracker import LearningProgressTracker
+    tracker = LearningProgressTracker(db)
 
-        # Create LearningProgress records for newly completed topics so streak tracking works
-        from app.models.intelligence import LearningProgress
-        from datetime import datetime, timezone
-        existing_progress = {
-            p.topic_name for p in db.query(LearningProgress.topic_name).filter(
-                LearningProgress.user_id == current_user.id,
-                LearningProgress.roadmap_id == roadmap_id,
-            ).all()
-        }
-        for topic_name in completed_topics:
-            if topic_name not in existing_progress:
-                db.add(LearningProgress(
-                    user_id=current_user.id,
-                    roadmap_id=roadmap_id,
-                    topic_name=topic_name,
-                    status="completed",
-                    progress_percentage=100.0,
-                    started_at=datetime.now(timezone.utc),
-                    completed_at=datetime.now(timezone.utc),
-                ))
-        db.flush()
-    
+    # Get existing progress records to avoid duplicates
+    existing_progress = {
+        p.topic_name for p in db.query(LearningProgress.topic_name).filter(
+            LearningProgress.user_id == current_user.id,
+            LearningProgress.roadmap_id == roadmap_id,
+        ).all()
+    }
+
+    # Mark newly completed topics via tracker (updates skill analytics + readiness)
+    for topic_name in completed_topics:
+        if topic_name not in existing_progress:
+            try:
+                tracker.start_topic(current_user.id, roadmap_id, topic_name)
+                tracker.complete_topic(current_user.id, roadmap_id, topic_name)
+            except Exception:
+                pass
+
+    # Mark topics that were unchecked (removed from completed list)
+    for topic_name in existing_progress:
+        if topic_name not in completed_topics:
+            try:
+                progress = db.query(LearningProgress).filter(
+                    LearningProgress.user_id == current_user.id,
+                    LearningProgress.roadmap_id == roadmap_id,
+                    LearningProgress.topic_name == topic_name,
+                ).first()
+                if progress:
+                    progress.status = "not_started"
+                    progress.progress_percentage = 0.0
+                    progress.completed_at = None
+                    db.commit()
+            except Exception:
+                pass
+
+    # Set completed_topics AFTER tracker calls (tracker._update_roadmap_progress overwrites it)
+    roadmap.completed_topics = json.dumps(completed_topics)
+
     # Count all individual topics across all phases for accurate percentage
     phases = json.loads(roadmap.phases) if roadmap.phases else []
-    completed = json.loads(roadmap.completed_topics) if roadmap.completed_topics else []
     
     total_topics = 0
     for phase in phases:
         for t in phase.get("topics", []):
-            if isinstance(t, str):
-                total_topics += 1
-            elif isinstance(t, dict):
-                total_topics += 1
+            total_topics += 1
     
-    done = len(completed)
+    done = len(completed_topics)
     roadmap.progress_percentage = round((done / max(total_topics, 1)) * 100, 1)
+
+    # Auto-advance current_phase_index
+    current_idx = roadmap.current_phase_index or 0
+    if phases and current_idx < len(phases):
+        current_phase = phases[current_idx]
+        phase_topic_names = [t.get("name", t) if isinstance(t, dict) else t for t in current_phase.get("topics", [])]
+        if phase_topic_names and all(t in completed_topics for t in phase_topic_names):
+            if current_idx < len(phases) - 1:
+                roadmap.current_phase_index = current_idx + 1
     
     if done == total_topics and total_topics > 0:
         roadmap.status = "completed"
     
     db.commit()
     db.refresh(roadmap)
-    return roadmap
+
+    # Return roadmap with parsed JSON fields
+    return {
+        "id": roadmap.id,
+        "progress_percentage": roadmap.progress_percentage,
+        "current_phase_index": roadmap.current_phase_index,
+        "status": roadmap.status,
+        "completed_topics": completed_topics,
+    }
 
 
 # ──────────────────────────────────────────────

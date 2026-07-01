@@ -78,7 +78,7 @@ const DashboardPage: React.FC = () => {
 
     const loadAnalytics = async () => {
         try {
-            const resp = await analyticsApi.getDashboard();
+            const resp = await analyticsApi.getDashboardSummary();
             setAnalytics(resp.data);
         } catch (error) {
             console.error(error);

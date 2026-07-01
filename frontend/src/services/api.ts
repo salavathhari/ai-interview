@@ -182,6 +182,7 @@ export const interviewApi = {
 
 export const analyticsApi = {
   getDashboard: () => api.get('/analytics/dashboard'),
+  getDashboardSummary: () => api.get('/analytics/dashboard-summary'),
   getInterview: () => api.get('/analytics/interview'),
   getCoding: () => api.get('/analytics/coding'),
   getSkills: () => api.get('/analytics/skills'),
@@ -283,7 +284,7 @@ export const careerApi = {
   getRoadmaps: () => api.get('/career/roadmaps'),
   getRoadmapAnalytics: (roadmapId: number) => api.get(`/career/roadmap/${roadmapId}/analytics`),
   updateRoadmapProgress: (roadmapId: number, completedTopics: string[]) =>
-    api.patch(`/career/roadmap/${roadmapId}/progress`, null, { params: { completed_topics: completedTopics } }),
+    api.patch(`/career/roadmap/${roadmapId}/progress`, { completed_topics: completedTopics }),
 
   // Learning Progress
   getLearningProgress: (roadmapId?: number, page = 1, perPage = 50) =>

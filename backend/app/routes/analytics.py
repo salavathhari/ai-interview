@@ -37,7 +37,7 @@ from app.models.intelligence import (
 )
 from app.models.analytics import AnalyticsEvent, AnalyticsSummary
 from app.schemas.analytics import (
-    AnalyticsResponse, TopicMetric, TrendPoint,
+    AnalyticsResponse, DashboardSummaryResponse, TopicMetric, TrendPoint,
     CodingAnalyticsResponse, SkillAnalyticsResponse, SkillHeatmapItem,
     LearningAnalyticsResponse, CareerAnalyticsResponse,
     TopicAnalyticsResponse, HistoricalTrendResponse,
@@ -760,10 +760,18 @@ def _get_predictions(db: Session, user_id: int) -> PredictionResponse:
         InterviewSession.status == "completed",
     ).scalar() or 0.0
 
-    coding_avg = db.query(func.avg(CodingSession.coding_score)).filter(
+    # Use submission correctness (what the dashboard coding score displays)
+    # instead of session-level coding_score which may be NULL or stale
+    submission_correctness = db.query(func.avg(CodingSubmission.correctness_score)).filter(
+        CodingSubmission.user_id == user_id,
+        CodingSubmission.correctness_score.isnot(None),
+    ).scalar()
+    session_coding_avg = db.query(func.avg(CodingSession.coding_score)).filter(
         CodingSession.user_id == user_id,
         CodingSession.status == "submitted",
-    ).scalar() or 0.0
+        CodingSession.coding_score.isnot(None),
+    ).scalar()
+    coding_avg = submission_correctness if submission_correctness is not None else (session_coding_avg or 0.0)
 
     readiness = db.query(CareerReadiness).filter(
         CareerReadiness.user_id == user_id,
@@ -775,7 +783,16 @@ def _get_predictions(db: Session, user_id: int) -> PredictionResponse:
     completed = len([p for p in learning_items if p.status in ("completed", "mastered")])
     total = len(learning_items)
 
-    # Improvement trend
+    # Total activities for context
+    total_interviews = db.query(func.count(InterviewSession.id)).filter(
+        InterviewSession.user_id == user_id,
+        InterviewSession.status == "completed",
+    ).scalar() or 0
+    total_coding = db.query(func.count(CodingSubmission.id)).filter(
+        CodingSubmission.user_id == user_id,
+    ).scalar() or 0
+
+    # Improvement trend (needs at least 3 interviews)
     scores = db.query(InterviewSession.score).filter(
         InterviewSession.user_id == user_id,
         InterviewSession.status == "completed",
@@ -792,7 +809,9 @@ def _get_predictions(db: Session, user_id: int) -> PredictionResponse:
     readiness_score = readiness.overall_score if readiness else 0.0
     predicted_readiness = min(100, readiness_score + improvement_velocity * 2)
 
+    # Interview: score is on 0-10 scale, convert to percentage
     interview_success = min(100, interview_avg * 10 + improvement_velocity * 5)
+    # Coding: correctness_score is already 0-100
     coding_success = min(100, coding_avg + improvement_velocity * 3)
 
     # Time to target
@@ -806,33 +825,52 @@ def _get_predictions(db: Session, user_id: int) -> PredictionResponse:
         remaining = total - completed
         weeks_left = max(1, int(remaining / max(1, rate * 2)))
         learn_forecast = f"~{weeks_left} weeks at current pace"
+    elif total > 0:
+        learn_forecast = f"{completed}/{total} topics completed — keep going"
     else:
-        learn_forecast = "No learning data yet"
+        learn_forecast = "Start your first learning topic to get a forecast"
 
     # Interview forecast
     if improvement_velocity > 0:
         interview_forecast = f"+{round(improvement_velocity * 2, 1)} points projected improvement"
-    elif interview_avg > 0:
+    elif total_interviews >= 2:
         interview_forecast = "Stable performance — focus on weak topics"
+    elif total_interviews == 1:
+        interview_forecast = "Complete more interviews for trend analysis"
     else:
-        interview_forecast = "No interview data yet"
+        interview_forecast = "Complete your first interview to unlock predictions"
 
-    # Factors
+    # Factors — show both strengths and actionable improvements
     factors = []
     if readiness_score > 70:
         factors.append("Strong overall readiness")
+    elif readiness_score > 0:
+        factors.append(f"Readiness at {round(readiness_score)}% — room to grow")
     if interview_avg > 7:
         factors.append("Above-average interview performance")
+    elif interview_avg > 0:
+        factors.append(f"Interview avg {round(interview_avg, 1)}/10 — practice weak topics")
     if coding_avg > 70:
         factors.append("Solid coding skills")
+    elif coding_avg > 0:
+        factors.append(f"Coding correctness at {round(coding_avg)}% — solve more problems")
     if improvement_velocity > 0.5:
-        factors.append("Positive improvement trend")
-    if completed > total * 0.5 if total > 0 else False:
+        factors.append("Positive improvement trend — keep it up")
+    if completed > 0 and total > 0 and completed > total * 0.5:
         factors.append("Good learning progress")
+    elif total > 0:
+        factors.append(f"Learning {round(completed / total * 100)}% complete")
+    # Activity-based factors when data is limited
+    if total_interviews == 0:
+        factors.append("Complete your first interview to improve predictions")
+    if total_coding == 0:
+        factors.append("Try a coding challenge to build your profile")
+    if total == 0:
+        factors.append("Start a learning roadmap to track skill growth")
     if not factors:
-        factors.append("Insufficient data — complete more activities")
+        factors.append("Complete more activities for better predictions")
 
-    confidence = min(100, (len(scores) * 5 + total * 3 + (20 if readiness else 0)))
+    confidence = min(100, (total_interviews * 8 + total_coding * 3 + total * 3 + (20 if readiness else 0)))
 
     return PredictionResponse(
         predicted_readiness=round(predicted_readiness, 1),
@@ -920,6 +958,52 @@ def _get_recommendations(db: Session, user_id: int) -> RecommendationResponse:
 
 
 # ─── Endpoints ────────────────────────────────────────────────────────────
+
+@router.get("/dashboard-summary", response_model=DashboardSummaryResponse)
+def get_dashboard_summary(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Lightweight dashboard metrics — only the basics needed for the main dashboard cards."""
+    uid = current_user.id
+    total = db.query(func.count(InterviewSession.id)).filter(
+        InterviewSession.user_id == uid,
+        InterviewSession.status == "completed",
+    ).scalar() or 0
+
+    avg_score = db.query(func.avg(InterviewSession.score)).filter(
+        InterviewSession.user_id == uid,
+        InterviewSession.status == "completed",
+    ).scalar() or 0.0
+
+    raw = db.query(Question.topic, Question.score).join(InterviewSession).filter(
+        InterviewSession.user_id == uid,
+        Question.score.isnot(None),
+        Question.topic.isnot(None),
+    ).all()
+
+    topic_groups = {}
+    for topic, score in raw:
+        norm = _norm_topic(topic)
+        topic_groups.setdefault(norm, []).append(score)
+
+    all_topics = [
+        TopicMetric(topic=t, average_score=round(sum(s) / len(s), 1), question_count=len(s))
+        for t, s in topic_groups.items()
+    ]
+    weak = sorted(all_topics, key=lambda x: x.average_score)[:3]
+    strong = sorted(all_topics, key=lambda x: x.average_score, reverse=True)[:3]
+
+    skill_breakdown = {t.topic: t.average_score for t in all_topics[:8]}
+
+    return DashboardSummaryResponse(
+        average_score=round(float(avg_score), 1),
+        total_interviews=total,
+        weak_topics=weak,
+        strong_topics=strong,
+        skill_breakdown=skill_breakdown,
+    )
+
 
 @router.get("/dashboard", response_model=AnalyticsResponse)
 def get_analytics_dashboard(

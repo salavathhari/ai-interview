@@ -127,6 +127,14 @@ class RecommendationResponse(BaseModel):
     priority_actions: List[Dict[str, str]] = []
 
 
+class DashboardSummaryResponse(BaseModel):
+    average_score: float
+    total_interviews: int
+    weak_topics: List[TopicMetric]
+    strong_topics: List[TopicMetric]
+    skill_breakdown: Dict[str, float]
+
+
 class AnalyticsResponse(BaseModel):
     average_score: float
     total_interviews: int
