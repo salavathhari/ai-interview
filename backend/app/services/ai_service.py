@@ -5,6 +5,7 @@ import re
 from openai import OpenAI
 from dotenv import load_dotenv
 from app.services.ai_cache import ai_cache
+from app.services.tts_cache import tts_cache
 from app.core.logging import logger
 from app.models.api_usage import ApiUsage
 from app.database import SessionLocal
@@ -714,18 +715,31 @@ class AIService:
     @staticmethod
     def text_to_speech(text: str):
         """
-        Convert text to speech using OpenAI TTS.
-        Returns audio bytes.
+        Convert text to speech using OpenAI TTS with caching.
+        Checks cache first (7-day TTL), returns cached audio if available.
+        Returns audio bytes or None on error.
         """
         try:
+            # Check cache first (questions repeat across interviews)
+            cached_audio = tts_cache.get(text)
+            if cached_audio:
+                logger.debug(f"TTS cache hit (saved ~{len(cached_audio) // 1024}KB bandwidth)")
+                return cached_audio
+
+            # Generate new audio if not cached
             response = client.audio.speech.create(
                 model="tts-1",
                 voice="alloy",
                 input=text
             )
-            return response.content # bytes
+            audio_bytes = response.content  # bytes
+
+            # Cache for future use (7 days)
+            tts_cache.set(text, audio_bytes, expire=604800)
+
+            return audio_bytes
         except Exception as e:
-            print(f"TTS Error: {e}")
+            logger.error(f"TTS Error: {e}")
             return None
 
     @staticmethod

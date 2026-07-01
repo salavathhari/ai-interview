@@ -612,3 +612,29 @@ class AutomationService:
                 ))
 
         self.db.commit()
+
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # RECRUITER PORTAL EVENTS
+    # ═══════════════════════════════════════════════════════════════════════════════
+
+    def on_application_created(self, user_id: int, application_id: int):
+        """When a candidate applies — record analytics event."""
+        _record_and_refresh(
+            self.db, user_id, "recruiter_application_created", "recruiter",
+            "application", application_id
+        )
+
+    def on_application_stage_change(self, user_id: int, application_id: int,
+                                     old_stage: str, new_stage: str):
+        """When an application moves pipeline stages — record analytics event."""
+        _record_and_refresh(
+            self.db, user_id, "recruiter_stage_changed", "recruiter",
+            "application", application_id, {"from": old_stage, "to": new_stage}
+        )
+
+    def on_offer_event(self, user_id: int, offer_id: int, action: str):
+        """When an offer is created / accepted / rejected — record analytics event."""
+        _record_and_refresh(
+            self.db, user_id, f"recruiter_offer_{action}", "recruiter",
+            "offer", offer_id
+        )

@@ -23,7 +23,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/dashboard" replace />;
+    const redirectPath = role === 'recruiter' ? '/recruiter/dashboard' : '/dashboard';
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

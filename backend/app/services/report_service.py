@@ -331,7 +331,7 @@ Each strengths/weaknesses/roadmap item must be a specific string, not a generic 
         elements.append(Paragraph("Coding Performance Report", styles['Title']))
         elements.append(Spacer(1, 12))
 
-        passed = sum(1 for s in submissions if s.status == "passed")
+        passed = sum(1 for s in submissions if s.status == "Accepted")
         total = len(submissions)
         avg_correctness = sum(s.correctness_score or 0 for s in submissions) / total if total else 0
         avg_ai_score = sum(s.ai_score or 0 for s in submissions) / total if total else 0
@@ -793,7 +793,7 @@ Each strengths/weaknesses/roadmap item must be a specific string, not a generic 
         # ─── CODING PERFORMANCE ───
         if coding_subs:
             elements.append(Paragraph("Coding Performance", section_style))
-            passed = sum(1 for s in coding_subs if s.status == "passed")
+            passed = sum(1 for s in coding_subs if s.status == "Accepted")
             elements.append(Paragraph(
                 f"Total Submissions: {len(coding_subs)} | "
                 f"Passed: {passed} | "
@@ -848,7 +848,7 @@ Each strengths/weaknesses/roadmap item must be a specific string, not a generic 
             "interview_count": len(interviews),
             "avg_interview_score": sum(i.score or 0 for i in interviews) / len(interviews) if interviews else 0,
             "coding_submissions": len(coding_subs),
-            "coding_pass_rate": sum(1 for s in coding_subs if s.status == "passed") / len(coding_subs) if coding_subs else 0,
+            "coding_pass_rate": sum(1 for s in coding_subs if s.status == "Accepted") / len(coding_subs) if coding_subs else 0,
         }
 
         if not api_key:
@@ -898,3 +898,103 @@ def _score_status(score):
         return "Fair"
     else:
         return "Needs Work"
+
+
+def generate_recruiter_hiring_report(db: Session, recruiter_id: int) -> io.BytesIO:
+    """Generate a PDF hiring summary report for a recruiter."""
+    from app.models.recruiter import (
+        RecruiterJobPost, Application, ApplicationHistory, Shortlist, Offer
+    )
+    from app.models.user import User
+
+    jobs = db.query(RecruiterJobPost).filter(
+        RecruiterJobPost.recruiter_id == recruiter_id
+    ).all()
+    job_ids = [j.id for j in jobs]
+
+    applications = db.query(Application).filter(
+        Application.job_post_id.in_(job_ids)
+    ).all() if job_ids else []
+
+    offers = db.query(Offer).filter(
+        Offer.recruiter_id == recruiter_id
+    ).all()
+
+    buffer = io.BytesIO()
+    doc = ReportDocTemplate(buffer, title="Recruiter Hiring Report", pagesize=letter,
+                            topMargin=0.75*inch, bottomMargin=0.75*inch)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    elements.append(Paragraph("Recruiter Hiring Summary Report", styles['Title']))
+    elements.append(Paragraph(
+        f"Generated on {datetime.now(timezone.utc).strftime('%B %d, %Y at %H:%M UTC')}",
+        styles['Normal']
+    ))
+    elements.append(Spacer(1, 20))
+
+    total_apps = len(applications)
+    stage_counts = {}
+    for a in applications:
+        stage_counts[a.status] = stage_counts.get(a.status, 0) + 1
+
+    summary_data = [
+        ["Metric", "Value"],
+        ["Total Job Postings", str(len(jobs))],
+        ["Open Positions", str(sum(1 for j in jobs if j.status == "open"))],
+        ["Total Applications", str(total_apps)],
+        ["Shortlisted", str(sum(1 for a in applications if a.status in ("selected", "offer_released", "hired")))],
+        ["Rejected", str(sum(1 for a in applications if a.status == "rejected"))],
+        ["Hired", str(sum(1 for a in applications if a.status == "hired"))],
+        ["Offers Pending", str(sum(1 for o in offers if o.status == "pending"))],
+        ["Offers Accepted", str(sum(1 for o in offers if o.status == "accepted"))],
+    ]
+    t = Table(summary_data, colWidths=[220, 180])
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.HexColor('#d1d5db')),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#9ca3af')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+        ('ALIGN', (1, 0), (1, -1), 'CENTER'),
+    ]))
+    elements.append(Paragraph("Overview", styles['Heading2']))
+    elements.append(t)
+    elements.append(Spacer(1, 20))
+
+    if stage_counts:
+        elements.append(Paragraph("Pipeline Breakdown", styles['Heading2']))
+        for stage, count in sorted(stage_counts.items(), key=lambda x: -x[1]):
+            pct = (count / total_apps * 100) if total_apps else 0
+            elements.append(Paragraph(
+                f"<b>{stage.replace('_', ' ').title()}:</b> {count} ({pct:.1f}%)",
+                styles['Normal']
+            ))
+        elements.append(Spacer(1, 20))
+
+    if jobs:
+        elements.append(Paragraph("Job Postings", styles['Heading2']))
+        job_data = [["Title", "Status", "Applications", "Created"]]
+        for j in jobs:
+            app_count = sum(1 for a in applications if a.job_post_id == j.id)
+            job_data.append([
+                (j.title or "Untitled")[:40],
+                j.status.title(),
+                str(app_count),
+                j.created_at.strftime('%Y-%m-%d') if j.created_at else "N/A",
+            ])
+        jt = Table(job_data, colWidths=[180, 80, 90, 100])
+        jt.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.HexColor('#d1d5db')),
+            ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#9ca3af')),
+            ('PADDING', (0, 0), (-1, -1), 6),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ]))
+        elements.append(jt)
+        elements.append(Spacer(1, 20))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer

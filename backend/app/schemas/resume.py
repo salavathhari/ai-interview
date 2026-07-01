@@ -16,6 +16,8 @@ class ResumeResponse(BaseModel):
     content_hash: Optional[str] = None
     version: int = 1
     is_active: bool = False
+    processing_status: str = "completed"  # pending, processing, completed, failed
+    extraction_error: Optional[str] = None
     parsed_name: Optional[str] = None
     parsed_email: Optional[str] = None
     parsed_phone: Optional[str] = None

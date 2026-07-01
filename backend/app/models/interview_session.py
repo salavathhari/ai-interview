@@ -13,7 +13,7 @@ class InterviewSession(Base):
     role = Column(String)  # e.g., "Software Engineer", "Data Scientist"
     difficulty = Column(String, default="Medium")
     interview_type = Column(String, default="Technical")
-    status = Column(String, default="pending")  # e.g., "pending", "in-progress", "completed"
+    status = Column(String, default="pending", index=True)  # e.g., "pending", "in-progress", "completed"
     score = Column(Float, nullable=True)
 
     # Topic specific scores

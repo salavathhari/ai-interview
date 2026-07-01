@@ -5,7 +5,7 @@ import {
   User, Settings, LogOut, ChevronDown, LayoutDashboard,
   Play, Code2, FileText, BarChart3, Brain,
   Briefcase, FileCheck, Zap, FileSearch, Map, CheckCircle,
-  Users, Shield, FileBarChart
+  Users, Shield, FileBarChart, Search
 } from 'lucide-react';
 import './AppLayout.css';
 
@@ -14,6 +14,8 @@ const NAV_SECTIONS = [
     label: 'Main',
     items: [
       { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/jobs', label: 'Job Board', icon: Search },
+      { path: '/my-applications', label: 'My Applications', icon: FileCheck },
       { path: '/interview-setup', label: 'New Interview', icon: Play },
       { path: '/coding', label: 'Coding', icon: Code2 },
       { path: '/resume', label: 'Resumes', icon: FileText },
@@ -98,7 +100,7 @@ const AppLayout: React.FC = () => {
         </div>
 
         <nav className="app-sidebar__nav">
-          {NAV_SECTIONS.map((section) => (
+          {role !== 'recruiter' && NAV_SECTIONS.map((section) => (
             <div key={section.label} className="app-sidebar__section">
               {!collapsed && <p className="app-sidebar__section-label">{section.label}</p>}
               {section.items.map((item) => {
@@ -125,10 +127,10 @@ const AppLayout: React.FC = () => {
               <button
                 type="button"
                 className={`app-sidebar__item ${isActive('/recruiter') ? 'app-sidebar__item--active' : ''}`}
-                onClick={() => { navigate('/recruiter'); setMobileOpen(false); }}
+                onClick={() => { navigate('/recruiter/dashboard'); setMobileOpen(false); }}
               >
                 <Users size={18} />
-                {!collapsed && <span>Pipeline</span>}
+                {!collapsed && <span>Recruiter Portal</span>}
               </button>
             </div>
           )}

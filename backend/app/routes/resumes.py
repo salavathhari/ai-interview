@@ -2,16 +2,17 @@ import os
 import re
 import uuid
 import hashlib
+import logging
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status, Query
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status, Query, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sql_func
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.auth.utils import get_current_user
 from app.models.user import User
 from app.models.resume import Resume, ResumeVersion
@@ -20,6 +21,8 @@ from app.services.ai_service import AIService
 import pdfplumber
 from docx import Document
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/resumes",
@@ -163,11 +166,97 @@ def _compute_content_hash(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 
+def _process_resume_extraction(resume_id: int, file_path: str, file_ext: str, user_id: int):
+    """Background task: Extract text and run ML models on resume (async). Called without blocking request."""
+    db = SessionLocal()
+    try:
+        # Mark as processing
+        resume = db.query(Resume).filter(Resume.id == resume_id).first()
+        if not resume:
+            logger.error(f"Resume {resume_id} not found for extraction")
+            return
+        
+        resume.processing_status = "processing"
+        db.commit()
+        
+        # Extract text (1-10 seconds for large PDFs)
+        text = ""
+        file_path_obj = Path(file_path)
+        if file_ext == ".pdf":
+            text = _extract_text_from_pdf(file_path_obj)
+        elif file_ext == ".docx":
+            text = _extract_text_from_docx(file_path_obj)
+        
+        if not text.strip():
+            raise ValueError("No text could be extracted from the document.")
+        
+        # Extract structured fields
+        structured_fields = _extract_structured_fields(text)
+        
+        # Extract skills via ML
+        try:
+            from app.ml.prediction.skill_service import SkillService
+            ml_skills = SkillService.extract_skills(text)
+            detected_skills = ml_skills.get("all_skills", [])
+            skills_str = ", ".join(detected_skills) if detected_skills else None
+        except Exception as e:
+            logger.warning(f"ML skill extraction failed: {e}, falling back to AI")
+            detected_skills = AIService.extract_skills(text)
+            skills_str = ", ".join(detected_skills) if detected_skills else None
+        
+        # Run ML models for resume analysis
+        try:
+            from app.ml.prediction.classifier_service import ClassifierService
+            from app.ml.prediction.search_service import SearchService
+            from app.ml.prediction.recommender_service import RecommenderService
+            ClassifierService.classify(text)
+            SearchService.index_resume(resume_id, text)
+            RecommenderService.predict_quality(text)
+        except Exception as e:
+            logger.warning(f"ML model inference failed: {e}")
+        
+        # Update resume with extracted data
+        content_hash = _compute_content_hash(text)
+        resume.extracted_text = text
+        resume.skills = skills_str
+        resume.content_hash = content_hash
+        resume.parsed_name = structured_fields.get("name")
+        resume.parsed_email = structured_fields.get("email")
+        resume.parsed_phone = structured_fields.get("phone")
+        resume.parsed_location = structured_fields.get("location")
+        resume.parsed_linkedin = structured_fields.get("linkedin")
+        resume.parsed_github = structured_fields.get("github")
+        resume.parsed_portfolio = structured_fields.get("portfolio")
+        resume.processing_status = "completed"
+        db.commit()
+        
+        logger.info(f"Resume {resume_id} extraction completed successfully")
+    
+    except Exception as e:
+        logger.error(f"Resume {resume_id} extraction failed: {str(e)}")
+        try:
+            resume = db.query(Resume).filter(Resume.id == resume_id).first()
+            if resume:
+                resume.processing_status = "failed"
+                resume.extraction_error = str(e)
+                db.commit()
+        except Exception as db_error:
+            logger.error(f"Failed to update resume status: {db_error}")
+    
+    finally:
+        db.close()
+
+
+def _compute_content_hash(text: str) -> str:
+    return hashlib.md5(text.encode("utf-8")).hexdigest()
+
+
 @router.post("/upload")
 async def upload_resume(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
     if not file.filename:
         raise HTTPException(
@@ -213,118 +302,68 @@ async def upload_resume(
             detail="Could not save file. Please try again later.",
         )
 
-    try:
-        text = ""
-        if ext == ".pdf":
-            text = _extract_text_from_pdf(file_path)
-        elif ext == ".docx":
-            text = _extract_text_from_docx(file_path)
-
-        if not text.strip():
-            raise ValueError("No text could be extracted from the document.")
-
-    except ValueError:
-        if file_path.exists():
-            file_path.unlink()
-        raise
-    except Exception as e:
-        if file_path.exists():
-            file_path.unlink()
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Could not extract text from document. Please check the file format.",
-        )
-
-    structured_fields = _extract_structured_fields(text)
-
-    try:
-        from app.ml.prediction.skill_service import SkillService
-        ml_skills = SkillService.extract_skills(text)
-        detected_skills = ml_skills.get("all_skills", [])
-        skills_str = ", ".join(detected_skills) if detected_skills else None
-    except Exception:
-        detected_skills = AIService.extract_skills(text)
-        skills_str = ", ".join(detected_skills) if detected_skills else None
+    # Deactivate all active resumes and create new resume with pending status
+    db.query(Resume).filter(
+        Resume.user_id == current_user.id,
+        Resume.is_active == True,
+    ).update({"is_active": False}, synchronize_session="fetch")
 
     existing_count = db.query(Resume).filter(
         Resume.user_id == current_user.id,
         Resume.filename == file.filename,
     ).count()
 
-    content_hash = _compute_content_hash(text)
-
-    # Atomically deactivate all active resumes and insert the new one in one transaction
-    db.query(Resume).filter(
-        Resume.user_id == current_user.id,
-        Resume.is_active == True,
-    ).update({"is_active": False}, synchronize_session="fetch")
-
     new_resume = Resume(
         user_id=current_user.id,
         filename=file.filename,
         file_path=str(file_path),
-        extracted_text=text,
-        skills=skills_str,
-        content_hash=content_hash,
+        extracted_text="",  # Will be filled by background task
+        skills=None,
+        content_hash=None,
         version=existing_count + 1,
         is_active=True,
-        parsed_name=structured_fields.get("name"),
-        parsed_email=structured_fields.get("email"),
-        parsed_phone=structured_fields.get("phone"),
-        parsed_location=structured_fields.get("location"),
-        parsed_linkedin=structured_fields.get("linkedin"),
-        parsed_github=structured_fields.get("github"),
-        parsed_portfolio=structured_fields.get("portfolio"),
+        processing_status="pending",
     )
     db.add(new_resume)
     db.commit()
     db.refresh(new_resume)
 
-    version_record = ResumeVersion(
-        resume_id=new_resume.id,
-        user_id=current_user.id,
-        version_number=1,
-        filename=file.filename,
-        file_path=str(file_path),
-        extracted_text=text,
-        skills=skills_str,
-        content_hash=content_hash,
-        change_reason="Initial upload",
-    )
-    db.add(version_record)
-    db.commit()
-
-    try:
-        from app.ml.prediction.classifier_service import ClassifierService
-        from app.ml.prediction.search_service import SearchService
-        from app.ml.prediction.recommender_service import RecommenderService
-        classification = ClassifierService.classify(text)
-        SearchService.index_resume(new_resume.id, text)
-        quality = RecommenderService.predict_quality(text)
-    except Exception:
-        classification = None
-        quality = None
-
-    duplicate_of = None
-    existing = db.query(Resume).filter(
-        Resume.user_id == current_user.id,
-        Resume.content_hash == content_hash,
-        Resume.id != new_resume.id,
-    ).first()
-    if existing:
-        duplicate_of = existing.id
+    # Queue background task for text extraction and ML processing
+    background_tasks.add_task(_process_resume_extraction, new_resume.id, str(file_path), ext, current_user.id)
 
     return {
         "id": new_resume.id,
         "filename": new_resume.filename,
-        "skills": detected_skills,
-        "version": 1,
+        "version": new_resume.version,
         "is_active": True,
-        "parsed_fields": structured_fields,
-        "classification": classification,
-        "quality": quality,
-        "duplicate_of": duplicate_of,
-        "message": "Resume uploaded and skills extracted successfully.",
+        "processing_status": "pending",
+        "message": "Resume uploaded. Extraction in progress, check status endpoint to monitor.",
+    }
+
+
+@router.get("/{resume_id}/status")
+async def get_resume_extraction_status(
+    resume_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Check extraction and processing status of a resume."""
+    resume = db.query(Resume).filter(
+        Resume.id == resume_id,
+        Resume.user_id == current_user.id,
+    ).first()
+    
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+    
+    return {
+        "id": resume.id,
+        "status": resume.processing_status,
+        "filename": resume.filename,
+        "is_active": resume.is_active,
+        "error": resume.extraction_error if resume.processing_status == "failed" else None,
+        "skills": resume.skills.split(", ") if resume.skills else [],
+        "extracted": resume.extracted_text is not None and len(resume.extracted_text.strip()) > 0,
     }
 
 

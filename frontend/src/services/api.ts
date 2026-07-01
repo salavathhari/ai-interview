@@ -486,4 +486,113 @@ export const reportsApi = {
   getHistory: () => api.get('/reports', { params: { include_all: true } }),
 };
 
+export const recruiterApi = {
+  getDashboard: () => api.get('/recruiter/v2/dashboard'),
+  getAnalytics: () => api.get('/recruiter/v2/analytics'),
+
+  getJobs: (params?: { status?: string; search?: string; page?: number; per_page?: number }) =>
+    api.get('/recruiter/v2/jobs', { params }),
+  createJob: (data: any) => api.post('/recruiter/v2/jobs', data),
+  getJob: (jobId: number) => api.get(`/recruiter/v2/jobs/${jobId}`),
+  updateJob: (jobId: number, data: any) => api.put(`/recruiter/v2/jobs/${jobId}`, data),
+  updateJobStatus: (jobId: number, status: string) =>
+    api.patch(`/recruiter/v2/jobs/${jobId}/status`, { status }),
+  deleteJob: (jobId: number) => api.delete(`/recruiter/v2/jobs/${jobId}`),
+  duplicateJob: (jobId: number) => api.post(`/recruiter/v2/jobs/${jobId}/duplicate`),
+
+  getApplications: (jobId: number, params?: any) =>
+    api.get(`/recruiter/v2/jobs/${jobId}/applications`, { params }),
+  createApplication: (jobId: number, data: any) =>
+    api.post(`/recruiter/v2/jobs/${jobId}/applications`, data),
+  getApplication: (appId: number) => api.get(`/recruiter/v2/applications/${appId}`),
+  updateStage: (appId: number, data: { status: string; reason?: string }) =>
+    api.patch(`/recruiter/v2/applications/${appId}/stage`, data),
+  getApplicationHistory: (appId: number) =>
+    api.get(`/recruiter/v2/applications/${appId}/history`),
+
+  getCandidateProfile: (userId: number) =>
+    api.get(`/recruiter/v2/candidates/${userId}/profile`),
+
+  shortlist: (appId: number, data: { action: string; reason?: string; comments?: string }) =>
+    api.post(`/recruiter/v2/applications/${appId}/shortlist`, data),
+
+  createOffer: (appId: number, data: any) =>
+    api.post(`/recruiter/v2/applications/${appId}/offer`, data),
+  getOffers: () => api.get('/recruiter/v2/offers'),
+  updateOfferStatus: (offerId: number, status: string) =>
+    api.patch(`/recruiter/v2/offers/${offerId}/status`, { status }),
+
+  getInterviewTemplates: () => api.get('/recruiter/v2/templates/interviews'),
+  createInterviewTemplate: (data: any) => api.post('/recruiter/v2/templates/interviews', data),
+  updateInterviewTemplate: (id: number, data: any) =>
+    api.put(`/recruiter/v2/templates/interviews/${id}`, data),
+  deleteInterviewTemplate: (id: number) =>
+    api.delete(`/recruiter/v2/templates/interviews/${id}`),
+  getCodingTemplates: () => api.get('/recruiter/v2/templates/coding'),
+  createCodingTemplate: (data: any) => api.post('/recruiter/v2/templates/coding', data),
+  updateCodingTemplate: (id: number, data: any) =>
+    api.put(`/recruiter/v2/templates/coding/${id}`, data),
+  deleteCodingTemplate: (id: number) =>
+    api.delete(`/recruiter/v2/templates/coding/${id}`),
+
+  assignInterview: (appId: number, data?: any) =>
+    api.post(`/recruiter/v2/applications/${appId}/assign-interview`, data),
+  assignCoding: (appId: number, data?: any) =>
+    api.post(`/recruiter/v2/applications/${appId}/assign-coding`, data),
+
+  compare: (applicationIds: number[]) =>
+    api.post('/recruiter/v2/compare', { application_ids: applicationIds }),
+
+  getNotifications: (unreadOnly?: boolean) =>
+    api.get('/recruiter/v2/notifications', { params: { unread_only: unreadOnly } }),
+  markNotificationRead: (id: number) =>
+    api.patch(`/recruiter/v2/notifications/${id}/read`),
+
+  getActivity: (params?: { page?: number; per_page?: number }) =>
+    api.get('/recruiter/v2/activity', { params }),
+
+  downloadHiringReport: () =>
+    api.get('/recruiter/v2/reports/hiring-pdf', { responseType: 'blob' }),
+};
+
+// ─── Candidate Job Board & Application APIs ──────────────────────────────────
+
+export const candidateApi = {
+  // Job Discovery
+  getJobs: (params?: { search?: string; location?: string; employment_type?: string; experience_level?: string; page?: number; per_page?: number }) =>
+    api.get('/candidate/jobs', { params }),
+  getJobDetail: (jobId: number) =>
+    api.get(`/candidate/jobs/${jobId}`),
+
+  // Application
+  applyToJob: (jobId: number, data: { resume_id: number; cover_letter?: string; source?: string }) =>
+    api.post(`/candidate/jobs/${jobId}/apply`, data),
+  getMyApplications: (params?: { status?: string; page?: number; per_page?: number }) =>
+    api.get('/candidate/applications', { params }),
+  getApplicationDetail: (appId: number) =>
+    api.get(`/candidate/applications/${appId}`),
+  withdrawApplication: (appId: number) =>
+    api.post(`/candidate/applications/${appId}/withdraw`),
+
+  // Assignments
+  getMyAssignments: (params?: { status?: string }) =>
+    api.get('/candidate/assignments', { params }),
+  getAssignmentDetail: (id: number) =>
+    api.get(`/candidate/assignments/${id}`),
+  startAssignment: (id: number) =>
+    api.post(`/candidate/assignments/${id}/start`),
+
+  // Offer Response
+  respondToOffer: (offerId: number, response: 'accepted' | 'rejected') =>
+    api.post(`/candidate/offers/${offerId}/respond`, { response }),
+
+  // Notifications
+  getMyNotifications: (unreadOnly?: boolean) =>
+    api.get('/candidate/notifications', { params: { unread_only: unreadOnly } }),
+  markMyNotificationRead: (id: number) =>
+    api.patch(`/candidate/notifications/${id}/read`),
+  markAllMyNotificationsRead: () =>
+    api.patch('/candidate/notifications/read-all'),
+};
+
 export default api;

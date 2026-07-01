@@ -7,8 +7,8 @@ class InterviewQuestionMetric(Base):
     __tablename__ = "interview_question_metrics"
 
     id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(Integer, ForeignKey("interview_sessions.id"))
-    question_id = Column(Integer, ForeignKey("questions.id"))
+    session_id = Column(Integer, ForeignKey("interview_sessions.id"), index=True)
+    question_id = Column(Integer, ForeignKey("questions.id"), index=True)
 
     time_taken = Column(Integer, nullable=True)
     time_limit = Column(Integer, nullable=True)

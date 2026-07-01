@@ -17,8 +17,8 @@ if is_sqlite:
 else:
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
-        pool_size=5,
-        max_overflow=10,
+        pool_size=20,
+        max_overflow=20,
         pool_pre_ping=True,
         pool_recycle=300,
     )
@@ -54,6 +54,12 @@ def init_models():
     )
     from app.models.analytics import AnalyticsEvent, AnalyticsSummary
     from app.models.generated_report import GeneratedReport
+    from app.models.recruiter import (
+        RecruiterJobPost, Application, ApplicationHistory,
+        Shortlist, Offer, RecruiterActivity,
+        InterviewTemplate, CodingTemplate,
+        Company, ApplicationNote, CandidateAssignment,
+    )
 
     # SQLite migrations for nullable columns not handled by create_all
     _run_sqlite_migrations()
@@ -80,6 +86,32 @@ _SQLITE_MIGRATIONS = {
         ("current_readiness", "REAL"), ("target_readiness", "REAL"),
         ("interview_readiness", "REAL"), ("coding_readiness", "REAL"),
         ("version", "INTEGER"), ("updated_at", "DATETIME"),
+    ],
+    "recruiter_job_posts": [
+        ("company_id", "INTEGER REFERENCES companies(id)"),
+        ("title", "TEXT"),
+        ("description", "TEXT"),
+    ],
+    "applications": [
+        ("recruiter_id", "INTEGER REFERENCES users(id)"),
+        ("resume_analysis_id", "INTEGER REFERENCES resume_analyses(id)"),
+        ("ats_score", "REAL"), ("resume_match_score", "REAL"),
+        ("skill_gap_score", "REAL"), ("career_readiness_score", "REAL"),
+        ("screening_summary", "TEXT"),
+        ("matched_skills", "TEXT"), ("missing_skills", "TEXT"),
+        ("experience_match", "REAL"), ("education_match", "REAL"),
+        ("interview_session_id", "INTEGER REFERENCES interview_sessions(id)"),
+        ("coding_session_id", "INTEGER REFERENCES coding_sessions(id)"),
+        ("final_interview_score", "REAL"), ("final_coding_score", "REAL"),
+        ("final_composite_score", "REAL"), ("hiring_recommendation", "TEXT"),
+        ("strengths", "TEXT"), ("weaknesses", "TEXT"),
+        ("decision", "TEXT"), ("decision_at", "DATETIME"),
+        ("decision_by", "INTEGER REFERENCES users(id)"),
+        ("decision_reason", "TEXT"), ("screened_at", "DATETIME"),
+    ],
+    "application_history": [
+        ("actor_id", "INTEGER REFERENCES users(id)"),
+        ("actor_role", "TEXT"),
     ],
 }
 

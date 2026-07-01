@@ -17,6 +17,8 @@ class Resume(Base):
     content_hash = Column(String(32), nullable=True, index=True)
     version = Column(Integer, default=1)
     is_active = Column(Boolean, default=False, index=True)
+    processing_status = Column(String(20), default="pending")  # pending, processing, completed, failed
+    extraction_error = Column(Text, nullable=True)
     parsed_name = Column(EncryptedString(200), nullable=True)
     parsed_email = Column(EncryptedString(320), nullable=True)
     parsed_phone = Column(EncryptedString(50), nullable=True)

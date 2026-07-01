@@ -800,6 +800,50 @@ def get_system_health(
     )
 
 
+@router.get("/cache/stats")
+def get_cache_stats(admin: User = Depends(verify_admin)):
+    """Get cache statistics (AI responses, TTS audio, etc)."""
+    try:
+        from app.services.ai_cache import ai_cache
+        from app.services.tts_cache import tts_cache
+        
+        ai_keys = len(ai_cache.redis.keys("ai:*"))
+        tts_keys = len(tts_cache.redis.keys("tts:*"))
+        
+        # Get memory usage of cache keys
+        ai_memory = sum(ai_cache.redis.memory_usage(k) or 0 for k in ai_cache.redis.keys("ai:*")[:100])
+        tts_memory = sum(tts_cache.redis.memory_usage(k) or 0 for k in tts_cache.redis.keys("tts:*")[:100])
+        
+        return {
+            "ai_response_cache": {
+                "entries": ai_keys,
+                "memory_kb": round(ai_memory / 1024, 2),
+            },
+            "tts_audio_cache": {
+                "entries": tts_keys,
+                "memory_kb": round(tts_memory / 1024, 2),
+            },
+            "total_entries": ai_keys + tts_keys,
+            "estimated_savings": f"Prevented ~{(ai_keys + tts_keys) * 0.5}s API latency",
+        }
+    except Exception as e:
+        logger.error(f"Failed to get cache stats: {e}")
+        return {"error": str(e), "detail": "Could not connect to Redis cache"}
+
+
+@router.delete("/cache/tts")
+def clear_tts_cache(admin: User = Depends(verify_admin)):
+    """Clear all TTS audio cache entries."""
+    try:
+        from app.services.tts_cache import tts_cache
+        
+        tts_cache.clear_pattern("tts:*")
+        return {"message": "TTS cache cleared successfully"}
+    except Exception as e:
+        logger.error(f"Failed to clear TTS cache: {e}")
+        return {"error": str(e)}
+
+
 # ─── AUDIT LOGS ───────────────────────────────────────────────────────────────
 
 @router.get("/audit-logs", response_model=AuditLogListResponse)

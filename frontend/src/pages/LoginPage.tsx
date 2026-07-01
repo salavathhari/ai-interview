@@ -23,7 +23,7 @@ const LoginPage: React.FC = () => {
             const role = localStorage.getItem('role');
             toast('success', 'Welcome back!');
             if (role === 'admin') navigate('/admin/dashboard');
-            else if (role === 'recruiter') navigate('/recruiter');
+            else if (role === 'recruiter') navigate('/recruiter/dashboard');
             else navigate('/dashboard');
         } catch (err: any) {
             setError(err.message || 'Invalid credentials');

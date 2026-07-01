@@ -670,15 +670,27 @@ const ATSReportPage: React.FC = () => {
                   return null;
                 })()}
                 <div className="optimized-actions">
-                  <button type="button" className="solid" onClick={handleDownloadOptimized}>
-                    <Download size={15} /> Download TXT
-                  </button>
-                  <button type="button" className="solid" onClick={handleDownloadOptimizedDocx} style={{ background: '#6366f1' }}>
-                    <FileDown size={15} /> Download DOCX
-                  </button>
-                  <button type="button" className="solid" onClick={handleDownloadOptimizedPdf} style={{ background: '#8b5cf6' }}>
-                    <File size={15} /> Download PDF
-                  </button>
+                  {optimized?.format === 'docx' ? (
+                    <button type="button" className="solid" onClick={handleDownloadOptimizedDocx}>
+                      <FileDown size={15} /> Download DOCX
+                    </button>
+                  ) : optimized?.format === 'pdf' ? (
+                    <button type="button" className="solid" onClick={handleDownloadOptimizedPdf}>
+                      <File size={15} /> Download PDF
+                    </button>
+                  ) : (
+                    <>
+                      <button type="button" className="solid" onClick={handleDownloadOptimized}>
+                        <Download size={15} /> Download TXT
+                      </button>
+                      <button type="button" className="solid" onClick={handleDownloadOptimizedDocx} style={{ background: '#6366f1' }}>
+                        <FileDown size={15} /> Download DOCX
+                      </button>
+                      <button type="button" className="solid" onClick={handleDownloadOptimizedPdf} style={{ background: '#8b5cf6' }}>
+                        <File size={15} /> Download PDF
+                      </button>
+                    </>
+                  )}
                   <button type="button" className="ghost" onClick={() => setShowOptimized(false)}>
                     Close Preview
                   </button>

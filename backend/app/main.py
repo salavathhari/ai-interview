@@ -29,11 +29,14 @@ from app.routes.analytics import router as analytics_router
 from app.routes.coding import router as coding_router
 from app.routes.admin import router as admin_router
 from app.routes.recruiter import router as recruiter_router
+from app.routes.recruiter_v2 import router as recruiter_v2_router
 from app.routes.career import router as career_router
 from app.routes.ats import router as ats_router
 from app.routes.ml import router as ml_router
 from app.routes.reports import router as reports_router
+from app.routes.candidate_jobs import router as candidate_jobs_router
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -53,6 +56,9 @@ init_models()
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Add GZIP compression for responses > 500 bytes
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # Explicit CORS origins to avoid browser CORS failures during local dev
 allowed_origins = [
@@ -156,6 +162,8 @@ app.include_router(analytics_router)
 app.include_router(coding_router)
 app.include_router(admin_router)
 app.include_router(recruiter_router)
+app.include_router(recruiter_v2_router)
+app.include_router(candidate_jobs_router)
 app.include_router(career_router)
 app.include_router(ats_router)
 app.include_router(ml_router)

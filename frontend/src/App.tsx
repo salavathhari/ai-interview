@@ -22,6 +22,21 @@ const ResumePage = lazy(() => import('./pages/ResumePage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const RecruiterPage = lazy(() => import('./pages/RecruiterPage'));
 
+const RecruiterLayout = lazy(() => import('./pages/recruiter/RecruiterLayout'));
+const RecruiterDashboardPage = lazy(() => import('./pages/recruiter/RecruiterDashboardPage'));
+const RecruiterJobsPage = lazy(() => import('./pages/recruiter/RecruiterJobsPage'));
+const RecruiterJobCreatePage = lazy(() => import('./pages/recruiter/RecruiterJobCreatePage'));
+const RecruiterJobDetailPage = lazy(() => import('./pages/recruiter/RecruiterJobDetailPage'));
+const RecruiterApplicationsPage = lazy(() => import('./pages/recruiter/RecruiterApplicationsPage'));
+const RecruiterCandidateProfilePage = lazy(() => import('./pages/recruiter/RecruiterCandidateProfilePage'));
+const RecruiterInterviewsPage = lazy(() => import('./pages/recruiter/RecruiterInterviewsPage'));
+const RecruiterCodingPage = lazy(() => import('./pages/recruiter/RecruiterCodingPage'));
+const RecruiterComparePage = lazy(() => import('./pages/recruiter/RecruiterComparePage'));
+const RecruiterAnalyticsPage = lazy(() => import('./pages/recruiter/RecruiterAnalyticsPage'));
+const RecruiterReportsPage = lazy(() => import('./pages/recruiter/RecruiterReportsPage'));
+const RecruiterNotificationsPage = lazy(() => import('./pages/recruiter/RecruiterNotificationsPage'));
+const RecruiterSettingsPage = lazy(() => import('./pages/recruiter/RecruiterSettingsPage'));
+
 const CareerDashboardPage = lazy(() => import('./pages/career/CareerDashboardPage'));
 const JobDescriptionPage = lazy(() => import('./pages/career/JobDescriptionPage'));
 const SkillGapPage = lazy(() => import('./pages/career/SkillGapPage'));
@@ -32,6 +47,10 @@ const CareerReadinessPage = lazy(() => import('./pages/career/CareerReadinessPag
 const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 
 const MLInsightsPage = lazy(() => import('./pages/ml/MLInsightsPage'));
+
+const CandidateJobsPage = lazy(() => import('./pages/candidate/CandidateJobsPage'));
+const CandidateJobDetailPage = lazy(() => import('./pages/candidate/CandidateJobDetailPage'));
+const MyApplicationsPage = lazy(() => import('./pages/candidate/MyApplicationsPage'));
 
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
@@ -81,15 +100,14 @@ function App() {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
 
-                  {/* Candidate routes (with shared AppLayout) */}
-                  <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                  {/* Candidate-only routes (with shared AppLayout) */}
+                  <Route element={<ProtectedRoute allowedRoles={['candidate', 'admin']}><AppLayout /></ProtectedRoute>}>
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/resume" element={<ResumePage />} />
                     <Route path="/analytics" element={<AnalyticsPage />} />
                     <Route path="/report" element={<ReportPage />} />
                     <Route path="/report/:sessionId" element={<ReportPage />} />
                     <Route path="/interview-setup" element={<InterviewSetupPage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
 
                     {/* Career routes */}
                     <Route path="/career/dashboard" element={<CareerDashboardPage />} />
@@ -106,8 +124,36 @@ function App() {
                     {/* ML Insights */}
                     <Route path="/ml-insights" element={<MLInsightsPage />} />
 
-                    {/* Recruiter */}
-                    <Route path="/recruiter" element={<RecruiterPage />} />
+                    {/* Job Board & Applications */}
+                    <Route path="/jobs" element={<CandidateJobsPage />} />
+                    <Route path="/jobs/:jobId" element={<CandidateJobDetailPage />} />
+                    <Route path="/my-applications" element={<MyApplicationsPage />} />
+                  </Route>
+
+                  {/* Shared routes (all roles) */}
+                  <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                    <Route path="/settings" element={<SettingsPage />} />
+                  </Route>
+
+                  {/* Recruiter Portal (own layout) */}
+                  <Route path="/recruiter" element={<ProtectedRoute allowedRoles={['recruiter', 'admin']}><RecruiterLayout /></ProtectedRoute>}>
+                    <Route path="dashboard" element={<RecruiterDashboardPage />} />
+                    <Route path="jobs" element={<RecruiterJobsPage />} />
+                    <Route path="jobs/create" element={<RecruiterJobCreatePage />} />
+                    <Route path="jobs/:jobId" element={<RecruiterJobDetailPage />} />
+                    <Route path="jobs/:jobId/edit" element={<RecruiterJobCreatePage />} />
+                    <Route path="applications" element={<RecruiterApplicationsPage />} />
+                    <Route path="candidates/:userId" element={<RecruiterCandidateProfilePage />} />
+                    <Route path="interviews" element={<RecruiterInterviewsPage />} />
+                    <Route path="coding" element={<RecruiterCodingPage />} />
+                    <Route path="compare" element={<RecruiterComparePage />} />
+                    <Route path="analytics" element={<RecruiterAnalyticsPage />} />
+                    <Route path="reports" element={<RecruiterReportsPage />} />
+                    <Route path="notifications" element={<RecruiterNotificationsPage />} />
+                    <Route path="settings" element={<RecruiterSettingsPage />} />
+                  </Route>
+                  <Route path="/recruiter" element={<ProtectedRoute allowedRoles={['recruiter', 'admin']}><RecruiterLayout /></ProtectedRoute>}>
+                    <Route index element={<RecruiterDashboardPage />} />
                   </Route>
 
                   {/* Full-screen routes (no layout) */}
