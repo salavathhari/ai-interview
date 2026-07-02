@@ -14,17 +14,19 @@ class TTSCache:
     """Redis-based cache for OpenAI TTS (text-to-speech) audio responses."""
 
     def __init__(self):
+        self.redis = None
         try:
             if redis is None:
-                raise ImportError("redis not installed")
+                logger.warning("redis package not installed — TTS cache disabled")
+                return
             host = os.getenv("REDIS_HOST", "localhost")
             password = os.getenv("REDIS_PASSWORD")
             self.redis = redis.Redis(host=host, port=6379, db=1, decode_responses=False, password=password)
             self.redis.ping()
             logger.info("✓ Connected to Redis for TTS cache (db=1)")
         except Exception as e:
-            logger.error(f"Failed to connect to Redis for TTS cache: {e}")
-            raise
+            logger.warning(f"Redis unavailable — TTS cache disabled: {e}")
+            self.redis = None
 
     def _get_key(self, text: str) -> str:
         """Create cache key from question text hash."""
@@ -32,6 +34,8 @@ class TTSCache:
 
     def get(self, text: str) -> Optional[bytes]:
         """Retrieve cached audio bytes for question text."""
+        if self.redis is None:
+            return None
         key = self._get_key(text)
         try:
             audio_bytes = self.redis.get(key)
@@ -44,6 +48,8 @@ class TTSCache:
 
     def set(self, text: str, audio_bytes: bytes, expire: int = 604800):
         """Cache audio bytes for question text. TTL: 7 days by default."""
+        if self.redis is None:
+            return
         key = self._get_key(text)
         try:
             self.redis.setex(key, expire, audio_bytes)
@@ -53,6 +59,8 @@ class TTSCache:
 
     def clear_pattern(self, pattern: str = "tts:*"):
         """Clear all TTS cache entries (use cautiously)."""
+        if self.redis is None:
+            return
         try:
             keys = self.redis.keys(pattern)
             if keys:
