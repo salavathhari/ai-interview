@@ -137,28 +137,6 @@ const MLInsightsPage: React.FC = () => {
     if (!selectedResumeId) return;
     setLoading(true); setError(''); setAnalysisComplete(false);
     try {
-      // Wait for background text extraction to finish before running ML analysis
-      const pollInterval = 2000;
-      const maxWait = 60000;
-      let waited = 0;
-      while (waited < maxWait) {
-        const statusResp = await resumeApi.getStatus(selectedResumeId);
-        const st = statusResp.data.status;
-        if (st === 'completed') break;
-        if (st === 'failed') {
-          setError(statusResp.data.error || 'Resume extraction failed. Please re-upload.');
-          setLoading(false);
-          return;
-        }
-        await new Promise(r => setTimeout(r, pollInterval));
-        waited += pollInterval;
-      }
-      if (waited >= maxWait) {
-        setError('Resume extraction is taking too long. Please try again later.');
-        setLoading(false);
-        return;
-      }
-
       const r = await mlApi.analyzeFull(selectedResumeId);
       const d = r.data;
       setClassification(d.classification);
