@@ -311,28 +311,45 @@ def recommend_skills(req: RecommendSkillsRequest, db: Session = Depends(get_db),
 
 @router.post("/analyze-full")
 def full_analysis(req: FullAnalysisRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    import gc
+    import logging
+
+    _log = logging.getLogger(__name__)
     start = time.time()
     resume_text = _get_resume_text(req.resume_id, user.id, db)
     jd_text = ""
     if req.job_description_id:
         jd_text = _get_jd_text(req.job_description_id, user.id, db)
 
+    def _safe(label, fn, *args, **kwargs):
+        """Run an ML step, return result or None on failure (OOM, missing model, etc.)."""
+        try:
+            result = fn(*args, **kwargs)
+            gc.collect()
+            return result
+        except Exception as e:
+            _log.warning(f"analyze-full: {label} failed: {e}")
+            gc.collect()
+            return None
+
     from app.ml.prediction.classifier_service import ClassifierService
     from app.ml.prediction.skill_service import SkillService
     from app.ml.prediction.ats_service import ATSService
     from app.ml.prediction.recommender_service import RecommenderService
 
-    classification = ClassifierService.classify(resume_text)
-    skills = SkillService.extract_skills(resume_text)
-    ats = ATSService.predict_ats(resume_text, jd_text)
-    jobs = RecommenderService.recommend_jobs(resume_text)
-    quality = RecommenderService.predict_quality(resume_text)
-    career = RecommenderService.career_path(resume_text, classification.get("predicted_role", ""))
-    recommend_skills = SkillService.recommend_skills(resume_text, classification.get("predicted_role", ""))
+    classification = _safe("classification", ClassifierService.classify, resume_text)
+    predicted_role = classification.get("predicted_role", "") if classification else ""
+
+    skills = _safe("skills", SkillService.extract_skills, resume_text)
+    ats = _safe("ats", ATSService.predict_ats, resume_text, jd_text)
+    jobs = _safe("jobs", RecommenderService.recommend_jobs, resume_text)
+    quality = _safe("quality", RecommenderService.predict_quality, resume_text)
+    career = _safe("career", RecommenderService.career_path, resume_text, predicted_role)
+    recommend_skills = _safe("recommend_skills", SkillService.recommend_skills, resume_text, predicted_role)
 
     skill_gap = None
     if jd_text:
-        skill_gap = SkillService.skill_gap(resume_text, jd_text)
+        skill_gap = _safe("skill_gap", SkillService.skill_gap, resume_text, jd_text)
 
     total_latency = round((time.time() - start) * 1000, 1)
 
