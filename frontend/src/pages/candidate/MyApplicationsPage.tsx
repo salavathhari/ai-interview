@@ -2,8 +2,8 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Clock, CheckCircle, XCircle, AlertCircle, ChevronDown,
-  Briefcase, MapPin, DollarSign, Send, Eye, BarChart3,
-  TrendingUp, Users, Award, Code, Loader2, Mic
+  Briefcase, DollarSign, Send, Eye, BarChart3,
+  TrendingUp, Award, Code, Loader2, Mic
 } from 'lucide-react';
 import { candidateApi } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';

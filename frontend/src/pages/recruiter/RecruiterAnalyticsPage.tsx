@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BarChart3, TrendingUp, Users, Clock } from 'lucide-react';
+import { BarChart3, TrendingUp, Users } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 
