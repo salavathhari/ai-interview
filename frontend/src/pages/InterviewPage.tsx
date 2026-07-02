@@ -677,8 +677,22 @@ const InterviewPage: React.FC = () => {
                     <span>Progress</span>
                     <span>Question {progress.current} / {progress.total}</span>
                 </div>
-                <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${Math.min((progress.current / progress.total) * 100, 100)}%` }} />
+                <div className="step-indicator">
+                    {Array.from({ length: progress.total }, (_, i) => {
+                        const stepNum = i + 1;
+                        const isDone = stepNum < progress.current;
+                        const isCurrent = stepNum === progress.current;
+                        return (
+                            <React.Fragment key={stepNum}>
+                                <div className={`step-bubble ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}>
+                                    {isDone ? '✓' : stepNum}
+                                </div>
+                                {i < progress.total - 1 && (
+                                    <div className={`step-connector ${isDone ? 'done' : ''}`} />
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
                 </div>
                 <p className="progress-status">{statusLabel()}</p>
             </section>
