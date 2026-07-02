@@ -193,10 +193,10 @@ def _process_resume_extraction(resume_id: int, file_path: str, file_ext: str, us
         # Extract structured fields
         structured_fields = _extract_structured_fields(text)
         
-        # Extract skills via ML
+        # Extract skills via ML (use fast dict+regex+spacy extraction, skip slow embeddings)
         try:
-            from app.ml.prediction.skill_service import SkillService
-            ml_skills = SkillService.extract_skills(text)
+            from app.ml.models.skill_extractor import SkillExtractor
+            ml_skills = SkillExtractor.extract(text)
             detected_skills = ml_skills.get("all_skills", [])
             skills_str = ", ".join(detected_skills) if detected_skills else None
         except Exception as e:
@@ -235,11 +235,13 @@ def _process_resume_extraction(resume_id: int, file_path: str, file_ext: str, us
     except Exception as e:
         logger.error(f"Resume {resume_id} extraction failed: {str(e)}")
         try:
-            resume = db.query(Resume).filter(Resume.id == resume_id).first()
+            db_err = SessionLocal()
+            resume = db_err.query(Resume).filter(Resume.id == resume_id).first()
             if resume:
                 resume.processing_status = "failed"
-                resume.extraction_error = str(e)
-                db.commit()
+                resume.extraction_error = str(e)[:500]
+                db_err.commit()
+            db_err.close()
         except Exception as db_error:
             logger.error(f"Failed to update resume status: {db_error}")
     

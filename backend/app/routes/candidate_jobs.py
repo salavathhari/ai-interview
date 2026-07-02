@@ -493,6 +493,72 @@ def my_application_detail(
     )
 
 
+@router.get("/applications/{app_id}/coding-session")
+def get_application_coding_session(
+    app_id: int,
+    candidate: User = Depends(verify_candidate),
+    db: Session = Depends(get_db),
+):
+    """Get the coding session for an application in coding_round status."""
+    app = db.query(Application).filter(
+        Application.id == app_id,
+        Application.user_id == candidate.id,
+    ).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    if app.status != "coding_round":
+        raise HTTPException(status_code=400, detail="Application is not in coding round")
+    if not app.coding_session_id:
+        raise HTTPException(status_code=404, detail="No coding session assigned yet")
+
+    coding_session = db.query(CodingSession).filter(CodingSession.id == app.coding_session_id).first()
+    if not coding_session:
+        raise HTTPException(status_code=404, detail="Coding session not found")
+
+    return {
+        "coding_session_id": coding_session.id,
+        "status": coding_session.status,
+        "challenge_id": coding_session.challenge_id,
+        "started_at": coding_session.started_at.isoformat() if coding_session.started_at else None,
+        "coding_score": coding_session.coding_score,
+    }
+
+
+@router.get("/applications/{app_id}/interview-session")
+def get_application_interview_session(
+    app_id: int,
+    candidate: User = Depends(verify_candidate),
+    db: Session = Depends(get_db),
+):
+    """Get the interview session for an application in interview_scheduled status."""
+    app = db.query(Application).filter(
+        Application.id == app_id,
+        Application.user_id == candidate.id,
+    ).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    if app.status not in ("interview_scheduled", "interview_completed"):
+        raise HTTPException(status_code=400, detail="Application is not in interview stage")
+    if not app.interview_session_id:
+        raise HTTPException(status_code=404, detail="No interview session assigned yet")
+
+    interview_session = db.query(InterviewSession).filter(
+        InterviewSession.id == app.interview_session_id
+    ).first()
+    if not interview_session:
+        raise HTTPException(status_code=404, detail="Interview session not found")
+
+    return {
+        "interview_session_id": interview_session.id,
+        "status": interview_session.status,
+        "role": interview_session.role,
+        "difficulty": interview_session.difficulty,
+        "interview_type": interview_session.interview_type,
+        "score": interview_session.score,
+        "started_at": interview_session.started_at.isoformat() if interview_session.started_at else None,
+    }
+
+
 @router.post("/applications/{app_id}/withdraw")
 def withdraw_application(
     app_id: int,

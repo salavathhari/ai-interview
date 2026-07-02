@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Mail, Briefcase, BarChart3, Code2, Target, BookOpen } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
+import ChatPanel from '../../components/ChatPanel';
 import './recruiter.css';
 
 type Profile = {
@@ -16,6 +18,7 @@ const fmt = (v: number | null | undefined) => v == null ? 'N/A' : typeof v === '
 
 export default function RecruiterCandidateProfilePage() {
   const nav = useNavigate();
+  const { user } = useAuth();
   const { userId } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -179,6 +182,13 @@ export default function RecruiterCandidateProfilePage() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Chat */}
+          {user && profile.applications.length > 0 && (
+            <div className="rp-card" style={{ marginTop: '1.5rem' }}>
+              <ChatPanel applicationId={profile.applications[0].id} currentUserId={user.id} />
             </div>
           )}
         </div>

@@ -574,6 +574,10 @@ export const candidateApi = {
     api.get(`/candidate/applications/${appId}`),
   withdrawApplication: (appId: number) =>
     api.post(`/candidate/applications/${appId}/withdraw`),
+  getCodingSession: (appId: number) =>
+    api.get(`/candidate/applications/${appId}/coding-session`),
+  getInterviewSession: (appId: number) =>
+    api.get(`/candidate/applications/${appId}/interview-session`),
 
   // Assignments
   getMyAssignments: (params?: { status?: string }) =>
@@ -594,6 +598,15 @@ export const candidateApi = {
     api.patch(`/candidate/notifications/${id}/read`),
   markAllMyNotificationsRead: () =>
     api.patch('/candidate/notifications/read-all'),
+};
+
+export const chatApi = {
+  sendMessage: (applicationId: number, content: string) =>
+    api.post('/chat/messages', { application_id: applicationId, content }),
+  getMessages: (applicationId: number) =>
+    api.get(`/chat/applications/${applicationId}/messages`),
+  getUnreadCount: (applicationId: number) =>
+    api.get(`/chat/applications/${applicationId}/unread-count`),
 };
 
 export default api;

@@ -43,6 +43,7 @@ def init_models():
     from app.models.admin_log import AdminLog
     from app.models.system_health_log import SystemHealthLog
     from app.models.notification import Notification
+    from app.models.message import Message
     from app.models.career import JobDescription, ResumeAnalysis, SkillGapAnalysis, LearningRoadmap, OptimizedResume, CareerReadiness, CareerReadinessHistory
     from app.models.intelligence import SkillDependency, LearningProgress, CareerRecommendation, PerformanceMetrics, SkillAnalytics
     from app.models.ats_report import ATSReport

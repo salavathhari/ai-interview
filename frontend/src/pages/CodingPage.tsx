@@ -19,7 +19,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { codingApi, getAccessToken } from '../services/api';
 import './CodingPage.css';
 
@@ -114,7 +114,9 @@ const TIMER_LIMIT = 45 * 60; // 45 minutes
 
 const CodingPage = () => {
   const { sessionId } = useParams<{ sessionId?: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const codingSessionIdParam = searchParams.get('coding_session_id');
 
   // Session & challenge
   const [codingSessionId, setCodingSessionId] = useState<number | null>(null);
@@ -154,13 +156,20 @@ const CodingPage = () => {
     const init = async () => {
       setLoading(true);
       try {
-        // Start or resume coding session
-        const interviewSessionId = sessionId ? parseInt(sessionId) : undefined;
-        const sessionRes = await codingApi.startSession({
-          interview_session_id: interviewSessionId,
-          language: 'python',
-        });
-        const sess = sessionRes.data;
+        let sess;
+        if (codingSessionIdParam) {
+          // Resume existing coding session from application
+          const sessionRes = await codingApi.getSession(parseInt(codingSessionIdParam));
+          sess = sessionRes.data;
+        } else {
+          // Start or resume coding session
+          const interviewSessionId = sessionId ? parseInt(sessionId) : undefined;
+          const sessionRes = await codingApi.startSession({
+            interview_session_id: interviewSessionId,
+            language: 'python',
+          });
+          sess = sessionRes.data;
+        }
         setCodingSessionId(sess.id);
 
         const ch: Challenge = sess.challenge;
@@ -199,7 +208,7 @@ const CodingPage = () => {
 
     init();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [sessionId, navigate]);
+  }, [sessionId, codingSessionIdParam, navigate]);
 
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);

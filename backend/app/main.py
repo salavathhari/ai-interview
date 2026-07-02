@@ -14,6 +14,7 @@ from app.models.api_usage import ApiUsage
 from app.models.admin_log import AdminLog
 from app.models.system_health_log import SystemHealthLog
 from app.models.notification import Notification
+from app.models.message import Message
 from app.models.ats_report import ATSReport
 from app.models.ml_analytics import (
     MLClassification, MLATSPrediction, MLSkillExtraction,
@@ -35,6 +36,7 @@ from app.routes.ats import router as ats_router
 from app.routes.ml import router as ml_router
 from app.routes.reports import router as reports_router
 from app.routes.candidate_jobs import router as candidate_jobs_router
+from app.routes.chat import router as chat_router
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -164,6 +166,7 @@ app.include_router(admin_router)
 app.include_router(recruiter_router)
 app.include_router(recruiter_v2_router)
 app.include_router(candidate_jobs_router)
+app.include_router(chat_router)
 app.include_router(career_router)
 app.include_router(ats_router)
 app.include_router(ml_router)

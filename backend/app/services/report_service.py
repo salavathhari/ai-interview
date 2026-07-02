@@ -304,7 +304,19 @@ Each strengths/weaknesses/roadmap item must be a specific string, not a generic 
         ).order_by(InterviewSession.started_at.desc()).first()
 
         if not session:
-            raise ValueError("No completed interview sessions found")
+            buffer = io.BytesIO()
+            doc = ReportDocTemplate(buffer, title="Interview Report", pagesize=letter,
+                                    topMargin=0.75*inch, bottomMargin=0.75*inch)
+            styles = getSampleStyleSheet()
+            elements = []
+            elements.append(Paragraph("Interview Performance Report", styles['Title']))
+            elements.append(Spacer(1, 24))
+            elements.append(Paragraph("No completed interview sessions found.", styles['Normal']))
+            elements.append(Spacer(1, 12))
+            elements.append(Paragraph("Complete an interview session to generate this report.", styles['Normal']))
+            doc.build(elements)
+            buffer.seek(0)
+            return buffer
 
         questions = db.query(Question).filter(Question.session_id == session.id).all()
         ai_summary = ReportService.generate_ai_summary(session, questions)
@@ -371,7 +383,10 @@ Each strengths/weaknesses/roadmap item must be a specific string, not a generic 
             elements.append(Paragraph("Recent Submissions", styles['Heading2']))
             sub_data = [["Challenge", "Language", "Status", "Correctness", "AI Score"]]
             for s in submissions[:15]:
-                challenge_title = s.challenge.title if s.challenge else "N/A"
+                try:
+                    challenge_title = s.challenge.title if s.challenge else "N/A"
+                except Exception:
+                    challenge_title = "N/A"
                 sub_data.append([
                     challenge_title[:30],
                     s.language or "N/A",

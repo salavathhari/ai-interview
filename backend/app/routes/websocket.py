@@ -519,6 +519,40 @@ async def interview_websocket(
         except Exception as auto_err:
             print(f"Automation trigger (interview) failed: {auto_err}")
 
+        # Auto-generate interview report in background
+        try:
+            from app.models.generated_report import GeneratedReport
+            from app.services.report_service import ReportService
+            report = GeneratedReport(
+                user_id=session.user_id,
+                title=f"Interview Report - {session.role or 'Technical'} - {session.ended_at.strftime('%Y-%m-%d %H:%M') if session.ended_at else 'now'}",
+                report_type="interview",
+                status="generating",
+            )
+            db.add(report)
+            db.commit()
+            db.refresh(report)
+            questions = db.query(Question).filter(Question.session_id == session_id).all()
+            ai_summary = ReportService.generate_ai_summary(session, questions)
+            pdf_buffer = ReportService.create_pdf_report(session, questions, ai_summary)
+            os.makedirs("uploads/reports", exist_ok=True)
+            file_path = os.path.join("uploads/reports", f"report_{report.id}.pdf")
+            with open(file_path, "wb") as f:
+                f.write(pdf_buffer.getvalue())
+            report.file_path = file_path
+            report.file_size = os.path.getsize(file_path)
+            report.status = "ready"
+            report.scores_snapshot = json.dumps(ReportService._capture_scores_snapshot(db, session.user))
+            db.commit()
+        except Exception as report_err:
+            print(f"Auto-report generation (interview) failed: {report_err}")
+            try:
+                if report and report.id:
+                    report.status = "failed"
+                    db.commit()
+            except Exception:
+                pass
+
         await websocket.send_json({
             "type": "completed",
             "final_score": session.score,

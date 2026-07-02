@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
 from datetime import datetime
+import os
+import json
 
 from app.database import get_db
 from app.auth.utils import get_current_user
@@ -2200,6 +2202,38 @@ def submit_code(
             automation.on_coding_complete(current_user.id, submission_in.coding_session_id)
         except Exception as auto_err:
             print(f"Automation trigger (coding) failed: {auto_err}")
+
+        # Auto-generate coding report in background
+        try:
+            from app.models.generated_report import GeneratedReport
+            from app.services.report_service import ReportService
+            report = GeneratedReport(
+                user_id=current_user.id,
+                title=f"Coding Report - {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}",
+                report_type="coding",
+                status="generating",
+            )
+            db.add(report)
+            db.commit()
+            db.refresh(report)
+            pdf_buffer = ReportService.generate_coding_report(db, current_user)
+            os.makedirs("uploads/reports", exist_ok=True)
+            file_path = os.path.join("uploads/reports", f"report_{report.id}.pdf")
+            with open(file_path, "wb") as f:
+                f.write(pdf_buffer.getvalue())
+            report.file_path = file_path
+            report.file_size = os.path.getsize(file_path)
+            report.status = "ready"
+            report.scores_snapshot = json.dumps(ReportService._capture_scores_snapshot(db, current_user))
+            db.commit()
+        except Exception as report_err:
+            print(f"Auto-report generation (coding) failed: {report_err}")
+            try:
+                if report and report.id:
+                    report.status = "failed"
+                    db.commit()
+            except Exception:
+                pass
 
     # Build full response including public test results
     public_tc_results = [

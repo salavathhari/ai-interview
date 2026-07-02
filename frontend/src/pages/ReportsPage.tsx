@@ -280,10 +280,10 @@ const ReportsPage: React.FC = () => {
           <div className="rp-empty-icon">
             <FileText size={36} />
           </div>
-          <h3>No Reports Yet</h3>
+          <h3>No {filterType ? REPORT_TYPE_INFO[filterType]?.label || '' : ''} Reports Yet</h3>
           <p>Generate your first report to get started</p>
-          <button className="rp-btn rp-btn-primary" onClick={() => generateReport('portfolio')}>
-            <Plus size={15} /> Generate Portfolio Report
+          <button className="rp-btn rp-btn-primary" onClick={() => generateReport(filterType || 'portfolio')}>
+            <Plus size={15} /> Generate {filterType ? REPORT_TYPE_INFO[filterType]?.label || 'Report' : 'Portfolio Report'}
           </button>
         </div>
       ) : (

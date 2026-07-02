@@ -49,8 +49,8 @@ const DashboardPage: React.FC = () => {
             .filter((item: any) => !Number.isNaN(item.value));
     }, [analytics]);
 
-    const weakestTopic = analytics?.weakest_topic || analytics?.weak_topics?.[0]?.topic || 'Communication';
-    const bestSkill = analytics?.best_skill || analytics?.strong_topics?.[0]?.topic || 'Python';
+    const weakestTopic = analytics?.weakest_topic || analytics?.weak_topics?.[0]?.topic || null;
+    const bestSkill = analytics?.best_skill || analytics?.strong_topics?.[0]?.topic || null;
 
     useEffect(() => {
         loadResumes();
@@ -194,18 +194,22 @@ const DashboardPage: React.FC = () => {
                             <h3>{analytics ? `${analytics.average_score.toFixed(1)}%` : '0.0%'}</h3>
                             <span>Across all rounds</span>
                         </article>
+                        {weakestTopic && (
                         <article className="metric-card">
                             <div className="metric-icon"><AlertTriangle size={20} /></div>
                             <p>Weakest Topic</p>
                             <h3>{weakestTopic}</h3>
                             <span>Priority to improve</span>
                         </article>
+                        )}
+                        {bestSkill && (
                         <article className="metric-card">
                             <div className="metric-icon"><Star size={20} /></div>
                             <p>Best Skill</p>
                             <h3>{bestSkill}</h3>
                             <span>Highest confidence area</span>
                         </article>
+                        )}
                     </>
                 )}
             </section>

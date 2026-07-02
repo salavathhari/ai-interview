@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FileText, Clock, CheckCircle, XCircle, AlertCircle, ChevronRight,
-  Briefcase, ChevronDown, MapPin, DollarSign, Send, Eye
+  FileText, Clock, CheckCircle, XCircle, AlertCircle, ChevronDown,
+  Briefcase, MapPin, DollarSign, Send, Eye, BarChart3,
+  TrendingUp, Users, Award, Code, Loader2, Mic
 } from 'lucide-react';
 import { candidateApi } from '../../services/api';
-import './candidate.css';
+import { useAuth } from '../../contexts/AuthContext';
+import ChatPanel from '../../components/ChatPanel';
+import './MyApplicationsPage.css';
 
 type TimelineEntry = {
   stage: string; label: string; timestamp?: string;
@@ -61,12 +64,25 @@ function fmtDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function timeAgo(d: string) {
+  const diff = Date.now() - new Date(d).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
 export default function MyApplicationsPage() {
   const nav = useNavigate();
+  const { user } = useAuth();
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [codingLoading, setCodingLoading] = useState<number | null>(null);
+  const [interviewLoading, setInterviewLoading] = useState<number | null>(null);
 
   const fetchApps = () => {
     setLoading(true);
@@ -82,14 +98,59 @@ export default function MyApplicationsPage() {
 
   const toggleExpand = (id: number) => setExpandedId(expandedId === id ? null : id);
 
-  const activeCount = apps.length;
+  const startCoding = async (appId: number) => {
+    setCodingLoading(appId);
+    try {
+      const res = await candidateApi.getCodingSession(appId);
+      const codingSessionId = res.data.coding_session_id;
+      nav(`/coding?coding_session_id=${codingSessionId}`);
+    } catch {
+      nav('/coding');
+    } finally {
+      setCodingLoading(null);
+    }
+  };
+
+  const startInterview = async (appId: number) => {
+    setInterviewLoading(appId);
+    try {
+      const res = await candidateApi.getInterviewSession(appId);
+      const interviewSessionId = res.data.interview_session_id;
+      nav(`/interview/${interviewSessionId}`);
+    } catch {
+      nav('/dashboard');
+    } finally {
+      setInterviewLoading(null);
+    }
+  };
+
+  const stats = useMemo(() => {
+    const total = apps.length;
+    const active = apps.filter(a => !['rejected', 'withdrawn', 'hired'].includes(a.status)).length;
+    const offers = apps.filter(a => a.status === 'offer_released' || a.offer).length;
+    const hired = apps.filter(a => a.status === 'hired').length;
+    return { total, active, offers, hired };
+  }, [apps]);
 
   if (loading) {
     return (
       <div className="cj-ma-page">
         <div className="cj-ma-header">
-          <div className="cj-skel-text cj-skel-text--xl" style={{ width: 200, height: 28 }} />
-          <div className="cj-skel-text" style={{ width: 140, height: 14 }} />
+          <div>
+            <div className="cj-skel-text cj-skel-text--xl" style={{ width: 200, height: 28, marginBottom: 8 }} />
+            <div className="cj-skel-text" style={{ width: 140, height: 14 }} />
+          </div>
+        </div>
+        <div className="cj-ma-stats">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="cj-ma-stat">
+              <div className="cj-skel-icon" style={{ width: 40, height: 40, borderRadius: 10 }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div className="cj-skel-text" style={{ width: 32, height: 20 }} />
+                <div className="cj-skel-text" style={{ width: 60, height: 10 }} />
+              </div>
+            </div>
+          ))}
         </div>
         <div className="cj-ma-filters-skel">
           {[1,2,3,4,5].map(i => <div key={i} className="cj-skel-pill" style={{ width: 70 }} />)}
@@ -97,7 +158,7 @@ export default function MyApplicationsPage() {
         <div className="cj-ma-list">
           {[1,2,3].map(i => (
             <div key={i} className="cj-ma-card-skel">
-              <div className="cj-skel-icon" style={{ width: 40, height: 40, borderRadius: 10 }} />
+              <div className="cj-skel-icon" style={{ width: 42, height: 42, borderRadius: 10 }} />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div className="cj-skel-text" style={{ width: '45%', height: 16 }} />
                 <div className="cj-skel-text" style={{ width: '25%', height: 12 }} />
@@ -117,9 +178,49 @@ export default function MyApplicationsPage() {
         <div>
           <h1 className="cj-ma-title">My Applications</h1>
           <p className="cj-ma-subtitle">
-            {activeCount} application{activeCount !== 1 ? 's' : ''}
-            {filter && ` · filtered by ${toTitleCase(filter.replace(/_/g, ' '))}`}
+            {stats.total} application{stats.total !== 1 ? 's' : ''}
+            {filter && ` \u00b7 filtered by ${toTitleCase(filter.replace(/_/g, ' '))}`}
           </p>
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="cj-ma-stats">
+        <div className="cj-ma-stat">
+          <div className="cj-ma-stat-icon" style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}>
+            <BarChart3 size={18} />
+          </div>
+          <div>
+            <div className="cj-ma-stat-value">{stats.total}</div>
+            <div className="cj-ma-stat-label">Total</div>
+          </div>
+        </div>
+        <div className="cj-ma-stat">
+          <div className="cj-ma-stat-icon" style={{ background: 'rgba(139,92,246,0.1)', color: '#8b5cf6' }}>
+            <TrendingUp size={18} />
+          </div>
+          <div>
+            <div className="cj-ma-stat-value">{stats.active}</div>
+            <div className="cj-ma-stat-label">In Progress</div>
+          </div>
+        </div>
+        <div className="cj-ma-stat">
+          <div className="cj-ma-stat-icon" style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>
+            <AlertCircle size={18} />
+          </div>
+          <div>
+            <div className="cj-ma-stat-value">{stats.offers}</div>
+            <div className="cj-ma-stat-label">Offers</div>
+          </div>
+        </div>
+        <div className="cj-ma-stat">
+          <div className="cj-ma-stat-icon" style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>
+            <Award size={18} />
+          </div>
+          <div>
+            <div className="cj-ma-stat-value">{stats.hired}</div>
+            <div className="cj-ma-stat-label">Hired</div>
+          </div>
         </div>
       </div>
 
@@ -172,7 +273,7 @@ export default function MyApplicationsPage() {
                           </span>
                         )}
                         <span className="cj-ma-card-meta-item">
-                          <Clock size={13} /> Applied {fmtDate(app.applied_at)}
+                          <Clock size={13} /> Applied {timeAgo(app.applied_at)}
                         </span>
                       </div>
                     </div>
@@ -242,6 +343,61 @@ export default function MyApplicationsPage() {
                         );
                       })}
                     </div>
+
+                    {/* Chat */}
+                    {user && (
+                      <div style={{ marginTop: '1.25rem' }}>
+                        <ChatPanel applicationId={app.id} currentUserId={user.id} />
+                      </div>
+                    )}
+
+                    {/* Start Interview */}
+                    {app.status === 'interview_scheduled' && (
+                      <div className="cj-ma-interview-action">
+                        <div className="cj-ma-interview-info">
+                          <Mic size={18} />
+                          <div>
+                            <h4>Interview Ready</h4>
+                            <p>Your AI-powered voice interview is waiting</p>
+                          </div>
+                        </div>
+                        <button
+                          className="cj-ma-interview-btn"
+                          disabled={interviewLoading === app.id}
+                          onClick={() => startInterview(app.id)}
+                        >
+                          {interviewLoading === app.id ? (
+                            <><Loader2 size={16} className="cj-spin" /> Loading...</>
+                          ) : (
+                            <><Mic size={16} /> Start Interview</>
+                          )}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Start Coding */}
+                    {app.status === 'coding_round' && (
+                      <div className="cj-ma-coding-action">
+                        <div className="cj-ma-coding-info">
+                          <Code size={18} />
+                          <div>
+                            <h4>Coding Assessment Ready</h4>
+                            <p>Click below to start your coding challenge</p>
+                          </div>
+                        </div>
+                        <button
+                          className="cj-ma-coding-btn"
+                          disabled={codingLoading === app.id}
+                          onClick={() => startCoding(app.id)}
+                        >
+                          {codingLoading === app.id ? (
+                            <><Loader2 size={16} className="cj-spin" /> Loading...</>
+                          ) : (
+                            <><Code size={16} /> Start Coding</>
+                          )}
+                        </button>
+                      </div>
+                    )}
 
                     {/* Offer Section */}
                     {app.offer && (

@@ -188,10 +188,15 @@ def generate_report(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except ValueError as e:
         report.status = "failed"
         db.commit()
-        raise HTTPException(status_code=500, detail="Report generation failed. Please try again later.")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        report.status = "failed"
+        db.commit()
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)[:200]}")
 
 
 @router.get("/{report_id}/download")

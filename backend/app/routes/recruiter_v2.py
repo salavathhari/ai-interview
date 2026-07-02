@@ -1898,9 +1898,10 @@ def assign_coding(
     db.commit()
     db.refresh(coding_session)
 
-    # Update application stage
+    # Update application stage and link session
     old_status = app.status
     app.status = "coding_round"
+    app.coding_session_id = coding_session.id
     history = ApplicationHistory(
         application_id=app_id,
         from_stage=old_status,
