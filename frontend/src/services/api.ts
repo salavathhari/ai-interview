@@ -158,6 +158,7 @@ export const resumeApi = {
   getMyResumes: (params?: { page?: number; per_page?: number; search?: string; active_only?: boolean }) =>
     api.get('/resumes/', { params }),
   getResume: (resumeId: number) => api.get(`/resumes/${resumeId}`),
+  getStatus: (resumeId: number) => api.get(`/resumes/${resumeId}/status`),
   getVersions: (resumeId: number) => api.get(`/resumes/${resumeId}/versions`),
   createVersion: (resumeId: number) => api.post(`/resumes/${resumeId}/versions`),
   setActive: (resumeId: number) => api.put(`/resumes/${resumeId}/active`),
