@@ -31,6 +31,5 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 600,
     target: 'es2020',
-    minify: 'esbuild',
   },
 })
