@@ -1,11 +1,6 @@
 """ML Configuration — device detection, paths, constants."""
 
 import os
-try:
-    import torch
-    _HAS_TORCH = True
-except ImportError:
-    _HAS_TORCH = False
 
 ML_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,8 +17,23 @@ try:
 except OSError:
     pass
 
-# Device
-DEVICE = "cuda" if _HAS_TORCH and torch.cuda.is_available() else "cpu"
+
+# Lazy torch import — avoids loading 200-500MB into RAM at startup.
+# Only import torch when DEVICE or _HAS_TORCH is actually accessed.
+_HAS_TORCH = None
+DEVICE = None
+
+
+def _ensure_torch():
+    global _HAS_TORCH, DEVICE
+    if _HAS_TORCH is None:
+        try:
+            import torch
+            _HAS_TORCH = True
+            DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+        except ImportError:
+            _HAS_TORCH = False
+            DEVICE = "cpu"
 
 # Embedding model
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"

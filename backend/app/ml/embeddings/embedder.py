@@ -8,7 +8,7 @@ from functools import lru_cache
 from typing import Optional
 import numpy as np
 
-from app.ml.config import EMBEDDING_MODEL_NAME, EMBEDDING_DIMENSION, EMBEDDING_CACHE_DIR, DEVICE, MAX_EMBEDDING_CACHE_SIZE
+from app.ml.config import EMBEDDING_MODEL_NAME, EMBEDDING_DIMENSION, EMBEDDING_CACHE_DIR, MAX_EMBEDDING_CACHE_SIZE, _ensure_torch
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +23,8 @@ class Embedder:
     def _get_model(cls):
         if cls._model is None:
             try:
+                _ensure_torch()
+                from app.ml.config import DEVICE
                 from sentence_transformers import SentenceTransformer
                 cls._model = SentenceTransformer(EMBEDDING_MODEL_NAME, device=DEVICE)
             except Exception as e:
