@@ -20,7 +20,6 @@ const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ResumePage = lazy(() => import('./pages/ResumePage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const RecruiterPage = lazy(() => import('./pages/RecruiterPage'));
 
 const RecruiterLayout = lazy(() => import('./pages/recruiter/RecruiterLayout'));
 const RecruiterDashboardPage = lazy(() => import('./pages/recruiter/RecruiterDashboardPage'));

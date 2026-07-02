@@ -4,7 +4,7 @@ import { resumeApi, interviewApi, analyticsApi } from '../services/api';
 import {
   Plus, Download, Mic, FileText, Sparkles, BarChart3, Brain,
   Users, TrendingUp, AlertTriangle, Star, Play, Upload,
-  ChevronRight, Calendar, Loader2
+  ChevronRight, Calendar
 } from 'lucide-react';
 import { Skeleton } from '../components/ui/Skeleton';
 import './DashboardPage.css';

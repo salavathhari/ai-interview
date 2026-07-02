@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, MapPin, Briefcase, DollarSign, Clock, Building2,
-  Filter, X, ChevronDown, Sparkles, ArrowRight, TrendingUp, Users
+  Filter, X, ChevronDown, Sparkles, ArrowRight, TrendingUp
 } from 'lucide-react';
 import { candidateApi } from '../../services/api';
 import './candidate.css';

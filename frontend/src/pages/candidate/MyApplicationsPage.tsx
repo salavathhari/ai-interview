@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FileText, Clock, CheckCircle, XCircle, AlertCircle, ChevronDown,
+  Clock, CheckCircle, XCircle, AlertCircle, ChevronDown,
   Briefcase, MapPin, DollarSign, Send, Eye, BarChart3,
   TrendingUp, Users, Award, Code, Loader2, Mic
 } from 'lucide-react';

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  ArrowLeft, MapPin, Briefcase, DollarSign, Calendar, Building2,
-  CheckCircle, Clock, Users, Globe, GraduationCap, Heart,
-  Share2, BookmarkPlus, ChevronRight, Zap, Shield, Trophy,
+  MapPin, Briefcase, DollarSign, Building2,
+  CheckCircle, Clock, GraduationCap, Heart,
+  Share2, BookmarkPlus, ChevronRight, Zap, Trophy,
   FileText, X, Loader2
 } from 'lucide-react';
 import { candidateApi, resumeApi } from '../../services/api';

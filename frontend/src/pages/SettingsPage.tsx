@@ -4,7 +4,7 @@ import { usePreferences } from '../contexts/PreferencesContext';
 import { userApi } from '../services/api';
 import {
   User, Shield, Settings, AlertTriangle, Mail, Lock, Eye, EyeOff,
-  CheckCircle2, Copy, Key, Bell, Volume2, Palette, Trash2, ArrowRight,
+  CheckCircle2, Copy, Key, Bell, Volume2, Trash2, ArrowRight,
 } from 'lucide-react';
 import './SettingsPage.css';
 
