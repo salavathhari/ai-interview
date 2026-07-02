@@ -52,9 +52,6 @@ def _is_production() -> bool:
     import os
     return os.getenv("ENVIRONMENT", "development").lower() == "production"
 
-Base.metadata.create_all(bind=engine)
-init_models()
-
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -182,6 +179,13 @@ app.include_router(career_router)
 app.include_router(ats_router)
 app.include_router(ml_router)
 app.include_router(reports_router)
+
+
+@app.on_event("startup")
+async def startup_event():
+    Base.metadata.create_all(bind=engine)
+    init_models()
+
 
 @app.get("/")
 

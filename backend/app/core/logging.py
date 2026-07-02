@@ -16,17 +16,20 @@ def setup_logging():
     logger.addHandler(stdout_handler)
 
     # File Handler (Rotating: Max 5MB per file, keep 5 backups)
-    log_dir = "logs"
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    
-    file_handler = RotatingFileHandler(
-        os.path.join(log_dir, "app.log"),
-        maxBytes=5*1024*1024,
-        backupCount=5
-    )
-    file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
-    logger.addHandler(file_handler)
+    # Gracefully skip if directory creation fails (e.g. read-only filesystem on Render)
+    try:
+        log_dir = "logs"
+        os.makedirs(log_dir, exist_ok=True)
+
+        file_handler = RotatingFileHandler(
+            os.path.join(log_dir, "app.log"),
+            maxBytes=5*1024*1024,
+            backupCount=5
+        )
+        file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+        logger.addHandler(file_handler)
+    except OSError:
+        pass
 
     return logger
 
