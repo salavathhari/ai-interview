@@ -312,6 +312,7 @@ def recommend_skills(req: RecommendSkillsRequest, db: Session = Depends(get_db),
 @router.post("/analyze-full")
 def full_analysis(req: FullAnalysisRequest, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     import gc
+    import sys
     import logging
 
     _log = logging.getLogger(__name__)
@@ -321,35 +322,67 @@ def full_analysis(req: FullAnalysisRequest, db: Session = Depends(get_db), user:
     if req.job_description_id:
         jd_text = _get_jd_text(req.job_description_id, user.id, db)
 
-    def _safe(label, fn, *args, **kwargs):
-        """Run an ML step, return result or None on failure (OOM, missing model, etc.)."""
+    # Heavy ML modules that consume ~300MB (torch + sentence-transformers)
+    _HEAVY_MODULES = [
+        "sentence_transformers", "torch", "transformers", "huggingface_hub",
+        "spacy", "en_core_web_sm",
+    ]
+
+    def _unload_heavy():
+        for mod_name in _HEAVY_MODULES:
+            sys.modules.pop(mod_name, None)
+        # Also remove our ML modules so they re-import cleanly next time
+        for mod_name in list(sys.modules.keys()):
+            if mod_name.startswith("app.ml."):
+                sys.modules.pop(mod_name, None)
+        gc.collect()
+
+    def _safe(label, fn):
         try:
-            result = fn(*args, **kwargs)
-            gc.collect()
+            result = fn()
             return result
         except Exception as e:
             _log.warning(f"analyze-full: {label} failed: {e}")
-            gc.collect()
             return None
 
+    # ── Tier 1: Lightweight models (sklearn/joblib only, ~100MB) ──
     from app.ml.prediction.classifier_service import ClassifierService
-    from app.ml.prediction.skill_service import SkillService
-    from app.ml.prediction.ats_service import ATSService
-    from app.ml.prediction.recommender_service import RecommenderService
-
-    classification = _safe("classification", ClassifierService.classify, resume_text)
+    classification = _safe("classification", lambda: ClassifierService.classify(resume_text))
     predicted_role = classification.get("predicted_role", "") if classification else ""
 
-    skills = _safe("skills", SkillService.extract_skills, resume_text)
-    ats = _safe("ats", ATSService.predict_ats, resume_text, jd_text)
-    jobs = _safe("jobs", RecommenderService.recommend_jobs, resume_text)
-    quality = _safe("quality", RecommenderService.predict_quality, resume_text)
-    career = _safe("career", RecommenderService.career_path, resume_text, predicted_role)
-    recommend_skills = _safe("recommend_skills", SkillService.recommend_skills, resume_text, predicted_role)
+    from app.ml.prediction.ats_service import ATSService
+    ats = _safe("ats", lambda: ATSService.predict_ats(resume_text, jd_text))
+
+    from app.ml.prediction.recommender_service import RecommenderService
+    quality = _safe("quality", lambda: RecommenderService.predict_quality(resume_text))
+
+    # ── Tier 2: Embedding-heavy models (~300MB torch/sentence-transformers) ──
+    # Unload sklearn to free ~100MB before loading torch
+    for mod_name in list(sys.modules.keys()):
+        if mod_name.startswith("app.ml.prediction."):
+            sys.modules.pop(mod_name, None)
+    gc.collect()
+
+    from app.ml.prediction.skill_service import SkillService
+    skills = _safe("skills", lambda: SkillService.extract_skills(resume_text))
+    _unload_heavy()
+
+    from app.ml.prediction.recommender_service import RecommenderService
+    jobs = _safe("jobs", lambda: RecommenderService.recommend_jobs(resume_text))
+    _unload_heavy()
+
+    career = _safe("career", lambda: RecommenderService.career_path(resume_text, predicted_role))
+    _unload_heavy()
+
+    from app.ml.prediction.skill_service import SkillService
+    recommend_skills = _safe("recommend_skills", lambda: SkillService.recommend_skills(resume_text, predicted_role))
+    _unload_heavy()
 
     skill_gap = None
     if jd_text:
-        skill_gap = _safe("skill_gap", SkillService.skill_gap, resume_text, jd_text)
+        from app.ml.prediction.skill_service import SkillService
+        skill_gap = _safe("skill_gap", lambda: SkillService.skill_gap(resume_text, jd_text))
+        _unload_heavy()
 
     total_latency = round((time.time() - start) * 1000, 1)
 

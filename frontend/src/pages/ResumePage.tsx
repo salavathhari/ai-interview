@@ -116,6 +116,20 @@ const ResumePage: React.FC = () => {
     handleFile(dropped);
   };
 
+  const pollExtractionStatus = async (resumeId: number): Promise<boolean> => {
+    const maxAttempts = 30;
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      try {
+        const resp = await resumeApi.getResume(resumeId);
+        const data = resp.data;
+        if (data.processing_status === 'completed') return true;
+        if (data.processing_status === 'failed') return false;
+      } catch { /* retry */ }
+    }
+    return false;
+  };
+
   const handleUpload = async () => {
     if (!file) return;
     setUploading(true);
@@ -129,9 +143,31 @@ const ResumePage: React.FC = () => {
       const result: UploadResult = await resumeApi.upload(formData, (pct) => {
         setUploadProgress(pct);
       });
-      setUploaded(result);
       setFile(null);
       setUploadProgress(0);
+
+      if (result.processing_status === 'pending' || result.processing_status === 'processing') {
+        const completed = await pollExtractionStatus(result.id);
+        if (completed) {
+          const fullResume = await resumeApi.getResume(result.id);
+          const data = fullResume.data;
+          setUploaded({
+            ...result,
+            skills: data.skills ? data.skills.split(', ').filter(Boolean) : [],
+            parsed_fields: {
+              name: data.parsed_name, email: data.parsed_email,
+              phone: data.parsed_phone, location: data.parsed_location,
+              linkedin: data.parsed_linkedin, github: data.parsed_github,
+              portfolio: data.parsed_portfolio,
+            },
+          });
+        } else {
+          setUploaded(result);
+        }
+      } else {
+        setUploaded(result);
+      }
+
       loadResumes();
     } catch (err: any) {
       setError(err.message || 'Upload failed. Please try again.');
