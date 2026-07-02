@@ -73,16 +73,6 @@ allowed_origins = [
     "https://ai-interview-frontend.up.railway.app",
 ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_origin_regex=r"https://(ai-interview-frontend\.up\.railway\.app|.*\.vercel\.app|.*\.web\.app|.*\.firebaseapp\.com)$",
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    max_age=3600,
-)
-
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
@@ -127,12 +117,33 @@ async def csrf_protect(request: Request, call_next):
     # If a CSRF cookie exists, the header must match (double-submit pattern)
     if cookie_csrf:
         if not header_csrf or cookie_csrf != header_csrf:
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=403,
                 content={"detail": "CSRF token mismatch"},
             )
+            # Attach CORS headers so the browser can read the error response
+            origin = request.headers.get("origin", "")
+            if origin and (origin in allowed_origins or origin.endswith(".vercel.app") or origin.endswith(".web.app") or origin.endswith(".firebaseapp.com")):
+                response.headers["Access-Control-Allow-Origin"] = origin
+                response.headers["Access-Control-Allow-Credentials"] = "true"
+            return response
 
     return await call_next(request)
+
+
+# CORS middleware MUST be the outermost middleware so it wraps all responses
+# (including error responses from inner middleware like csrf_protect).
+# In Starlette, the last add_middleware call creates the outermost layer.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://(ai-interview-frontend\.up\.railway\.app|.*\.vercel\.app|.*\.web\.app|.*\.firebaseapp\.com)$",
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+    max_age=3600,
+)
+
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
