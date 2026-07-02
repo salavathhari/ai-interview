@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Trophy, Medal } from 'lucide-react';
+import { Trophy, Medal } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 

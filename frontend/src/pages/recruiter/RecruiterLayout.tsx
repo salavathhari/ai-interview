@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, Users, GitCompare, Video, Code2,
-  Bell, Settings, LineChart, FileText, LogOut, Search, Menu
+  Bell, Settings, LineChart, FileText, LogOut, Menu
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { API_BASE_URL, getAccessToken } from '../../services/api';

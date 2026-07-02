@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, Users, Edit, MapPin, Calendar, DollarSign } from 'lucide-react';
+import { ArrowLeft, Users, Edit, MapPin, Calendar, DollarSign } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 

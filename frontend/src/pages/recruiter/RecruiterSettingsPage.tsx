@@ -3,7 +3,7 @@ import { User, Mail, Shield } from 'lucide-react';
 import './recruiter.css';
 
 export default function RecruiterSettingsPage() {
-  const { user, role } = useAuth();
+  const { user } = useAuth();
   const displayName = user?.name || 'Recruiter';
   const displayEmail = user?.email || '';
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);

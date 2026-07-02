@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Briefcase, MapPin, Clock, MoreVertical, Copy, Archive, Trash2, Eye, Edit } from 'lucide-react';
+import { Plus, Search, Briefcase, MapPin, MoreVertical, Copy, Archive, Trash2, Eye, Edit } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, X } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 

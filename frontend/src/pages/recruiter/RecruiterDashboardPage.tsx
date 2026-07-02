@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Briefcase, Users, BarChart3, Sparkles, TrendingUp, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Briefcase, Users, Sparkles, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 

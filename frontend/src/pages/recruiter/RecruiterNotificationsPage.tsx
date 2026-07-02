@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bell, Check, CheckCheck } from 'lucide-react';
+import { Bell, Check } from 'lucide-react';
 import { recruiterApi } from '../../services/api';
 import './recruiter.css';
 
