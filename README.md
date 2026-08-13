@@ -1,87 +1,161 @@
-# AI Interview Platform - Engineering Documentation
+# AI Interview Platform
 
-A high-fidelity AI-as-a-Service platform for automated technical interviews, featuring real-time evaluation, safe code sandboxing, and multi-tenant recruiter portals.
+> AI-powered technical interview platform for candidates and recruiters, with real-time interviews, adaptive evaluation, coding challenges, and recruiter analytics.
 
----
+## Why this project?
 
-## 🏗️ Architecture Overview
+Traditional interview practice usually separates coding, communication, and evaluation into different tools. This platform brings them into one workflow: candidates can complete AI-driven interviews while recruiters can create roles, review candidate performance, and export assessment reports.
+
+## Highlights
+
+- **AI-driven interviews** — generates adaptive technical questions based on the candidate and selected role.
+- **Real-time interview engine** — WebSocket-based sessions for interactive interviews.
+- **Voice interviews** — text-to-speech for questions and speech-to-text for candidate responses.
+- **AI evaluation** — analyzes responses for technical correctness and produces scores.
+- **Coding sandbox** — runs coding challenges inside isolated Docker containers.
+- **Recruiter portal** — create job roles, define benchmarks, review candidates, and inspect assessment results.
+- **Role-based access control** — separate Admin, Recruiter, and Candidate permissions.
+- **Candidate anti-cheating signals** — recruiter dashboards can surface interview integrity signals.
+- **Automated reports** — generates PDF assessment reports with AI analytics.
+- **Caching & session support** — Redis is used for high-speed caching and interview-session support.
+- **Testing & CI** — Pytest-based backend tests and GitHub Actions build/test checks.
+
+## System Architecture
 
 ```mermaid
 graph TD
-    User((Candidate/Recruiter))
-    Frontend[React + Vite + Tailwind]
-    Gateway[FastAPI Gateway]
-    Auth[JWT RBAC Service]
-    InterviewEngine[WebSocket Interview Engine]
-    Sandbox[Dockerized Coding Sandbox]
-    AIService[OpenAI GPT-3.5/TTS/Whisper]
-    Cache[(Redis Cache)]
-    DB[(PostgreSQL)]
-    Monitor[Logging & Middleware]
-
-    User <--> Frontend
-    Frontend <--> Gateway
-    Gateway --> Auth
-    Gateway <--> InterviewEngine
-    InterviewEngine --> AIService
-    InterviewEngine --> Cache
-    InterviewEngine --> Sandbox
-    Gateway --> DB
-    Gateway --> Monitor
+    Candidate[Candidate / Recruiter] <--> Frontend[React + Vite + Tailwind]
+    Frontend <--> API[FastAPI Gateway]
+    API --> Auth[JWT + RBAC]
+    API --> DB[(PostgreSQL)]
+    API <--> WS[WebSocket Interview Engine]
+    WS --> AI[OpenAI AI Services]
+    WS --> Redis[(Redis)]
+    WS --> Sandbox[Docker Coding Sandbox]
+    API --> Reports[PDF Report Generation]
 ```
 
----
+## Interview Workflow
 
-## 🔄 Key Workflows
+```text
+Resume / Candidate Profile
+          ↓
+      Skill Extraction
+          ↓
+      Role Selection
+          ↓
+  Real-time AI Interview
+          ↓
+ Text / Voice Responses
+          ↓
+ AI Evaluation + Scoring
+          ↓
+ Candidate Assessment
+          ↓
+ Recruiter Dashboard + PDF Report
+```
 
-### 1. The Interview Loop
-1.  **Initialization**: User uploads resume -> AI extracts skills -> Recruiter selects Job Role.
-2.  **Engagement**: WebSocket connection starts -> AI generates adaptive questions -> TTS converts to audio.
-3.  **Evaluation**: Candidate answers (Text/Voice) -> Whisper STT converts voice to text -> AI scores technical correctness.
-4.  **Sandbox**: Coding challenges launch ephemeral Docker containers -> Sandbox executes code -> Results returned to AI for scoring.
+## Recruiter Workflow
 
-### 2. Recruiter Pipeline
-1.  **Job Creation**: Recruiter defines Job Roles & AI Benchmarks.
-2.  **Review**: Dashboard aggregates candidate scores & anti-cheating signals.
-3.  **Export**: Formal PDF reports generated via `ReportLab` with deep AI analytics.
+1. Create a job role and define interview benchmarks.
+2. Review candidate assessments.
+3. Inspect scores and interview integrity signals.
+4. Compare candidate performance.
+5. Export a detailed PDF assessment report.
 
----
+## Engineering Stack
 
-## 🛠️ Technical Stack & Engineering Depth
+| Layer | Technology |
+|---|---|
+| Frontend | React, Vite, Tailwind CSS |
+| Backend | Python, FastAPI |
+| Real-time | WebSockets |
+| AI | OpenAI API, TTS, Whisper |
+| Database | PostgreSQL, SQLAlchemy |
+| Cache | Redis |
+| Sandbox | Docker / Docker Compose |
+| Authentication | JWT, Bcrypt, RBAC |
+| Reports | ReportLab |
+| Testing | Pytest |
+| CI/CD | GitHub Actions |
 
-| Layer | Technology | Engineering Highlights |
-| :--- | :--- | :--- |
-| **Backend** | Python 3.11, FastAPI | Asynchronous IO, Dependency Injection, SQLAlchemy ORM |
-| **Real-time** | WebSockets | Stateful session management, recovery logic |
-| **AI/ML** | OpenAI API | Prompt compression, semantic caching, adaptive difficulty |
-| **Infrastructure** | Docker, Docker Compose | Microservices isolation, secure sandboxing (DIND) |
-| **Persistence** | PostgreSQL, Redis | Relational data integrity + high-speed caching |
-| **Security** | JWT, Bcrypt | RBAC (Admin/Recruiter/Candidate) |
+## Repository Structure
 
----
+```text
+ai-interview/
+├── backend/              # FastAPI services, interview engine and business logic
+├── frontend/             # React client
+├── .github/              # CI/CD workflows
+├── docker-compose.yml    # Local multi-service environment
+├── run_migrations.py     # Database migration helper
+├── deploy-gcp.ps1        # GCP deployment helper
+└── PRESENTATION.md       # Project presentation material
+```
 
-## 🚀 Setup & Installation (Docker Standard)
+## Running Locally
 
 ### Prerequisites
-- Docker & Docker Compose
-- OpenAI API Key
 
-### 1-Step Quickstart
+- Docker
+- Docker Compose
+- OpenAI API key
+
+### Start the platform
+
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
-The platform will be available at:
-- **Frontend**: `http://localhost:3000`
-- **Backend API**: `http://localhost:8000`
-- **API Docs**: `http://localhost:8000/docs`
 
-### Seed Accounts
-- **Admin**: `admin@ai-platform.com` / `admin123`
-- **Recruiter**: `recruiter@hiring.com` / `recruiter123`
+Services are configured for:
 
----
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+- API documentation: `http://localhost:8000/docs`
 
-## 📈 Monitoring & Quality Assurance
-- **Logs**: Located in `backend/logs/app.log` (Rotating handler).
-- **CI/CD**: GitHub Actions pipeline for automated Pytest and Build checks.
-- **Testing**: Run local tests via `cd backend && python -m pytest`.
+> Configure secrets through environment variables. Do not commit API keys, passwords, or other credentials to the repository.
+
+### Run backend tests
+
+```bash
+cd backend
+python -m pytest
+```
+
+## Security Considerations
+
+The platform includes several security-oriented design choices:
+
+- JWT authentication and role-based authorization.
+- Password hashing with Bcrypt.
+- Isolated Docker execution for coding submissions.
+- Backend-only handling of AI credentials.
+- Redis-backed session/cache support.
+- Logging and middleware for monitoring requests.
+
+Production deployments should additionally use restricted container permissions, resource limits, network isolation, secret management, and a dedicated sandbox execution policy.
+
+## What I Learned
+
+This project focuses on engineering problems beyond a basic CRUD application:
+
+- Designing asynchronous APIs with FastAPI.
+- Managing stateful real-time WebSocket sessions.
+- Integrating AI services into an application workflow.
+- Safely executing untrusted code in isolated containers.
+- Combining PostgreSQL persistence with Redis caching.
+- Implementing RBAC for multiple user types.
+- Building automated testing and CI checks.
+
+## Future Improvements
+
+- Add more AI evaluation metrics and customizable scoring rubrics.
+- Improve interview analytics and candidate comparison.
+- Expand language support in the coding sandbox.
+- Add stronger production-grade sandbox isolation and resource quotas.
+- Add observability dashboards for latency, failures, and interview sessions.
+
+## Author
+
+**Salavath Haricharan**
+
+Computer Science Engineering student focused on full-stack development, AI applications, and software engineering.
